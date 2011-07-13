@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.multimedia.players" name="External Multimedia Players"
+	version="0.1.0" provider-name="Plesken">
+	<requires>
+		<import addon="xbmc.python" version="1.0" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>External Multimedia Players</summary>
+		<description>These players you can use to play 3D movies from NET and bluray from iso files, or unencrypted disc</description>
+		<platform>all</platform>
+	</extension>
+</addon>
