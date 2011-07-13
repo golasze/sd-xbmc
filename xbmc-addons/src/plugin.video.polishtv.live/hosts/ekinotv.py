@@ -2,14 +2,16 @@
 import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
-import xbmcgui, xbmc
-import thread
+import xbmcgui, xbmc, xbmcaddon
 
+scriptID = 'plugin.video.polishtv.live'
+scriptname = "Polish Live TV"
+ptv = xbmcaddon.Addon(scriptID)
 
 BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, megavideo, cacaoweb
+import pLog, megavideo, cacaoweb, settings
 
 log = pLog.pLog()
 
@@ -34,6 +36,7 @@ STREAM_LINK = 'http://127.0.0.1:4001/megavideo/megavideo.caml?videoid='
 class EkinoTV:
   def __init__(self):
     log.info('Loading EkinoTV')
+    self.settings = settings.TVSettings()
     
     
   def setTable(self):
@@ -558,5 +561,112 @@ class EkinoTV:
     origTab = self.searchTab(text)
     return self.getMovieNamesTab(origTab)
     
-  
-      
+
+  def listsMenu(self, table, title):
+    value = ''
+    if len(table) > 0:
+      d = xbmcgui.Dialog()
+      choice = d.select(title, table)
+      for i in range(len(table)):
+	#log.info(table[i])
+	if choice == i:
+	  value = table[i]
+    return value
+
+
+  def listsTable(self, table):
+    nTab = []
+    for num, val in table.items():
+      nTab.append(val)
+    return nTab
+
+
+  def LOAD_AND_PLAY_VIDEO(self, videoUrl):
+  	ok=True
+  	if videoUrl == '':
+		d = xbmcgui.Dialog()
+		d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+		return False
+	try:
+		xbmcPlayer = xbmc.Player()
+		xbmcPlayer.play(videoUrl)
+	except:
+		d = xbmcgui.Dialog()
+		d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')		
+	return ok
+
+
+  def handleService(self):
+  	cm = self.listsMenu(self.getMenuTable(), "Wybór typu")
+  	if cm == self.setTable()[1]:
+  		categoryMovies = self.listsMenu(self.getCategoryName(), "Kategorie filmów")
+  		if categoryMovies != '':
+  			page = self.listsMenu(self.getSortMovies(categoryMovies), "Wybór strony")
+  			if page != '':
+  				title = self.listsMenu(self.getMovieCatNames(page, categoryMovies), "Wybór tytułu filmu")
+  				if title != '':
+  					urlLink = self.getMovieCatURL(page, categoryMovies, title)
+  					if urlLink.startswith('http://'):
+  						if self.settings.MegaVideoUnlimit == 'false':
+  							self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
+  						elif self.settings.MegaVideoUnlimit == 'true':
+  							self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
+  							
+  	elif cm == self.setTable()[2]:
+  		page = self.listsMenu(self.getSortLinkMovies(self.setDubLink()) , "Wybór strony")
+  		if page != '':
+  			title = self.listsMenu(self.getMovieDubNames(page), "Wybór tytułu filmu")
+  			urlLink = self.getMovieDubURL(page, title)
+  			if urlLink.startswith('http://'):
+  				if self.settings.MegaVideoUnlimit == 'false':
+  					self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
+  				elif self.settings.MegaVideoUnlimit == 'true':
+  					self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
+  					
+  	elif cm == self.setTable()[3]:
+  		page = self.listsMenu(self.getSortLinkMovies(self.setSubLink()) , "Wybór strony")
+  		if page != '':
+		    title = self.listsMenu(self.getMovieSubNames(page), "Wybór tytułu filmu")
+		    if title != '':
+		    	urlLink = self.getMovieSubURL(page, title)
+		      	if urlLink.startswith('http://'):
+  				    if self.settings.MegaVideoUnlimit == 'false':
+  				    	self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
+  				    elif self.settings.MegaVideoUnlimit == 'true':
+						self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
+  					
+  	elif cm == self.setTable()[4]:
+  		title = self.listsMenu(self.getMoviePopNames(), "Wybór tytułu filmu")
+		if title != '':			
+  			urlLink = self.getMoviePopURL(title)
+  			if urlLink.startswith('http://'):
+  				if self.settings.MegaVideoUnlimit == 'false':
+  					self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
+				elif self.settings.MegaVideoUnlimit == 'true':
+					self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
+  			
+  	if cm == self.setTable()[5]:	 					
+  		title = self.listsMenu(self.getSerialNames(), "Wybór tytułu serialu")
+  		if title != '':
+  			season = self.listsMenu(self.getSeasonsTab(self.getSerialURL(title)), "Wybór sezonu")
+  			if season != '':
+  				part = self.listsMenu(self.getSeasonPartsTitle(season, title), "Wybór odcinka")
+  				if part != '':
+  					urlLink = self.getPartURL(part, title)
+  					if urlLink.startswith('http://'):
+  						if self.settings.MegaVideoUnlimit == 'false':
+  							self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
+  						elif self.settings.MegaVideoUnlimit == 'true':
+  							self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
+  					
+  	if cm == self.setTable()[6]:
+  		text = self.searchInputText()
+  		if text != None:
+  			title = self.listsMenu(self.getMovieSearchNames(text), "Wybór tytułu")
+  			if title != '':
+  				urlLink = self.getMovieURL(self.searchTab(text), title)
+  				if urlLink.startswith('http://'):
+  					if self.settings.MegaVideoUnlimit == 'false':
+  						self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
+  					elif self.settings.MegaVideoUnlimit == 'true':
+  						self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
