@@ -1,0 +1,7 @@
+<keymap>
+  <global>
+    <keyboard>
+      <p>XBMC.RunScript(%arg0%)</p>
+    </keyboard>
+  </global>
+</keymap>

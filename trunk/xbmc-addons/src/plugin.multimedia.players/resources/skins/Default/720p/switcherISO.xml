@@ -1,0 +1,81 @@
+<window>
+  <defaultcontrol>201</defaultcontrol>
+  <coordinates>
+    <system>1</system>
+      <posx>300</posx>
+      <posy>280</posy>
+    </coordinates>
+  <controls>
+    <control type="image">
+      <posx>0</posx>
+      <posy>0</posy>
+      <width>650</width>
+      <height>200</height>
+      <texture>switcher-dialog.png</texture>
+      <animation effect="fade" time="200">WindowOpen</animation>
+      <animation effect="fade" time="200">WindowClose</animation>
+    </control>
+    <control type="label" id="100">
+      <description>Header label</description>
+      <posx>0</posx>
+      <posy>10</posy>
+      <width>650</width>
+      <height>60</height>
+      <font>font24</font>
+      <label>SCRIPT100</label>
+      <align>center</align>
+      <aligny>center</aligny>
+      <textcolor>FFFFFFFF</textcolor>
+      <shadowcolor>FF000000</shadowcolor>
+    </control>
+    <control type="group">
+      <posx>0</posx>
+      <posy>0</posy>
+      <control type="button" id="201">
+	<description>2D label</description>
+	<posx>70</posx>
+	<posy>85</posy>
+	<width>150</width>
+	<height>60</height>
+	<font>font28</font>
+	<label>DVD</label>
+	<align>center</align>
+	<aligny>center</aligny>
+	<onleft>203</onleft>
+	<onright>202</onright>
+	<onup>203</onup>
+	<ondown>202</ondown>
+      </control>
+      <control type="button" id="202">
+	<description>3D label</description>
+	<posx>250</posx>
+	<posy>85</posy>
+	<width>150</width>
+	<height>60</height>
+	<font>font28</font>
+	<label>BD</label>
+	<align>center</align>
+	<aligny>center</aligny>
+	<onleft>201</onleft>
+	<onright>203</onright>
+	<onup>201</onup>
+	<ondown>203</ondown>
+      </control>
+      <control type="button" id="203">
+	<description>3D label</description>
+	<posx>430</posx>
+	<posy>85</posy>
+	<width>150</width>
+	<height>60</height>
+	<font>font28</font>
+	<label>BD3D</label>
+	<align>center</align>
+	<aligny>center</aligny>
+	<onleft>202</onleft>
+	<onright>201</onright>
+	<onup>202</onup>
+	<ondown>201</ondown>
+      </control>
+    </control>
+  </controls>
+</window>

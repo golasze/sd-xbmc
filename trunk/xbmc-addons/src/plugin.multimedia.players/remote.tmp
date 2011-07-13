@@ -1,0 +1,627 @@
+<keymap>
+ <global>
+  <universalremote>
+    <obc31>number0</obc31>
+    <obc21>number1</obc21>
+    <obc22>number2</obc22>
+    <obc23>number3</obc23>
+    <obc24>number4</obc24>
+    <obc25>number5</obc25>
+    <obc26>number6</obc26>
+    <obc27>number7</obc27>
+    <obc28>number8</obc28>
+    <obc29>number9</obc29>
+    <obc43>PlayDVD</obc43>
+    <obc47>Pause</obc47>
+    <obc46>Stop</obc46>
+    <obc44>FastForward</obc44>
+    <obc42>Rewind</obc42>
+    <obc36>Left</obc36>
+    <obc38>Right</obc38>
+    <obc34>Up</obc34>
+    <obc39>Down</obc39>
+    <obc37>Select</obc37>
+    <obc10>PageUp</obc10>
+    <obc15>PageDown</obc15>
+    <obc32>PreviousMenu</obc32>
+    <obc19>ContextMenu</obc19>
+    <obc8>Info</obc8>
+    <obc50>SkipNext</obc50>
+    <obc48>SkipPrevious</obc48>
+    <obc49>FullScreen</obc49>
+    <obc18>AspectRatio</obc18>
+    <obc45>Screenshot</obc45>
+    <obc14>VolumeUp</obc14>
+    <obc12>VolumeDown</obc12>
+    <obc13>Mute</obc13>
+    <obc41>OSD</obc41>
+    <obc40>CodecInfo</obc40>
+    <obc11>XBMC.ActivateWindow(Home)</obc11>
+    <obc33>ContextMenu</obc33>
+    <obc7>XBMC.ActivateWindow(Weather)</obc7>
+    <obc51>ShowVideoMenu</obc51>
+    <obc53>AudioNextLanguage</obc53>
+    <obc8>ActivateWindow(systeminfo)</obc8>
+    <obc52>ActivateWindow(shutdownmenu)</obc52>
+    <obc2>XBMC.ActivateWindow(videofiles)</obc2>
+    <obc4>XBMC.ActivateWindow(MyMusic)</obc4>
+    <obc6>XBMC.ActivateWindow(MyPictures)</obc6>
+    <obc30>ParentDir</obc30>
+
+    <!-- Addon Buttons for TV and Radio -->
+    <obc1>XBMC.ActivateWindow(10025,&quot;addons://sources/video/&quot;)</obc1><!-- Video -->
+    <obc5>XBMC.ActivateWindow(10501,&quot;plugin://plugin.audio.icecast/?initial=list&quot;)</obc5><!-- Music -->
+    <!-- To set, set an Addon as favorite in XBMC and look into favourites.xml for the value to set here -->
+    
+    <obc3>XBMC.ActivateWindow(videolibrary,movietitles)</obc3>
+    <obc9>XBMC.ActivateWindow(settings)</obc9>
+    <obc35>Info</obc35>
+
+    <obc16>ShowSubtitles</obc16> <!-- Red -->
+    <obc17>NextSubtitle</obc17><!-- Green -->
+    <obc18>Angle</obc18><!-- Yellow -->
+    <obc19>Playlist</obc19><!-- Blue -->
+    <obc20>XBMC.ActivateWindow(Teletext)</obc20><!-- TXT -->
+  </universalremote>
+ </global>
+
+ <Home>
+  <universalremote>
+    <obc1>XBMC.ActivateWindow(10025,&quot;addons://sources/video/&quot;)</obc1>
+    <obc2>XBMC.ActivateWindow(videofiles)</obc2>
+    <obc3>XBMC.ActivateWindow(videolibrary,movietitles)</obc3>
+    <obc4>XBMC.ActivateWindow(MyMusic)</obc4>
+    <obc5>XBMC.ActivateWindow(10501,&quot;plugin://plugin.audio.icecast/?initial=list&quot;)</obc5>
+    <obc6>XBMC.ActivateWindow(MyPictures)</obc6>
+    <obc7>XBMC.ActivateWindow(Weather)</obc7>
+    <obc8>ActivateWindow(systeminfo)</obc8>
+    <obc9>XBMC.ActivateWindow(settings)</obc9>
+    <obc49>Fullscreen</obc49>
+  </universalremote>
+ </Home>
+
+ <MyFiles>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc23>VolumeUp</obc23>
+    <obc26>VolumeDown</obc26>
+    <obc29>Mute</obc29>
+    <obc35>Info</obc35>
+    <obc30>ParentDir</obc30>
+    <obc2>XBMC.ActivateWindow(videofiles)</obc2>
+  </universalremote>
+ </MyFiles>
+
+ <MyMusicPlaylist>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc32>Playlist</obc32>      <!-- Close playlist -->
+    <obc19>Playlist</obc19>
+    <obc41>Delete</obc41>
+    <obc22>MoveItemUp</obc22>
+    <obc25>MoveItemDown</obc25>
+    <obc23>VolumeUp</obc23>
+    <obc26>VolumeDown</obc26>
+    <obc29>Mute</obc29>
+    <obc30>ParentDir</obc30>
+  </universalremote>
+ </MyMusicPlaylist>
+
+ <MyMusicPlaylistEditor>
+  <universalremote>
+    <obc31>Queue</obc31>
+    <obc35>Info</obc35>
+  </universalremote>
+ </MyMusicPlaylistEditor>
+
+ <MyMusicFiles>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc41>Delete</obc41>
+    <obc31>Queue</obc31>
+    <obc23>VolumeUp</obc23>
+    <obc26>VolumeDown</obc26>
+    <obc29>Mute</obc29>
+    <obc35>Info</obc35>
+    <obc30>ParentDir</obc30> 
+    <obc4>ParentDir</obc4>
+  </universalremote>
+ </MyMusicFiles>
+
+ <MyMusicLibrary>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc41>Delete</obc41>
+    <obc31>Queue</obc31>
+    <obc23>VolumeUp</obc23>
+    <obc26>VolumeDown</obc26>
+    <obc29>Mute</obc29>
+    <obc35>Info</obc35> 
+    <obc30>ParentDir</obc30>
+  </universalremote>
+ </MyMusicLibrary>
+
+ <FullscreenVideo>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc36>StepBack</obc36>
+    <obc38>StepForward</obc38>
+    <obc34>BigStepForward</obc34>
+    <obc39>BigStepBack</obc39>
+    <obc35>Info</obc35>
+    <obc49>AspectRatio</obc49>
+    <obc33>OSD</obc33> 
+    <obc17>ShowSubtitles</obc17>
+    <obc16>AudioNextLanguage</obc16>
+    <obc37>Info</obc37>
+    <obc11>XBMC.ActivateWindow(TVOSDGuide)</obc11>
+    <obc20>XBMC.ActivateWindow(Teletext)</obc20>
+    <obc9>Fullscreen</obc9>
+  </universalremote>
+ </FullscreenVideo>
+
+ <FullscreenInfo>
+  <universalremote>
+    <obc19>CodecInfo</obc19>
+    <obc11>XBMC.ActivateWindow(TVOSDGuide)</obc11>
+    <obc20>XBMC.ActivateWindow(Teletext)</obc20>
+    <obc32>Close</obc32>
+    <obc37>Close</obc37>
+    <obc3>OSD</obc3>
+    <obc35>Close</obc35>
+    <obc40>Close</obc40>
+    <obc9>Fullscreen</obc9>
+  </universalremote>
+ </FullscreenInfo>
+
+ <PlayerControls>
+  <universalremote>
+    <obc37>Close</obc37>
+    <obc40>CodecInfo</obc40>
+    <obc43>Play</obc43>
+  </universalremote>
+ </PlayerControls>
+
+ <Visualisation>
+  <universalremote>
+    <obc36>PreviousPreset</obc36>
+    <obc38>NextPreset</obc38>
+    <obc34>IncreaseRating</obc34>
+    <obc39>DecreaseRating</obc39>
+    <obc32>LockPreset</obc32>
+    <obc19>CodecInfo</obc19>
+    <obc40>CodecInfo</obc40>
+    <obc37>XBMC.ActivateWindow(VisualisationPresetList)</obc37>
+  </universalremote>
+ </Visualisation>
+
+ <MusicOSD>
+  <universalremote>
+    <obc3>Close</obc3>
+    <obc32>Close</obc32>
+    <obc11>Close</obc11>
+    <obc41>Close</obc41>
+    <obc43>Play</obc43>  
+    <obc9>XBMC.ActivateWindow(Home)</obc9>
+  </universalremote>
+ </MusicOSD>
+
+ <VisualisationSettings>
+  <universalremote>
+    <obc3>Close</obc3>
+    <obc32>Close</obc32>
+    <obc41>Close</obc41>
+    <obc43>Play</obc43> 
+  </universalremote>
+ </VisualisationSettings>
+
+ <VisualisationPresetList>
+  <universalremote>
+    <obc3>Close</obc3>
+    <obc32>Close</obc32>
+    <obc41>Close</obc41>
+    <obc43>Play</obc43> 
+  </universalremote>
+ </VisualisationPresetList>
+
+ <SlideShow>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc31>ZoomNormal</obc31>
+    <obc21>ZoomLevel1</obc21>
+    <obc22>ZoomLevel2</obc22>
+    <obc23>ZoomLevel3</obc23>
+    <obc24>ZoomLevel4</obc24>
+    <obc25>ZoomLevel5</obc25>
+    <obc26>ZoomLevel6</obc26>
+    <obc27>ZoomLevel7</obc27>
+    <obc28>ZoomLevel8</obc28>
+    <obc29>ZoomLevel9</obc29>
+    <obc10>ZoomIn</obc10>
+    <obc15>ZoomOut</obc15>
+    <obc35>CodecInfo</obc35>
+    <obc50>NextPicture</obc50>
+    <obc48>PreviousPicture</obc48>
+    <obc37>Rotate</obc37>
+    <obc41>OSD</obc41>
+  </universalremote>
+ </SlideShow>
+
+ <ScreenCalibration>
+  <universalremote>
+    <obc37>NextCalibration</obc37>
+    <obc31>ResetCalibration</obc31>
+    <obc50>NextResolution</obc50>
+  </universalremote>
+ </ScreenCalibration>
+
+ <GUICalibration>
+  <universalremote>
+    <obc37>NextCalibration</obc37>
+    <obc31>ResetCalibration</obc31>
+  </universalremote>
+ </GUICalibration>
+
+ <SelectDialog>
+  <universalremote>
+    <obc32>Close</obc32>
+    <obc34>Up</obc34>
+    <obc39>Down</obc39>
+  </universalremote>
+ </SelectDialog>
+
+ <VideoOSD>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc3>PreviousMenu</obc3>
+    <obc32>Close</obc32>
+    <obc33>Close</obc33>
+    <obc41>Close</obc41> 
+    <obc35>Info</obc35>
+    <obc9>Fullscreen</obc9>
+  </universalremote>
+ </VideoOSD>
+
+ <VideoMenu>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc11>OSD</obc11>
+    <obc19>CodecInfo</obc19>
+    <obc31>Number0</obc31>
+    <obc21>Number1</obc21>
+    <obc22>Number2</obc22>
+    <obc23>Number3</obc23>
+    <obc24>Number4</obc24>
+    <obc25>Number5</obc25>
+    <obc26>Number6</obc26>
+    <obc27>Number7</obc27>
+    <obc28>Number8</obc28>
+    <obc29>Number9</obc29>
+    <obc35>Info</obc35>
+    <obc2>XBMC.ActivateWindow(videofiles)</obc2>
+  </universalremote>
+ </VideoMenu>
+
+ <OSDVideoSettings>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc3>Close</obc3>
+    <obc32>Close</obc32>
+  </universalremote>
+ </OSDVideoSettings>
+ 
+ <OSDAudioSettings>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc32>Close</obc32>
+    <obc41>OSD</obc41>
+  </universalremote>
+ </OSDAudioSettings>
+
+ <VideoBookmarks>
+  <universalremote>
+    <obc43>Play</obc43>
+    <obc32>Close</obc32>
+    <obc3>Close</obc3>
+    <obc41>Delete</obc41>
+  </universalremote>
+ </VideoBookmarks>
+
+ <MyVideoLibrary>
+  <universalremote>
+    <obc11>ContextMenu</obc11>
+    <obc43>%arg1%</obc43>
+    <obc23>VolumeUp</obc23>
+    <obc26>VolumeDown</obc26>
+    <obc29>Mute</obc29>
+    <obc35>Info</obc35>
+    <obc41>ContextMenu</obc41>
+    <obc30>ParentDir</obc30>
+    <obc32>Delete</obc32>
+    <obc3>PreviousMenu</obc3>
+    <obc2>PreviousMenu</obc2>
+  </universalremote>
+ </MyVideoLibrary>
+
+ <MyVideoFiles>
+  <universalremote>
+    <obc43>%arg1%</obc43>
+    <obc23>VolumeUp</obc23>
+    <obc26>VolumeDown</obc26>
+    <obc29>Mute</obc29>
+    <obc35>Info</obc35>
+    <obc41>Delete</obc41>
+    <obc30>ParentDir</obc30>
+    <obc2>PreviousMenu</obc2>
+  </universalremote>
+ </MyVideoFiles>
+
+ <MyVideoPlaylist>
+  <universalremote>
+    <obc43>%arg1%</obc43>
+    <obc32>Playlist</obc32>      <!-- Close playlist -->
+    <obc19>Playlist</obc19>
+    <obc41>Delete</obc41>
+    <obc22>MoveItemUp</obc22>
+    <obc25>MoveItemDown</obc25>
+    <obc23>VolumeUp</obc23>
+    <obc26>VolumeDown</obc26>
+    <obc29>Mute</obc29>
+    <obc30>ParentDir</obc30>
+  </universalremote>
+ </MyVideoPlaylist>
+
+ <VirtualKeyboard>
+  <universalremote>
+    <obc11>Close</obc11>
+    <obc32>BackSpace</obc32>
+    <obc33>Shift</obc33>
+    <obc34>Up</obc34>
+    <obc39>Down</obc39>
+    <obc40>Symbols</obc40>
+    <obc31>Number0</obc31>
+    <obc21>Number1</obc21>
+    <obc22>Number2</obc22>
+    <obc23>Number3</obc23>
+    <obc24>Number4</obc24>
+    <obc25>Number5</obc25>
+    <obc26>Number6</obc26>
+    <obc27>Number7</obc27>
+    <obc28>Number8</obc28>
+    <obc29>Number9</obc29>
+    <obc15>CursorLeft</obc15>
+    <obc10>CursorRight</obc10>
+    <obc30>Close</obc30>
+    <obc41>Close</obc41>
+  </universalremote>
+ </VirtualKeyboard>
+
+ <ContextMenu>
+  <universalremote>
+    <obc11>Close</obc11>
+    <obc32>Close</obc32>
+    <obc33>Close</obc33>
+    <obc34>Up</obc34>
+    <obc39>Down</obc39>
+    <obc41>Close</obc41>
+  </universalremote>
+ </ContextMenu>
+
+ <FileStackingDialog>
+  <universalremote>
+    <obc32>Close</obc32>
+  </universalremote>
+ </FileStackingDialog>
+
+ <Scripts>
+  <universalremote>
+    <obc7>XBMC.ActivateWindow(ScriptsDebugInfo)</obc7>
+  </universalremote>
+ </Scripts>
+
+ <ScriptsDebugInfo>
+ <universalremote>
+ </universalremote>
+ </ScriptsDebugInfo>
+ 
+ <NumericInput>
+  <universalremote>
+    <obc34>Up</obc34>
+    <obc39>Down</obc39>
+    <obc31>Number0</obc31>
+    <obc21>Number1</obc21>
+    <obc22>Number2</obc22>
+    <obc23>Number3</obc23>
+    <obc24>Number4</obc24>
+    <obc25>Number5</obc25>
+    <obc26>Number6</obc26>
+    <obc27>Number7</obc27>
+    <obc28>Number8</obc28>
+    <obc29>Number9</obc29>
+    <obc32>BackSpace</obc32>
+    <obc30>Close</obc30>
+  </universalremote>
+ </NumericInput>
+
+ <Weather>
+  <universalremote>
+    <obc7>PreviousMenu</obc7>
+    <obc37>PreviousMenu</obc37>
+  </universalremote>
+ </Weather>
+ 
+ <Settings>
+ <universalremote>
+ 
+ </universalremote>
+ </Settings>
+
+ <MyPicturesSettings>
+ <universalremote>
+ 
+ </universalremote>
+ </MyPicturesSettings>
+
+ <MyProgramsSettings>
+ <universalremote>
+ 
+ </universalremote>
+ </MyProgramsSettings>
+
+ <MyWeatherSettings>
+ <universalremote>
+ 
+ </universalremote>
+ </MyWeatherSettings>
+
+ <MyMusicSettings>
+ <universalremote>
+ 
+ </universalremote>
+ </MyMusicSettings>
+
+ <SystemSettings>
+ <universalremote>
+ 
+ </universalremote>
+ </SystemSettings>
+
+ <MyVideosSettings>
+ <universalremote>
+ 
+ </universalremote>
+ </MyVideosSettings>
+
+ <NetworkSettings>
+ <universalremote>
+ 
+ </universalremote>
+ </NetworkSettings>
+
+ <AppearanceSettings>
+ <universalremote>
+ 
+ </universalremote>
+ </AppearanceSettings>
+
+ <Profiles>
+ <universalremote>
+ 
+ </universalremote>
+ </Profiles>
+
+ <systeminfo>
+ <universalremote>
+ <obc8>PreviousMenu</obc8>
+ </universalremote>
+ </systeminfo>
+
+ <shutdownmenu>
+  <universalremote>
+    <obc52>Select</obc52><!-- Power = Select -->
+    <obc51>Quit</obc51>
+    <obc53>Suspend</obc53>
+  </universalremote>
+ </shutdownmenu>
+
+ <submenu>
+ <universalremote>
+ </universalremote>
+ </submenu>
+
+ <MusicInformation>
+  <universalremote>
+    <obc32>Close</obc32>
+    <obc35>Close</obc35>
+    <obc40>Close</obc40>
+  </universalremote>
+ </MusicInformation>
+
+ <MovieInformation>
+  <universalremote>
+    <obc32>Close</obc32>
+    <obc35>Close</obc35>
+    <obc40>Close</obc40>
+  </universalremote>
+ </MovieInformation>
+
+ <LockSettings>
+  <universalremote>
+    <obc3>Close</obc3>
+  </universalremote>
+ </LockSettings>
+
+ <ProfileSettings>
+  <universalremote>
+    <obc3>Close</obc3>
+  </universalremote>
+ </ProfileSettings>
+
+ <PictureInfo>
+  <universalremote>
+    <obc50>NextPicture</obc50>
+    <obc48>PreviousPicture</obc48>
+    <obc32>Close</obc32>
+    <obc35>Close</obc35>
+    <obc40>Close</obc40>
+  </universalremote>
+ </PictureInfo>
+
+ <Favourites>
+  <universalremote>
+    <obc32>Close</obc32>
+  </universalremote>
+ </Favourites>
+
+ <EPGProgInfo>
+  <universalremote>
+    <obc32>Close</obc32>
+    <obc3>Close</obc3>
+    <obc11>Close</obc11>
+    <obc35>Close</obc35>
+  </universalremote>
+ </EPGProgInfo>
+
+ <TVOSDChannels>
+  <universalremote>
+    <obc3>Close</obc3>
+    <obc32>Close</obc32>
+  </universalremote>
+ </TVOSDChannels>
+
+ <TVOSDGuide>
+  <universalremote>
+    <obc32>Close</obc32>
+    <obc3>Close</obc3>
+    <obc11>Close</obc11>
+    <obc8>Close</obc8>
+  </universalremote>
+ </TVOSDGuide>
+
+ <MyTVSettings>
+ <universalremote>
+ </universalremote>
+ </MyTVSettings>
+
+ <Teletext>
+  <universalremote>
+    <obc31>number0</obc31>
+    <obc21>number1</obc21>
+    <obc22>number2</obc22>
+    <obc23>number3</obc23>
+    <obc24>number4</obc24>
+    <obc25>number5</obc25>
+    <obc26>number6</obc26>
+    <obc27>number7</obc27>
+    <obc28>number8</obc28>
+    <obc29>number9</obc29>
+    <obc16>Red</obc16>
+    <obc17>Green</obc17>
+    <obc18>Yellow</obc18>
+    <obc19>Blue</obc19>
+    <obc32>Close</obc32>
+    <obc3>Close</obc3>
+    <obc20>Close</obc20>
+  </universalremote>
+ </Teletext>
+</keymap>

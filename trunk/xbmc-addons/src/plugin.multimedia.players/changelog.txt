@@ -1,0 +1,34 @@
+Version 1.0.1
+- rewrite scripts to use language (audio, subtitles) from xbmc settings
+- add parsing to display 2 mkv (left, right) files from http connection
+- changed play bluray - not via mplayer, only internal player xbmc with support libbluray
+- added color subtitle settings
+- added size subtitle settings
+- added encoding character subtitle settings
+- added adjust parallax subtitle settings
+
+
+Version 0.1.0
+- rename plugin from plugin.3Dvideo.player to plugin.multimedia.players
+- add switcher 2D/3D when start play movie from file
+- add switcher DVD/BD/BD3D when start movie from iso or disc (BD3D is not implemented yet)
+- add bluray playing support via mplayer and libbluray (menu is not implemented yet)
+- improved xbmc3Dplayer.py script
+- improved pLog.py script
+- add connection.py script
+- add xbmcBDplayer.py script
+
+
+
+Version 0.0.2
+- add button auto recognize input values of 3D movie
+- add button manual set input values of 3D movie
+
+ 
+Version 0.0.1
+First implementation of 3D plugin to XBMC
+
+- add setting localization of bino player and mediainfo files
+- add setting audio/subtitles language
+- add setting automatic recognize values of 3D movie [based on playercorefactory.xml]
+

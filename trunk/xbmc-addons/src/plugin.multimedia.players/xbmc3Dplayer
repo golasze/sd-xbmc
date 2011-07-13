@@ -1,0 +1,230 @@
+#!/bin/sh
+
+#general
+BINO=`grep "player_location" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"player_location\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
+MEDIAINFO=`grep "mediainfo_location" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"mediainfo_location\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
+VOUTLABEL=`grep "output_video" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"output_video\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'|tr ' ' '-'`
+AUDIO=`grep "audio_language" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"audio_language\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
+SUBTITLE=`grep "subtitle_language" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"subtitle_language\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
+SMBCONNECT=`echo "$1"|grep "smb"|wc -l`
+
+
+
+if [ ${VOUTLABEL} == '2D-left' ] 
+  then
+      VOUT='mono-left'
+elif [ ${VOUTLABEL} == '2D-right' ] 
+  then
+      VOUT='mono-right'
+elif [ ${VOUTLABEL} == '2D-equalizer' ] 
+  then
+      VOUT='equalizer'
+elif [ ${VOUTLABEL} == '3D-equalizer' ] 
+  then
+      VOUT='equalizer-3d'
+elif [ ${VOUTLABEL} == '3D-OpenGL' ] 
+  then
+      VOUT='stereo'
+elif [ ${VOUTLABEL} == '3D-Over/Under' ] 
+  then
+      VOUT='top-bottom'
+elif [ ${VOUTLABEL} == '3D-HALF-Over/Under' ] 
+  then
+     VOUT='top-bottom-half'
+elif [ ${VOUTLABEL} == '3D-Side-By-Side' ] 
+  then
+     VOUT='left-right'
+elif [ ${VOUTLABEL} == '3D-HALF-Side-By-Side"' ] 
+  then
+     VOUT='left-right-half'
+elif [ ${VOUTLABEL} == '3D-rows' ] 
+  then
+     VOUT='even-odd-rows'
+elif [ ${VOUTLABEL} == '3D-columns' ] 
+  then
+     VOUT='even-odd-columns'
+elif [ ${VOUTLABEL} == '3D-checkerboard' ] 
+  then
+     VOUT='checkerboard'
+elif [ ${VOUTLABEL} == 'Red-Cyan-mono' ] 
+  then
+      VOUT='red-cyan-monochrome'
+elif [ ${VOUTLABEL} == 'Red-Cyan-half-color' ] 
+  then
+      VOUT='red-cyan-half-color'
+elif [ ${VOUTLABEL} == 'Red-Cyan-color' ] 
+  then
+      VOUT='red-cyan-full-color'
+elif [ ${VOUTLABEL} == 'Red-Cyan-dubois' ] 
+  then
+      VOUT='red-cyan-dubois'
+elif [ ${VOUTLABEL} == 'Green-Magenta-mono' ] 
+  then
+      VOUT='green-magenta-monochrome'
+elif [ ${VOUTLABEL} == 'Green-Magenta-half-color' ] 
+  then
+      VOUT='green-magenta-half-color'
+elif [ ${VOUTLABEL} == 'Green-Magenta-color' ] 
+  then
+      VOUT='green-magenta-full-color'
+elif [ ${VOUTLABEL} == 'Green-Magenta-dubois' ] 
+  then
+      VOUT='green-magenta-dubois'
+elif [ ${VOUTLABEL} == 'Amber-Blue-mono' ] 
+  then
+      VOUT='amber-blue-monochrome'
+elif [ ${VOUTLABEL} == 'Amber-Blue-half-color' ] 
+  then
+      VOUT='amber-blue-half-color'
+elif [ ${VOUTLABEL} == 'Amber-Blue-color' ] 
+  then
+      VOUT='amber-blue-full-color'
+elif [ ${VOUTLABEL} == 'Amber-Blue-dubois' ] 
+  then
+      VOUT='amber-blue-dubois'
+else
+  VOUT='even-odd-rows'
+fi
+
+
+if [ ${SMBCONNECT} -eq 1 ]
+  then
+    checkLogin=`echo "$1"|grep "@"|wc -l`
+
+    if [ ${checkLogin} -eq 1 ]
+      then
+	login=`echo "$1"|awk -F"@" '{print $1}'|awk -F"://" '{print $2}'|awk -F":" '{print $1}'`
+	pass=`echo "$1"|awk -F"@" '{print $1}'|awk -F"://" '{print $2}'|awk -F":" '{print $2}'`
+	host=`echo "$1"|awk -F"@" '{print $2}'|awk -F"/" '{print $1}'`
+	share=`echo "$1"|awk -F"@" '{print $2}'|awk -F"/" '{print $2}'`
+	dir=`echo "$1"|sed 's/smb:\/\/'${login}':'${pass}'@'${host}'\/'${share}'//g'`
+      else
+	host=`echo "$1"|awk -F"/" '{print $3}'`
+	share=`echo "$1"|awk -F"/" '{print $4}'`
+	dir=`echo "$1"|sed 's/smb:\/\/'${host}'\/'${share}'//g'`
+    fi
+
+    if [ ${checkLogin} -eq 1 ]
+      then
+	sudo mount.cifs //${host}/${share} /mnt -o rw,user=${login},password=${pass},noperm
+      else
+	sudo mount.cifs //${host}/${share} /mnt -o rw,noperm
+    fi
+
+    IN="/mnt${dir}"
+elif [ ${SMBCONNECT} -eq 0 ]
+  then
+    IN="$1"
+fi
+
+#scan file
+${MEDIAINFO} "${IN}" > /tmp/_file3Dmediainfo_
+
+#width & height for side by side & over/under
+width=`grep "Width" /tmp/_file3Dmediainfo_|head -1|awk -F":" '{print $2}'|awk -F"pixels" '{print $1}'|awk '{print $1$2$3}'`
+height=`grep "Height" /tmp/_file3Dmediainfo_|head -1|awk -F":" '{print $2}'|awk -F"pixels" '{print $1}'|awk '{print $1$2$3}'`
+
+if [ ${width} -gt 2000 ] 
+  then
+    if [ ${height} -lt 1100 ]
+      then
+	${BINO} --input=left-right "${IN}" --output=${VOUT} -f -n
+      #exit 1
+    fi
+elif [ ${height} -gt 1100  ]
+  then
+    if [ ${width} -lt 2000 ]
+      then
+	${BINO} --input=top-bottom "${IN}" --output=${VOUT} -f -n
+	#exit 1
+    fi
+elif [ ${width} -gt 1300 ] 
+  then
+    if [ ${height} -lt 730 ]
+      then
+	${BINO} --input=left-right "${IN}" --output=${VOUT} -f -n
+      #exit 1
+    fi
+elif [ ${height} -gt 730  ]
+  then
+    if [ ${width} -lt 1300 ]
+      then
+	${BINO} --input=top-bottom "${IN}" --output=${VOUT} -f -n
+	#exit 1
+    fi
+fi
+
+#side by side & over/under halfsbs
+ifHalfSBS=`echo "${IN}"|grep "[Hh][Aa][Ll][Ff]"|grep "[Ss][Bb][Ss]"|wc -l`
+
+if [ ${ifHalfSBS} -eq 1 ]
+  then
+    ifSideBySide=`echo "${IN}"|grep -w "[Ss][Ii][Dd][Ee]"|grep -w "[Bb][Yy]"|wc -l`
+    ifOverUnder=`echo "${IN}"|grep -w "[Oo][Vv][Ee][Rr]"|grep -w "[Uu][Nn][Dd][Ee][Rr]"|wc -l`
+    ifTopBottom=`echo "${IN}"|grep -w "[Tt][Oo][Pp]"|grep -w "[Bb][Oo][Tt][Tt][Oo][Mm]"|wc -l`
+
+    if [ ${ifSideBySide} -eq 1 ]
+      then
+	input="left-right-half"
+    elif [ ${ifOverUnder} -eq 1 ]
+      then
+	input="top-bottom-half"
+    elif [ ${ifTopBottom} -eq 1 ]
+      then
+	input="top-bottom-half"
+    fi
+
+    ${BINO} --input=${input} "${IN}" --output=${VOUT} -f -n
+    #exit 1
+fi
+
+#2 files [left, right] for 1 3D film
+ifLeft=`echo "${IN}"|grep "[Ll][Ee][Ff][Tt]"|wc -l`
+ifRight=`echo "${IN}"|grep "[Rr][Ii][Gg][Hh][Tt]"|wc -l`
+
+if [ ${ifLeft} -eq 1 ]
+  then
+    b=`echo "${IN}"|awk -F"[Ll][Ee][Ff][Tt]" '{print $1}'`
+    right=`ls -1 "${b}"*|grep "[Rr][Ii][Gg][Hh][Tt]"`
+    ${BINO} --input=separate-left-right "${IN}" "${right}" --output=${VOUT} -f -n -s
+    #exit 1
+elif [ ${ifRight} -eq 1 ]
+  then
+    b=`echo "${IN}"|awk -F"[Rr][Ii][Gg][Hh][Tt]" '{print $1}'`
+    left=`ls -1 "${b}"*|grep "[Ll][Ee][Ff][Tt]"`
+    ${BINO} --input=separate-left-right "${left}" "${IN}" --output=${VOUT} -f -n -s
+    #exit 1
+fi
+
+#wmv media info stereoscopic dualstream
+if [ `grep "StereoscopicLayout" /tmp/_file3Dmediainfo_|grep "DualStream"|wc -l` != 0 ]
+  then
+    ${BINO} --input=mono "${IN}" --output=${VOUT} -f -n
+    #exit 1
+fi
+
+#mkv dualstream
+ifStereo=`grep "Video #" /tmp/_file3Dmediainfo_|wc -l`
+firstEyeLeft=`grep "Title" /tmp/_file3Dmediainfo_|head -1|grep "[Ll][Ee][Ff][Tt]"|wc -l`
+firstEyeRight=`grep "Title" /tmp/_file3Dmediainfo_|head -1|grep "[Rr][Ii][Gg][Hh][Tt]"|wc -l`
+ 
+if [ ${ifStereo} -gt 1 ]
+  then
+    if [ ${firstEyeLeft} -eq 1 ]
+      then
+	input="separate-left-right"
+	break
+    elif [ ${firstEyeRight} -eq 1 ]
+      then
+	input="separate-right-left"
+	break
+    fi
+
+    ${BINO} --input=${input} "${IN}" --output=${VOUT} -f -n
+    #exit 1
+fi
+
+if [ ${SMBCONNECT} -eq 1 ]
+  then
+    sudo umount -lf /mnt
+fi

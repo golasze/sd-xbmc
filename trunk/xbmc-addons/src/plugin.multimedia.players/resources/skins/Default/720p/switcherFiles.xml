@@ -1,0 +1,66 @@
+<window>
+  <defaultcontrol>101</defaultcontrol>
+  <coordinates>
+    <system>1</system>
+      <posx>360</posx>
+      <posy>280</posy>
+    </coordinates>
+  <controls>
+    <control type="image">
+      <posx>0</posx>
+      <posy>0</posy>
+      <width>500</width>
+      <height>200</height>
+      <texture>switcher-dialog.png</texture>
+      <animation effect="fade" time="200">WindowOpen</animation>
+      <animation effect="fade" time="200">WindowClose</animation>
+    </control>
+    <control type="label" id="100">
+      <description>Header label</description>
+      <posx>0</posx>
+      <posy>10</posy>
+      <width>500</width>
+      <height>60</height>
+      <font>font24</font>
+      <label>SCRIPT100</label>
+      <align>center</align>
+      <aligny>center</aligny>
+      <textcolor>FFFFFFFF</textcolor>
+      <shadowcolor>FF000000</shadowcolor>
+    </control>
+    <control type="group">
+      <posx>0</posx>
+      <posy>0</posy>
+      <control type="button" id="101">
+	<description>2D label</description>
+	<posx>70</posx>
+	<posy>85</posy>
+	<width>150</width>
+	<height>60</height>
+	<font>font28</font>
+	<label>2D</label>
+	<align>center</align>
+	<aligny>center</aligny>
+	<onleft>102</onleft>
+	<onright>102</onright>
+	<onup>102</onup>
+	<ondown>102</ondown>
+      </control>
+      <control type="button" id="102">
+	<description>3D label</description>
+	<posx>250</posx>
+	<posy>85</posy>
+	<width>150</width>
+	<height>60</height>
+	<font>font28</font>
+	<label>3D</label>
+	<align>center</align>
+	<aligny>center</aligny>
+	<onleft>101</onleft>
+	<onright>101</onright>
+	<onup>101</onup>
+	<ondown>101</ondown>
+      </control>
+    </control>
+  </controls>
+</window>
