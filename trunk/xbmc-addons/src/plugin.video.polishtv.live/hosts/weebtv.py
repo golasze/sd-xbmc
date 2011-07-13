@@ -199,18 +199,17 @@ class WeebTV:
 
 
   def LOAD_AND_PLAY_VIDEO(self, videoUrl):
-        log.info('url: ' + videoUrl)
         ok=True
         if videoUrl == '':
                 d = xbmcgui.Dialog()
                 d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
                 return False
-        #try:
-        xbmcPlayer = xbmc.Player()
-        xbmcPlayer.play(videoUrl)
-        #except:
-        #    d = xbmcgui.Dialog()
-        #    d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+        try:
+            xbmcPlayer = xbmc.Player()
+            xbmcPlayer.play(videoUrl)
+        except:
+            d = xbmcgui.Dialog()
+            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
         return ok
     
 
