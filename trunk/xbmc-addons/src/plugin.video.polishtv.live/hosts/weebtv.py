@@ -2,12 +2,15 @@
 import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys
-import xbmcgui, xbmcplugin
+import xbmcgui, xbmcplugin, xbmcaddon
+
+scriptID = sys.modules[ "__main__" ].scriptID
 
 BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
+#sys.path.append( os.path.join( os.getcwd(), "../" ) )
 
-import pLog
+import pLog, settings
 
 log = pLog.pLog()
 
@@ -16,6 +19,7 @@ mainUrl = 'http://weeb.tv'
 class WeebTV:
   def __init__(self):
     log.info('Loading WeebTV')
+    self.settings = settings.TVSettings()
 
 
   def handle(self):
@@ -174,4 +178,59 @@ class WeebTV:
 	    param[splitparams[0]]=splitparams[1]
     return param
 
+
+  def listsMenu(self, table, title):
+    value = ''
+    if len(table) > 0:
+      d = xbmcgui.Dialog()
+      choice = d.select(title, table)
+      for i in range(len(table)):
+        #log.info(table[i])
+        if choice == i:
+            value = table[i]
+    return value
+
+
+  def listsTable(self, table):
+    nTab = []
+    for num, val in table.items():
+      nTab.append(val)
+    return nTab
+
+
+  def LOAD_AND_PLAY_VIDEO(self, videoUrl):
+        ok=True
+        if videoUrl == '':
+                d = xbmcgui.Dialog()
+                d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+                return False
+        try:
+            xbmcPlayer = xbmc.Player()
+            xbmcPlayer.play(videoUrl)
+        except:
+            d = xbmcgui.Dialog()
+            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+        return ok
     
+    
+  def handleService(self):
+    log.info('Wejście do TV komercyjnej')
+    #tt = weebtv.WeebTV()
+    #tt.handle()
+    try:
+      chn = self.listsMenu(self.getChannelNames(), "Wybór kanału")
+      if chn != '':
+        link = self.getChannelURL(chn)
+        if self.settings.WeebTVEnable == 'true':
+          #log.info('podany login: ' + self.settings.WeebTVLogin)
+          #log.info('podane hasło: ' + self.settings.WeebTVPassword)
+          if self.login(self.settings.WeebTVLogin, self.settings.WeebTVPassword):
+              #log.info('zalogowany')
+              self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
+          else:
+              #log.info('bez logowania')
+              self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
+    except:
+      d = xbmcgui.Dialog()
+      d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')
+
