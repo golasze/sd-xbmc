@@ -2,7 +2,7 @@
 import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys
-import xbmcgui, xbmcplugin, xbmcaddon
+import xbmcgui, xbmcplugin, xbmcaddon, xbmc
 
 scriptID = sys.modules[ "__main__" ].scriptID
 
@@ -199,27 +199,31 @@ class WeebTV:
 
 
   def LOAD_AND_PLAY_VIDEO(self, videoUrl):
+        log.info('url: ' + videoUrl)
         ok=True
         if videoUrl == '':
                 d = xbmcgui.Dialog()
                 d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
                 return False
-        try:
-            xbmcPlayer = xbmc.Player()
-            xbmcPlayer.play(videoUrl)
-        except:
-            d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+        #try:
+        xbmcPlayer = xbmc.Player()
+        xbmcPlayer.play(videoUrl)
+        #except:
+        #    d = xbmcgui.Dialog()
+        #    d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
         return ok
     
-    
+
   def handleService(self):
     log.info('Wejście do TV komercyjnej')
     #tt = weebtv.WeebTV()
     #tt.handle()
     try:
       chn = self.listsMenu(self.getChannelNames(), "Wybór kanału")
-      if chn != '':
+    except:
+      d = xbmcgui.Dialog()
+      d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')        
+    if chn != '':
         link = self.getChannelURL(chn)
         if self.settings.WeebTVEnable == 'true':
           #log.info('podany login: ' + self.settings.WeebTVLogin)
@@ -230,7 +234,5 @@ class WeebTV:
           else:
               #log.info('bez logowania')
               self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
-    except:
-      d = xbmcgui.Dialog()
-      d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')
+
 
