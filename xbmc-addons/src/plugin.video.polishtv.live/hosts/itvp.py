@@ -3,7 +3,6 @@ import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
 import xbmcgui, xbmc
-import thread
 
 
 BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "../resources" )
@@ -240,7 +239,7 @@ class iTVP:
 	return tUrl
 
 
-	def listsMenu(self, table, title):
+  def listsMenu(self, table, title):
 	  		value = ''
 	  		if len(table) > 0:
 	  			d = xbmcgui.Dialog()
@@ -252,14 +251,14 @@ class iTVP:
 	  	  		return value
 	
 	
-	def listsTable(self, table):
+  def listsTable(self, table):
 	    nTab = []
 	    for num, val in table.items():
 	      nTab.append(val)
 	    return nTab
 	
 	
-	def LOAD_AND_PLAY_VIDEO(self, videoUrl):
+  def LOAD_AND_PLAY_VIDEO(self, videoUrl):
 	        ok=True
 	        if videoUrl == '':
 	                d = xbmcgui.Dialog()
@@ -274,8 +273,7 @@ class iTVP:
 	        return ok
 
 
-	def handleService(self):
-		#vod = itvp.iTVP()
+  def handleService(self):
 		mm = self.listsMenu(self.getMenuTable(self.setMainMenu()), "Wybór typu")
 		if mm == 'Seriale':
 	  		sm = self.listsMenu(self.getMenuTable(self.setSerialsMenu()), "Wybór kategorii")

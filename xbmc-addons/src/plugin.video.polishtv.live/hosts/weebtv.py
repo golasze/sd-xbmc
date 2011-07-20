@@ -4,7 +4,9 @@ import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys
 import xbmcgui, xbmcplugin, xbmcaddon, xbmc
 
-scriptID = sys.modules[ "__main__" ].scriptID
+scriptID = 'plugin.video.polishtv.live'
+scriptname = "Polish Live TV"
+ptv = xbmcaddon.Addon(scriptID)
 
 BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
@@ -15,6 +17,8 @@ import pLog, settings
 log = pLog.pLog()
 
 mainUrl = 'http://weeb.tv'
+APP_HOST = '46.105.110.156'
+
 
 class WeebTV:
   def __init__(self):
@@ -66,15 +70,14 @@ class WeebTV:
     return nameTab
 
 
-  def getChannelNamesAddDir(self):
+  def getChannelNamesAddLink(self):
     origTab = self.getChannels()
+    origTab.sort(key=lambda x: x[1])
     for i in range(len(origTab)):
       value = origTab[i]
       name = value[1]
       iconimage = value[2]
-      #log.info(str(name) + ', ' + str(mode) + ', ' + str(url) + ', ' + str(iconimage))
-      #self.addDir(name, mode, True, False)
-      self.addDir(name, iconimage)
+      self.addLink('weebtv', name, iconimage)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
     
@@ -110,13 +113,12 @@ class WeebTV:
     response.close()
     match = re.compile('<embed id="player_embed" type=".+?" src="(.+?)" flashvars="(.+?)" allowscriptaccess=".+?" allowfullscreen=".+?" quality=".+?"').findall(link)
     if len(match) > 0:
-      #chan = split(';', str(match[0][1]))
       channel = str(match[0][1]).split('=')
-      rtmp = 'rtmp://app.weeb.tv/live/'
+      rtmp = 'rtmp://' + APP_HOST + '/live/' + channel[1] + '/'
       rtmp += ' swfUrl='  + urllib.unquote_plus(str(match[0][0]))
-      rtmp += ' pageUrl=' + mainUrl + '/'
-      #rtmp += ' tcUrl=' +  urllib.unquote_plus(str(match[0][1]))
-      rtmp += ' playpath=' + channel[1]
+      rtmp += ' pageUrl=' + url
+      rtmp += ' tcUrl=rtmp://' + APP_HOST + '/live/' + channel[1]
+      rtmp += ' playpath=live'
       rtmp += ' swfVfy=true'
       rtmp += ' live=true'
       return rtmp
@@ -150,33 +152,12 @@ class WeebTV:
       return False
 
 
-  def addDir(self, name, iconimage):
-    #u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
-    u=sys.argv[0]+"?name="+urllib.quote_plus(name)
-    log.info(str(u))
-    ok=True
+  def addLink(self, service, name, iconimage):
+    u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name)
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+    liz.setProperty("IsPlayable", "true")
     liz.setInfo( type="Video", infoLabels={ "Title": name } )
-    ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-    return ok
-    
-    
-  def get_params(self):
-    param=[]
-    paramstring=sys.argv[2]
-    if len(paramstring)>=2:
-      params=sys.argv[2]
-      cleanedparams=params.replace('?','')
-      if (params[len(params)-1]=='/'):
-	params=params[0:len(params)-2]
-	pairsofparams=cleanedparams.split('&')
-	param={}
-	for i in range(len(pairsofparams)):
-	  splitparams={}
-	  splitparams=pairsofparams[i].split('=')
-	  if (len(splitparams))==2:
-	    param[splitparams[0]]=splitparams[1]
-    return param
+    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 
 
   def listsMenu(self, table, title):
@@ -214,15 +195,17 @@ class WeebTV:
     
 
   def handleService(self):
-    log.info('Wejście do TV komercyjnej')
-    #tt = weebtv.WeebTV()
-    #tt.handle()
-    try:
-      chn = self.listsMenu(self.getChannelNames(), "Wybór kanału")
-    except:
-      d = xbmcgui.Dialog()
-      d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')        
-    if chn != '':
+    #log.info('Wejście do TV komercyjnej')
+    name = str(self.settings.paramName)
+    chn = name.replace("+", " ")
+    #log.info('b: '+chn)
+    if chn == 'None':
+        try:
+          self.getChannelNamesAddLink()
+        except:
+          d = xbmcgui.Dialog()
+          d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')        
+    elif chn != 'None':
         link = self.getChannelURL(chn)
         if self.settings.WeebTVEnable == 'true':
           #log.info('podany login: ' + self.settings.WeebTVLogin)
@@ -233,5 +216,5 @@ class WeebTV:
           else:
               #log.info('bez logowania')
               self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
-
+              
 
