@@ -342,7 +342,7 @@ class EkinoTV:
 			strTab.append(expr1.group(1))
 		if expr2:
 			strTab.append(expr2.group(1).replace('\t' , '').replace('  ', ''))
-    #log.info(strTab)
+    log.info(strTab)
     return strTab    
 
 
@@ -355,8 +355,13 @@ class EkinoTV:
   		#log.info(str(value))
   		url = value[1]
   		title = value[0]
-  		img = self.getSerialInfoTab(url)[1]
-  		plot = self.getSerialInfoTab(url)[2]
+  		img = ''
+  		plot = ''
+  		tab = self.getSerialInfoTab(url)
+  		for i in range(len(tab)):
+  			value = tab[i]
+  			img = value[0]
+  			plot = value[1]
   		strTab.append(img)
   		strTab.append(title)
   		strTab.append(plot)
@@ -445,16 +450,17 @@ class EkinoTV:
     
     
   def getPartURL(self, key, title):
-    url = ''
-    table = self.getPartsTab(self.getSerialURL(title))
-    for i in range(len(table)):
-      value = table[i]
-      name = value[3]
-      #log.info(name + ' < jest w > ' + key)
-      if name in key:
-	url = value[1]
-	break
-    return url
+  	url = ''
+	table = self.getPartsTab(self.getSerialURL(title))
+	for i in range(len(table)):
+		value = table[i]
+		name = value[3]
+		#log.info(name + ' < jest w > ' + key)
+		if name in key:
+			url = value[1]
+			break
+	#log.info('part: ' + url)
+	return url
 
 
   def getItemTitles(self, table):
@@ -473,28 +479,6 @@ class EkinoTV:
 	link = value[1]
 	break
     return link
-
-
-  def checkCountMoviesLink(self, url):
-  	tab = []
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', HOST)
-	response = urllib2.urlopen(req)
-	link = response.read()
-	response.close()
-	match = re.compile('<div style=".+?" onclick="(.+?)"></div>').findall(link)
-	if len(match) > 1:
-		#strTab = []
-		#for i in range(len(match)):
-		#	a = i + 1
-		#	fLink = match[i].split('\'')
-		#	strTab.append('Film ' + str(a))
-		#	strTab.append(fLink[1])
-		#	tab.append(strTab)
-		#	strTab = []
-		return True
-	#return tab		
-			 	
 
 
   def getMovieURLFalse(self, url):
@@ -636,12 +620,20 @@ class EkinoTV:
 
   def listsAddLinkMovie(self, table):
 	table.sort(key=lambda x: x[1])
-	log.info(str(table))
+	#log.info(str(table))
 	for i in range(len(table)):
 	  value = table[i]
 	  title = value[1]
 	  iconimage = value[0]
-	  self.add('ekinotv', 'playSelectedMovie', 'None', 'None', title, iconimage, True, False)
+	  self.add('ekinotv', 'playSelectedMovie', 'movie', 'None', title, iconimage, True, False)
+	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+
+  def listsAddLinkSerial(self, table, category):
+	#log.info(str(table))
+	for i in range(len(table)):
+	  title = table[i]
+	  self.add('ekinotv', 'playSelectedMovie', 'serial', category, title, '', True, False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -656,12 +648,11 @@ class EkinoTV:
 	  	elif name != 'None' and category != 'None' and page != 'None':
 	  		self.add('ekinotv', name, category, page, table[i], 'None', True, False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
-	
 
 
   def add(self, service, name, category, page, title, iconimage, folder = True, isPlayable = True):
     u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name) + "&category=" + urllib.quote_plus(category) + "&page=" + urllib.quote_plus(page) + "&title=" + urllib.quote_plus(title)
-    log.info(str(u))
+    #log.info(str(u))
     if name == 'playSelectedMovie':
     	name = title
     elif name != 'None' and category != 'None' and page == 'None':
@@ -701,10 +692,10 @@ class EkinoTV:
   	title = title.replace("+", " ")
   	category = category.replace("+", " ")
   	page = page.replace("+", " ")
-  	log.info('nazwa: ' + name)
-  	log.info('cat: ' + category)
-  	log.info('page: ' + page)
-  	log.info('tytuł: ' + title)
+  	#log.info('nazwa: ' + name)
+  	#log.info('cat: ' + category)
+  	#log.info('page: ' + page)
+  	#log.info('tytuł: ' + title)
   	
   	if name == 'None':
   		self.listsAddDirMenu(self.getMenuTable(), 'None', 'None', 'None')
@@ -730,13 +721,10 @@ class EkinoTV:
 	
 	if name == self.setTable()[5] and category == 'None':
 		self.listsAddDirMenu(self.getSerialNames(), name, 'None', 'None')
-		#self.getSerialsFullTab()
-		#self.getSerialInfoTab('http://www.ekino.tv/serial,24-godziny.html')
 	elif name == self.setTable()[5] and category != 'None' and page == 'None':
 		self.listsAddDirMenu(self.getSeasonsTab(self.getSerialURL(category)), name, category, page)
 	elif name == self.setTable()[5] and category != 'None' and page != 'None':
-		self.listsAddLinkMovie(self.getSeasonPartsTitle(page, category))
-		#self.getSerialInfoTab('http://www.ekino.tv/serial,24-godziny.html')
+		self.listsAddLinkSerial(self.getSeasonPartsTitle(page, category), category)
 	
 	if name == self.setTable()[6]:
 		text = self.searchInputText()
@@ -745,91 +733,16 @@ class EkinoTV:
   		
   	
   	if name == 'playSelectedMovie':
-		if title != 'None':
-		 	log.info('tytuł2: ' + title)
-		 	urlLink = self.getMovieURL(self.searchTab(title), title)		  		
-			if urlLink.startswith('http://'):
-				try:
-					if self.settings.MegaVideoUnlimit == 'false':
-				  		self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-				  	elif self.settings.MegaVideoUnlimit == 'true':
-				  		self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))  		
-			  	except:
-			  		pass
-		  		
-"""
-  def handleService(self):
-  	cm = self.listsMenu(self.getMenuTable(), "Wybór typu")
-  	if cm == self.setTable()[1]:
-  		categoryMovies = self.listsMenu(self.getCategoryName(), "Kategorie filmów")
-  		if categoryMovies != '':
-  			page = self.listsMenu(self.getSortMovies(categoryMovies), "Wybór strony")
-  			if page != '':
-  				title = self.listsMenu(self.getMovieCatNames(page, categoryMovies), "Wybór tytułu filmu")
-  				if title != '':
-  					urlLink = self.getMovieCatURL(page, categoryMovies, title)
-  					if urlLink.startswith('http://'):
-  						if self.settings.MegaVideoUnlimit == 'false':
-  							self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-  						elif self.settings.MegaVideoUnlimit == 'true':
-  							self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
-  							
-  	elif cm == self.setTable()[2]:
-  		page = self.listsMenu(self.getSortLinkMovies(self.setDubLink()) , "Wybór strony")
-  		if page != '':
-  			title = self.listsMenu(self.getMovieDubNames(page), "Wybór tytułu filmu")
-  			urlLink = self.getMovieDubURL(page, title)
-  			if urlLink.startswith('http://'):
-  				if self.settings.MegaVideoUnlimit == 'false':
-  					self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-  				elif self.settings.MegaVideoUnlimit == 'true':
-  					self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
-  					
-  	elif cm == self.setTable()[3]:
-  		page = self.listsMenu(self.getSortLinkMovies(self.setSubLink()) , "Wybór strony")
-  		if page != '':
-		    title = self.listsMenu(self.getMovieSubNames(page), "Wybór tytułu filmu")
-		    if title != '':
-		    	urlLink = self.getMovieSubURL(page, title)
-		      	if urlLink.startswith('http://'):
-  				    if self.settings.MegaVideoUnlimit == 'false':
-  				    	self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-  				    elif self.settings.MegaVideoUnlimit == 'true':
-						self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
-  					
-  	elif cm == self.setTable()[4]:
-  		title = self.listsMenu(self.getMoviePopNames(), "Wybór tytułu filmu")
-		if title != '':			
-  			urlLink = self.getMoviePopURL(title)
-  			if urlLink.startswith('http://'):
-  				if self.settings.MegaVideoUnlimit == 'false':
-  					self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-				elif self.settings.MegaVideoUnlimit == 'true':
-					self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
-  			
-  	if cm == self.setTable()[5]:	 					
-  		title = self.listsMenu(self.getSerialNames(), "Wybór tytułu serialu")
-  		if title != '':
-  			season = self.listsMenu(self.getSeasonsTab(self.getSerialURL(title)), "Wybór sezonu")
-  			if season != '':
-  				part = self.listsMenu(self.getSeasonPartsTitle(season, title), "Wybór odcinka")
-  				if part != '':
-  					urlLink = self.getPartURL(part, title)
-  					if urlLink.startswith('http://'):
-  						if self.settings.MegaVideoUnlimit == 'false':
-  							self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-  						elif self.settings.MegaVideoUnlimit == 'true':
-  							self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
-  					
-  	if cm == self.setTable()[6]:
-  		text = self.searchInputText()
-  		if text != None:
-  			title = self.listsMenu(self.getMovieSearchNames(text), "Wybór tytułu")
-  			if title != '':
-  				urlLink = self.getMovieURL(self.searchTab(text), title)
-  				if urlLink.startswith('http://'):
-  					if self.settings.MegaVideoUnlimit == 'false':
-  						self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-  					elif self.settings.MegaVideoUnlimit == 'true':
-  						self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
-"""
+  		urlLink = ''
+		if title != 'None' and category == 'movie':
+		 	urlLink = self.getMovieURL(self.searchTab(title), title)
+		elif title != 'None' and category == 'serial' and page != 'None':
+			urlLink = self.getPartURL(title, page)	  		
+		if urlLink.startswith('http://'):
+			try:
+				if self.settings.MegaVideoUnlimit == 'false':
+			  		self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
+			  	elif self.settings.MegaVideoUnlimit == 'true':
+			  		self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))  		
+		  	except:
+		  		pass
