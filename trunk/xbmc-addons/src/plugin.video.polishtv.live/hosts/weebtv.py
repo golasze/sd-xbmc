@@ -155,9 +155,9 @@ class WeebTV:
   def addLink(self, service, name, iconimage):
     u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name)
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    liz.setProperty("IsPlayable", "true")
+    #liz.setProperty("IsPlayable", "true")
     liz.setInfo( type="Video", infoLabels={ "Title": name } )
-    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
 
 
   def listsMenu(self, table, title):

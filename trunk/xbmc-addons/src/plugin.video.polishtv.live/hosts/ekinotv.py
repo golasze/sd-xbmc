@@ -641,7 +641,7 @@ class EkinoTV:
 	  value = table[i]
 	  title = value[1]
 	  iconimage = value[0]
-	  self.add('ekinotv', 'playSelectedMovie', 'None', 'None', title, iconimage, False, True)
+	  self.add('ekinotv', 'playSelectedMovie', 'None', 'None', title, iconimage, True, False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
