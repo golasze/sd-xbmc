@@ -402,23 +402,24 @@ class EkinoTV:
     response.close()
     tabURL = link.replace('\t', '').split('\n')
     for line in tabURL:
-		#log.info(line)
-		#img = re.match(r'.+?<p></p><center><img alt=".+?" src="(.+?)" style=".+?"></center>$', line, re.M|re.I)
 		expr = re.match(r'.+?<li>(.+)<a href="(.+?)" title="(.+?) Odcinek\:.+?">(.+?)</a></li>$', line, re.M|re.I)
+		expr_bak = re.match(r'.+?<li>(.+)<a href="(.+?)" title="(.+?) Odcinek\:.+?">(.+?)</a>.+?</li>$', line, re.M|re.I)
 		if expr:
 			if expr.group(2).startswith('http://'):
-				#log.info(expr1.group(1))
 				strTab.append(expr.group(1).replace('\t' , '').replace('  ', ''))
 				strTab.append(expr.group(2))
 				strTab.append(expr.group(3))
 				strTab.append(expr.group(4))
 				valTab.append(strTab)
 				strTab = []
-		#if img:
-		#	strTab.append(img.group(1))
-	  	#	valTab.append(strTab)
-	  	#	strTab = []
-    #log.info('result: ' + str(valTab))
+		elif expr_bak:
+			if expr_bak.group(2).startswith('http://'):
+				strTab.append(expr_bak.group(1).replace('\t' , '').replace('  ', ''))
+				strTab.append(expr_bak.group(2))
+				strTab.append(expr_bak.group(3))
+				strTab.append(expr_bak.group(4))
+				valTab.append(strTab)
+				strTab = []
     return valTab
     
 
