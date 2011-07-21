@@ -82,15 +82,15 @@ class WeebTV:
     
     
   def getChannelURL(self, key):
-    link = ''
-    origTab = self.getChannels()
-    for i in range(len(origTab)):
-      value = origTab[i]
-      name = value[1]
-      if key in name:
-	link = value[0]
-	break
-    return link
+      link = ''
+      origTab = self.getChannels()
+      for i in range(len(origTab)):
+          value = origTab[i]
+          name = value[1]
+          if name == key:
+              link = value[0]
+              break
+      return link
     
 
   def getChannelIcon(self, key):
