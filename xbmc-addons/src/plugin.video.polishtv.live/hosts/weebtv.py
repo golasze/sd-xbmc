@@ -111,17 +111,20 @@ class WeebTV:
     response = urllib2.urlopen(req)
     link = response.read()
     response.close()
-    match = re.compile('<embed id="player_embed" type=".+?" src="(.+?)" flashvars="(.+?)" allowscriptaccess=".+?" allowfullscreen=".+?" quality=".+?"').findall(link)
-    if len(match) > 0:
-      channel = str(match[0][1]).split('=')
-      rtmp = 'rtmp://' + APP_HOST + '/live/' + channel[1] + '/'
-      rtmp += ' swfUrl='  + urllib.unquote_plus(str(match[0][0]))
-      rtmp += ' pageUrl=' + url
-      rtmp += ' tcUrl=rtmp://' + APP_HOST + '/live/' + channel[1]
-      rtmp += ' playpath=live'
-      rtmp += ' swfVfy=true'
-      rtmp += ' live=true'
-      return rtmp
+    match_src = re.compile('<param name="movie" value="(.+?)" />').findall(link)
+    match_chn = re.compile('<param name="flashvars" value="(.+?)" />').findall(link)
+    log.info('src: ' + str(len(match_src)) + ', chn: ' + str(len(match_chn)))
+    if len(match_src) == 1 and len(match_chn) == 1:
+        channel = str(match_chn[0]).split('=')
+        rtmp = 'rtmp://' + APP_HOST + '/live/' + channel[1] + '/'
+        rtmp += ' swfUrl='  + urllib.unquote_plus(str(match_src[0]))
+        rtmp += ' pageUrl=' + url
+        rtmp += ' tcUrl=rtmp://' + APP_HOST + '/live/' + channel[1]
+        rtmp += ' playpath=live'
+        rtmp += ' swfVfy=true'
+        rtmp += ' live=true'
+        log.info(rtmp)
+        return rtmp
       
       
   def login(self, user, password):
@@ -207,14 +210,19 @@ class WeebTV:
           d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')        
     elif chn != 'None':
         link = self.getChannelURL(chn)
+        #log.info('link: ' + link)
         if self.settings.WeebTVEnable == 'true':
-          #log.info('podany login: ' + self.settings.WeebTVLogin)
-          #log.info('podane hasło: ' + self.settings.WeebTVPassword)
-          if self.login(self.settings.WeebTVLogin, self.settings.WeebTVPassword):
-              #log.info('zalogowany')
-              self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
-          else:
-              #log.info('bez logowania')
-              self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
+            log.info('przed logowaniem')
+            #log.info('podany login: ' + self.settings.WeebTVLogin)
+            #log.info('podane hasło: ' + self.settings.WeebTVPassword)
+            if self.login(self.settings.WeebTVLogin, self.settings.WeebTVPassword):
+                #log.info('zalogowany')
+                self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
+            else:
+                #log.info('bez logowania')
+                self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
+        else:
+            #log.info('bez logowania')
+            self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
               
 
