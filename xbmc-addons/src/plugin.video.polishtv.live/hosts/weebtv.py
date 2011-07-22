@@ -113,7 +113,7 @@ class WeebTV:
     response.close()
     match_src = re.compile('<param name="movie" value="(.+?)" />').findall(link)
     match_chn = re.compile('<param name="flashvars" value="(.+?)" />').findall(link)
-    log.info('src: ' + str(len(match_src)) + ', chn: ' + str(len(match_chn)))
+    #log.info('src: ' + str(len(match_src)) + ', chn: ' + str(len(match_chn)))
     if len(match_src) == 1 and len(match_chn) == 1:
         channel = str(match_chn[0]).split('=')
         rtmp = 'rtmp://' + APP_HOST + '/live/' + channel[1] + '/'
