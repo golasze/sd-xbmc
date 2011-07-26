@@ -21,6 +21,7 @@ class TVSettings:
     self.paramMode = self.getIntParam(params, "mode")
     self.paramCategory = self.getParam(params, "category")
     self.paramPage = self.getParam(params, "page")
+    self.paramURL = self.getParam(params, "url")
     self.WeebTVLogin = addon.getSetting('weebtv_login')
     self.WeebTVPassword = addon.getSetting('weebtv_password')
     self.WeebTVEnable = addon.getSetting('weebtv_enable')
@@ -57,7 +58,7 @@ class TVSettings:
   def getParams(self):
     param=[]
     paramstring=sys.argv[2]
-    self.log.info('raw param string: ' + paramstring)
+    self.log.debug('raw param string: ' + paramstring)
     if len(paramstring)>=2:
       params=sys.argv[2]
       cleanedparams=params.replace('?','')
