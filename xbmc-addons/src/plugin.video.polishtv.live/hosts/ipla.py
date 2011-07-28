@@ -202,10 +202,8 @@ class IPLA:
 
     def switcher(self, url, idKey):
         if self.check(url, idKey):
-            log.info('lista sezonów')
             self.listsSeasons(url, idKey)
         else:
-            log.info('lista tytułów')
             self.listsMovieVOD(idKey)
 
     
@@ -242,8 +240,7 @@ class IPLA:
         liz.setInfo( type="Video", infoLabels={ "Title": title } )
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         
-        
-        
+               
     def handleService(self):
         name = str(self.settings.paramName)
         title = str(self.settings.paramTitle)
@@ -267,7 +264,7 @@ class IPLA:
         if name == 'None':
             self.listsCategories(URL_CATEGORIES)
         elif name != 'None' and url != 'None' and category == 'main-categories':
-            log.info('titles')
+            #log.info('titles')
             self.listsTitles(url, name)
         elif name != 'None' and url != 'None' and category == 'title-categories':
             #self.listsSeasons(url, name)

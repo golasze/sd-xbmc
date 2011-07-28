@@ -75,9 +75,10 @@ class WeebTV:
     origTab.sort(key=lambda x: x[1])
     for i in range(len(origTab)):
       value = origTab[i]
+      url = value[0]
       name = value[1]
       iconimage = value[2]
-      self.addLink('weebtv', name, iconimage)
+      self.addLink('weebtv', name, iconimage, url)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
     
@@ -155,12 +156,12 @@ class WeebTV:
       return False
 
 
-  def addLink(self, service, name, iconimage):
-    u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name)
+  def addLink(self, service, name, iconimage, url):
+    u=self.videoLink(url)
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    #liz.setProperty("IsPlayable", "true")
+    liz.setProperty("IsPlayable", "true")
     liz.setInfo( type="Video", infoLabels={ "Title": name } )
-    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 
 
   def listsMenu(self, table, title):
@@ -198,31 +199,20 @@ class WeebTV:
     
 
   def handleService(self):
-    #log.info('Wejście do TV komercyjnej')
+    log.info('Wejście do TV komercyjnej')
     name = str(self.settings.paramName)
     chn = name.replace("+", " ")
-    #log.info('b: '+chn)
+    log.info('b: '+chn)
     if chn == 'None':
         try:
-          self.getChannelNamesAddLink()
-        except:
-          d = xbmcgui.Dialog()
-          d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')        
-    elif chn != 'None':
-        link = self.getChannelURL(chn)
-        #log.info('link: ' + link)
-        if self.settings.WeebTVEnable == 'true':
-            log.info('przed logowaniem')
-            #log.info('podany login: ' + self.settings.WeebTVLogin)
-            #log.info('podane hasło: ' + self.settings.WeebTVPassword)
-            if self.login(self.settings.WeebTVLogin, self.settings.WeebTVPassword):
-                #log.info('zalogowany')
-                self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
+            if self.settings.WeebTVEnable == 'true':
+                log.info('zalogowany')
+                self.getChannelNamesAddLink()
             else:
-                #log.info('bez logowania')
-                self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
-        else:
-            #log.info('bez logowania')
-            self.LOAD_AND_PLAY_VIDEO(self.videoLink(link))
+                log.info('bez logowania')
+                self.getChannelNamesAddLink()
+        except:
+            d = xbmcgui.Dialog()
+            d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')        
               
 
