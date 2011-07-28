@@ -181,35 +181,20 @@ class WeebTV:
     for num, val in table.items():
       nTab.append(val)
     return nTab
-
-
-  def LOAD_AND_PLAY_VIDEO(self, videoUrl):
-        ok=True
-        if videoUrl == '':
-                d = xbmcgui.Dialog()
-                d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
-                return False
-        try:
-            xbmcPlayer = xbmc.Player()
-            xbmcPlayer.play(videoUrl)
-        except:
-            d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
-        return ok
     
 
   def handleService(self):
     log.info('Wejście do TV komercyjnej')
     name = str(self.settings.paramName)
     chn = name.replace("+", " ")
-    log.info('b: '+chn)
+    #log.info('b: '+chn)
     if chn == 'None':
         try:
             if self.settings.WeebTVEnable == 'true':
-                log.info('zalogowany')
+                #log.info('zalogowany')
                 self.getChannelNamesAddLink()
             else:
-                log.info('bez logowania')
+                #log.info('bez logowania')
                 self.getChannelNamesAddLink()
         except:
             d = xbmcgui.Dialog()
