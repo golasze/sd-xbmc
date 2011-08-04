@@ -12,7 +12,7 @@ BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( os.getcwd(), "hosts" ) )
 
-import pLog, settings, weebtv, ekinotv, anyfiles, itvp, ipla
+import pLog, settings, weebtv, ekinotv, anyfiles, itvp, ipla, iplex
 
 log = pLog.pLog()
 
@@ -60,7 +60,7 @@ class PolishLiveTV:
 		vod = anyfiles.AnyFiles()
 		vod.handleService()
 	#elif mode == '203':
-	#	vod = anyfiles.AnyFiles()
+	#	vod = iplex.IPLEX()
 	#	vod.handleService()
 	elif mode == '204' or service == 'ipla':
 		#self.LOAD_AND_PLAY_VIDEO('http://redirector.redefine.pl/movies/e5a064aac8f20f7289c09bd533dc1bdf.flv')
@@ -100,21 +100,6 @@ class PolishLiveTV:
   	for num, val in table.items():
   		self.addDir(val, num, False, False)
   	xbmcplugin.endOfDirectory(int(sys.argv[1]))
-        
-
-  def LOAD_AND_PLAY_VIDEO(self, videoUrl):
-        ok=True
-        if videoUrl == '':
-                d = xbmcgui.Dialog()
-                d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
-                return False
-        try:
-            xbmcPlayer = xbmc.Player()
-            xbmcPlayer.play(videoUrl)
-        except:
-            d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
-        return ok
        
 
   def addDir(self, name, mode, autoplay, isPlayable = True):
