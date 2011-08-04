@@ -3,6 +3,7 @@ import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys
 import xbmcgui, xbmcplugin, xbmcaddon, xbmc
+import random
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -17,46 +18,45 @@ import pLog, settings
 log = pLog.pLog()
 
 mainUrl = 'http://weeb.tv'
-APP_HOST = '46.105.110.156'
+#APP_HOST = [ '46.105.110.156', '46.105.112.31' ]
+APP_HOST = '46.105.112.31'
 
 
 class WeebTV:
   def __init__(self):
     log.info('Loading WeebTV')
     self.settings = settings.TVSettings()
-
-
-  def handle(self):
-    channel = self.getChannelNamesAddDir()
-    log.info(str(channel))
-
+  
 
   def getChannels(self):
-    outTab = []
-    tabURL = []
-    strTab = []
-    urlChans = mainUrl + '/channels'
-    openURL = urllib.urlopen(urlChans)
-    readURL = openURL.read()
-    openURL.close()
-    tabURL = readURL.replace('\n', '').split('<')
-    for line in tabURL:
-      #log.info(line)
-      #exprLink = re.match(r'^fieldset onclick="location.href=\'(.*?)\'">$', line, re.M|re.I)
-      exprLink = re.match(r'^fieldset onclick="location.href=\'(.*?)\'".*$', line, re.M|re.I)
-      exprName = re.match(r'^legend align="center" title=".*?">(.*?)$', line, re.M|re.I)
-      #exprName2 = re.match(r'^.*?>(.*?).*$', line, re.M|re.I)
-      exprIcon = re.match(r'^img src="(.*?)" alt=".*?" height=".*?" width=".*?" />$', line, re.M|re.I)
-      if exprLink:
-	strTab.append(exprLink.group(1))
-      if exprName:
-	strTab.append(exprName.group(1))
-      if exprIcon:
-	strTab.append(exprIcon.group(1))
-	outTab.append(strTab)
-      if '/fieldset' in line:
-	strTab = []
-    return outTab
+      outTab = []
+      tabURL = []
+      strTab = []
+      urlChans = mainUrl + '/channels'
+      openURL = urllib.urlopen(urlChans)
+      readURL = openURL.read()
+      openURL.close()
+      tabURL = readURL.replace('\n', '').split('<')
+      for line in tabURL:
+          #log.info(line)
+          #exprLink = re.match(r'^fieldset onclick="location.href=\'(.*?)\'">$', line, re.M|re.I)
+          exprLink = re.match(r'^fieldset onclick="location.href=\'(.*?)\'".*$', line, re.M|re.I)
+          exprName = re.match(r'^legend align="center" title=".*?">(.*?)$', line, re.M|re.I)
+          exprIcon = re.match(r'^img src="(.*?)" alt=".*?" height=".*?" width=".*?" />$', line, re.M|re.I)
+          exprQuality = re.match(r'^span style="color:#ccc;">(.+?)$', line, re.M|re.I)
+          if exprLink:
+              strTab.append(exprLink.group(1))
+          if exprName:
+              strTab.append(exprName.group(1))
+          if exprIcon:
+              strTab.append(exprIcon.group(1))
+          if exprQuality:
+              strTab.append(exprQuality.group(1))
+              outTab.append(strTab)
+          if '/fieldset' in line:
+              strTab = []
+      #log.info(str(outTab))
+      return outTab
 
 
   def getChannelNames(self):
@@ -71,15 +71,16 @@ class WeebTV:
 
 
   def getChannelNamesAddLink(self):
-    origTab = self.getChannels()
-    origTab.sort(key=lambda x: x[1])
-    for i in range(len(origTab)):
-      value = origTab[i]
-      url = value[0]
-      name = value[1]
-      iconimage = value[2]
-      self.addLink('weebtv', name, iconimage, url)
-    xbmcplugin.endOfDirectory(int(sys.argv[1]))
+      origTab = self.getChannels()
+      origTab.sort(key=lambda x: x[1])
+      for i in range(len(origTab)):
+          value = origTab[i]
+          url = value[0]
+          name = value[1]
+          iconimage = value[3]
+          quality = value[2]
+          self.addLink('weebtv', name + ' --- [' + quality + ']', iconimage, url)
+      xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
     
   def getChannelURL(self, key):
