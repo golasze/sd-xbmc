@@ -3,7 +3,6 @@ import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys
 import xbmcgui, xbmcplugin, xbmcaddon, xbmc
-import random
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -18,8 +17,9 @@ import pLog, settings
 log = pLog.pLog()
 
 mainUrl = 'http://weeb.tv'
-#APP_HOST = [ '46.105.110.156', '46.105.112.31' ]
-APP_HOST = '46.105.112.31'
+#APP_HOSTS = { 1: '46.105.110.156',
+#             2: '46.105.112.31' }
+#APP_HOST = '46.105.112.31'
 
 
 class WeebTV:
@@ -118,14 +118,16 @@ class WeebTV:
     #log.info('src: ' + str(len(match_src)) + ', chn: ' + str(len(match_chn)))
     if len(match_src) == 1 and len(match_chn) == 1:
         channel = str(match_chn[0]).split('=')
-        rtmp = 'rtmp://' + APP_HOST + '/live/' + channel[1] + '/'
+        #rtmp = 'rtmp://' + APP_HOST + '/live/' + channel[1] + '/'
+        rtmp = 'rtmp://' + self.settings.WeebIP + '/live/' + channel[1] + '/'
         rtmp += ' swfUrl='  + urllib.unquote_plus(str(match_src[0]))
         rtmp += ' pageUrl=' + url
-        rtmp += ' tcUrl=rtmp://' + APP_HOST + '/live/' + channel[1]
+        #rtmp += ' tcUrl=rtmp://' + APP_HOST + '/live/' + channel[1]
+        rtmp += ' tcUrl=rtmp://' + self.settings.WeebIP + '/live/' + channel[1]
         rtmp += ' playpath=live'
         rtmp += ' swfVfy=true'
         rtmp += ' live=true'
-        log.info(rtmp)
+        #log.info(rtmp)
         return rtmp
       
       
