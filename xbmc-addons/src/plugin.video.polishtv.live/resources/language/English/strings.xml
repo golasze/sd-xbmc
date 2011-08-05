@@ -5,8 +5,10 @@
     <string id="55002">Użytkownik:</string>
     <string id="55003">Hasło:</string>
     <string id="55004">Włącz logowanie</string>
-    <string id="55005">Więcej informacji i pomocy można znaleźć na stronie</string>
-    <string id="55006">usługodawcy ([B]http://weeb.tv[/B]).</string>
+    <string id="55005">Ustawienie IP streamingu</string>
+    <string id="55006">Wybierz IP</string>
+    <string id="55007">Więcej informacji i pomocy można znaleźć na stronie</string>
+    <string id="55008">usługodawcy ([B]http://weeb.tv[/B]).</string>
     
     <!-- Megavideo settings -->
     <string id="55100">MegaVideo</string>
