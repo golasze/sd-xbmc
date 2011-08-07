@@ -12,19 +12,20 @@ BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( os.getcwd(), "hosts" ) )
 
-import pLog, settings, weebtv, ekinotv, anyfiles, itvp, ipla, iplex
+import pLog, settings
+import weebtv, ekinotv, ipla, iitvinfo
 
 log = pLog.pLog()
 
 
-TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
-		    101: "Justin TV [wyświetl kanały]" }
+TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]" }
 
 VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
-		     201: "iTVP [filmy, seriale, vod]",
-		     202: "AnyFiles [różne filmy]",
-		     203: "IPLEX",
-		     204: "IPLA" }
+		     #201: "iTVP [filmy, seriale, vod]",
+		     #202: "AnyFiles [różne filmy]",
+		     #203: "IPLEX",
+		     201: "IPLA",
+		     202: "iiTV info [seriale]" }
 
 
 
@@ -48,23 +49,25 @@ class PolishLiveTV:
 		tv = weebtv.WeebTV()
 		tv.handleService()
 	elif mode == '2':
-		log.info('Wejście do TV internetowej')
+		#log.info('Wejście do TV internetowej')
 		self.LIST(VOD_ONLINE_TABLE)
 	elif mode == '200' or service == 'ekinotv':
 		vod = ekinotv.EkinoTV()
 		vod.handleService()
-	elif mode == '201':
-		vod = itvp.iTVP()
-		vod.handleService()
-	elif mode == '202':
-		vod = anyfiles.AnyFiles()
-		vod.handleService()
+	#elif mode == '201':
+	#	vod = itvp.iTVP()
+	#	vod.handleService()
+	#elif mode == '202':
+	#	vod = anyfiles.AnyFiles()
+	#	vod.handleService()
 	#elif mode == '203':
 	#	vod = iplex.IPLEX()
 	#	vod.handleService()
-	elif mode == '204' or service == 'ipla':
-		#self.LOAD_AND_PLAY_VIDEO('http://redirector.redefine.pl/movies/e5a064aac8f20f7289c09bd533dc1bdf.flv')
+	elif mode == '201' or service == 'ipla':
 		vod = ipla.IPLA()
+		vod.handleService()
+	elif mode == '202' or service == 'iitvinfo':
+		vod = iitvinfo.iiTVInfo()
 		vod.handleService()
 	elif mode == '20':
 		log.info('Wyświetlam ustawienia')
