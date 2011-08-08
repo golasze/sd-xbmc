@@ -20,7 +20,8 @@ watchUrl = mainUrl + '/ogladaj/'
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 MEGAVIDEO_MOVIE_URL = 'http://www.megavideo.com/v/'
-STREAM_LINK = 'http://127.0.0.1:4001/megavideo/megavideo.caml?videoid='
+STREAM_MEGALINK = 'http://127.0.0.1:4001/megavideo/megavideo.caml?videoid='
+STREAM_OBBLINK = 'http://127.0.0.1:4001/videobb/videobb.caml?videoid='
 
 
 class iiTVInfo:
@@ -90,7 +91,7 @@ class iiTVInfo:
         response = urllib2.urlopen(req)
         link = response.read()
         response.close()
-        match_parts = re.compile('&nbsp; (.+?) <a class="serlink" href="(.+?)">(.+?)</a> <br />').findall(link)
+        match_parts = re.compile('&nbsp; (.+?) <a class="serlink" href="(.+?)">(.+?)</a>.+?<br />').findall(link)
         if len(match_parts) > 0:
             for i in range(len(match_parts)):
                 pTab = match_parts[i][0].split('e')
@@ -100,8 +101,38 @@ class iiTVInfo:
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
             
 
-    def getMegaVideoID(self, url):
-        megaID = ''
+    def getItemTitles(self, table):
+        out = []
+        for i in range(len(table)):
+            value = table[i]
+            out.append(value[0])
+        return out
+
+
+    def getTabID(self, table, key):
+        id = ''
+        for i in range(len(table)):
+            value = table[i]
+            if key in value[0]:
+                id = value[1]
+                break
+        return id
+
+
+    def getID(self, opt0, opt1):
+        identity = ''
+        if 'megavideo.com' in opt0:
+            lTab = opt1.split('v=')
+            identity = lTab[1] + ':megavideo'
+        elif 'videobb.com' in opt0:
+            lTab = opt1.split('video/')
+            identity = lTab[1] + ':videobb'
+        #log.info(identity)
+        return identity
+
+
+    def getVideoID(self, url):
+        videoID = ''
         req = urllib2.Request(url)
         req.add_header('User-Agent', HOST)
         response = urllib2.urlopen(req)
@@ -131,13 +162,32 @@ class iiTVInfo:
             req = urllib2.Request(watchUrl, data, headers)
             response = urllib2.urlopen(req)
             link = response.read()
+            #log.info(link)
             response.close()
-            match_watch = re.compile('<div align="left" style="text-align: left; font-size: 13px;"> <b>.+?<a href=".+?" target="_blank">(.+?)</a></b></div>').findall(link)
+            match_watch = re.compile('<div align="left" style="text-align: left; font-size: 13px;"> <b>(.+?)<a href=".+?" target="_blank">(.+?)</a></b></div>').findall(link)
             if len(match_watch) == 1:
-                lTab = match_watch[0].split('v=')
-                megaID = lTab[1]
-        #log.info('mID: ' + megaID)
-        return megaID
+                videoID = self.getID(match_watch[0], match_watch[1])
+            elif len(match_watch) > 1:
+                valTab = []
+                strTab = []
+                a = 1
+                for i in range(len(match_watch)):
+                    if 'megavideo' in match_watch[i][0] or 'videobb' in match_watch[i][0]:
+                        idd = self.getID(match_watch[i][0], match_watch[i][1])
+                        iddTab = idd.split(':')
+                        strTab.append('Film ' + str(a) + '. link z ' + iddTab[1])
+                        strTab.append(idd)
+                        valTab.append(strTab)
+                        strTab = []
+                        a = a + 1
+                #log.info(str(valTab))
+                d = xbmcgui.Dialog()
+                item = d.select("Wybór filmu", self.getItemTitles(valTab))
+                if item != '':
+                    item = item + 1
+                    videoID = self.getTabID(valTab, str(item))                              
+        #log.info('mID: ' + videoID)
+        return videoID
         
 
     
@@ -192,15 +242,22 @@ class iiTVInfo:
         
         if name == 'playSelectedMovie':
             linkVideo = ''
-            megaID = self.getMegaVideoID(mainUrl + page)
-            if megaID != '':
-                if self.settings.MegaVideoUnlimit == 'true':
-                    linkVideo = STREAM_LINK + megaID
+            ID = self.getVideoID(mainUrl + page)
+            tabID = ID.split(':')
+            if ID != '':
+                if tabID[1] == 'megavideo':
+                    if self.settings.MegaVideoUnlimit == 'true':
+                        linkVideo = STREAM_MEGALINK + tabID[0]
+                        cw = cacaoweb.CacaoWeb()
+                        cw.runApp()              
+                    elif self.settings.MegaVideoUnlimit == 'false':
+                        mega = megavideo
+                        linkVideo = mega.Megavideo(MEGAVIDEO_MOVIE_URL + tabID[0])
+                elif tabID[1] == 'videobb':
+                    linkVideo = STREAM_OBBLINK + tabID[0]
                     cw = cacaoweb.CacaoWeb()
-                    cw.runApp()              
-                elif self.settings.MegaVideoUnlimit == 'false':
-                    mega = megavideo
-                    linkVideo = mega.Megavideo(MEGAVIDEO_MOVIE_URL + megaID)
+                    cw.runApp()                     
+                    
                 if linkVideo.startswith('http://'):
                     self.LOAD_AND_PLAY_VIDEO(linkVideo)
             else:
