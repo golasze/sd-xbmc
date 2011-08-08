@@ -166,7 +166,7 @@ class iiTVInfo:
             response.close()
             match_watch = re.compile('<div align="left" style="text-align: left; font-size: 13px;"> <b>(.+?)<a href=".+?" target="_blank">(.+?)</a></b></div>').findall(link)
             if len(match_watch) == 1:
-                videoID = self.getID(match_watch[0], match_watch[1])
+                videoID = self.getID(match_watch[0][0], match_watch[0][1])
             elif len(match_watch) > 1:
                 valTab = []
                 strTab = []
