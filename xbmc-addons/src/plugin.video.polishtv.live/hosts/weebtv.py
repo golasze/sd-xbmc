@@ -36,26 +36,25 @@ class WeebTV:
       openURL = urllib.urlopen(urlChans)
       readURL = openURL.read()
       openURL.close()
-      tabURL = readURL.replace('\n', '').split('<')
-      for line in tabURL:
-          #log.info(line)
-          #exprLink = re.match(r'^fieldset onclick="location.href=\'(.*?)\'">$', line, re.M|re.I)
-          exprLink = re.match(r'^fieldset onclick="location.href=\'(.*?)\'".*$', line, re.M|re.I)
-          exprName = re.match(r'^legend align="center" title=".*?">(.*?)$', line, re.M|re.I)
-          exprIcon = re.match(r'^img src="(.*?)" alt=".*?" height=".*?" width=".*?" />$', line, re.M|re.I)
-          exprQuality = re.match(r'^span style="color:#ccc;">(.+?)$', line, re.M|re.I)
-          if exprLink:
-              strTab.append(exprLink.group(1))
-          if exprName:
-              strTab.append(exprName.group(1))
-          if exprIcon:
-              strTab.append(exprIcon.group(1))
-          if exprQuality:
-              strTab.append(exprQuality.group(1))
+      match_opt1 = re.compile('<p style="color: green;font-weight:bold;">.+?<span style="color:#ccc;">(.+?)</span></p>').findall(readURL)
+      match_opt2 = re.compile('<a href="(.+?)" title=".+?"><img src="(.+?)" alt="(.+?)" height="100" width="100" /></a>').findall(readURL)
+      if len(match_opt2) > 0:
+          for i in range(len(match_opt2)):
+              quality = 'Brak'
+              if len(match_opt1) > 0:
+                  quality = match_opt1[i]
+              link = match_opt2[i][0]
+              image = match_opt2[i][1]
+              title = match_opt2[i][2]
+              #self.addLink('weebtv', title + ' --- [' + quality + ']', image, link)
+          #xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
+          #xbmcplugin.endOfDirectory(int(sys.argv[1]))
+              strTab.append(link)
+              strTab.append(title)
+              strTab.append(image)
+              strTab.append(quality)
               outTab.append(strTab)
-          if '/fieldset' in line:
               strTab = []
-      #log.info(str(outTab))
       return outTab
 
 
@@ -77,8 +76,8 @@ class WeebTV:
           value = origTab[i]
           url = value[0]
           name = value[1]
-          iconimage = value[3]
-          quality = value[2]
+          iconimage = value[2]
+          quality = value[3]
           self.addLink('weebtv', name + ' --- [' + quality + ']', iconimage, url)
       xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
@@ -190,15 +189,17 @@ class WeebTV:
     log.info('Wejście do TV komercyjnej')
     name = str(self.settings.paramName)
     chn = name.replace("+", " ")
-    #log.info('b: '+chn)
+    log.info('b: '+chn)
     if chn == 'None':
         try:
             if self.settings.WeebTVEnable == 'true':
-                #log.info('zalogowany')
+                log.info('zalogowany')
                 self.getChannelNamesAddLink()
+                #self.getChannels()
             else:
-                #log.info('bez logowania')
+                log.info('bez logowania')
                 self.getChannelNamesAddLink()
+                #self.getChannels()
         except:
             d = xbmcgui.Dialog()
             d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')        
