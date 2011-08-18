@@ -30,7 +30,8 @@ PAGE_MOVIES = 10
 MEGAVIDEO_MOVIE_URL = 'http://www.megavideo.com/v/'
 DUB_LINK = mainUrl + '/tag,lektor.html'
 SUB_LINK = mainUrl + '/tag,napisy.html'
-STREAM_LINK = 'http://127.0.0.1:4001/megavideo/megavideo.caml?videoid='
+STREAM_LINK_MEGAVIDEO = 'http://127.0.0.1:4001/megavideo/megavideo.caml?videoid='
+STREAM_LINK_VIDEOBB = 'http://127.0.0.1:4001/videobb/videobb.caml?videoid='
 
 
 class EkinoTV:
@@ -142,7 +143,7 @@ class EkinoTV:
     link = response.read()
     response.close()
     match = re.compile('<p>.+?<b>(.+?)</b>.+?"<b>.+?</b>".+?</p>').findall(link)
-    log.info('match: ' + str(match))
+    #log.info('match: ' + str(match))
     if len(match) > 0:
       a = math.ceil(float(match[0]) / float(PAGE_MOVIES))
       for i in range(int(a)):
@@ -342,7 +343,7 @@ class EkinoTV:
 			strTab.append(expr1.group(1))
 		if expr2:
 			strTab.append(expr2.group(1).replace('\t' , '').replace('  ', ''))
-    log.info(strTab)
+    #log.info(strTab)
     return strTab    
 
 
@@ -367,9 +368,9 @@ class EkinoTV:
   		strTab.append(plot)
   		strTab.append(url)
   		valTab.append(strTab)
-  		log.info(str(strTab))
+  		#log.info(str(strTab))
   		strTab = []
-  	log.info(str(valTab))
+  	#log.info(str(valTab))
   	return valTab
 
 
@@ -516,23 +517,24 @@ class EkinoTV:
 
 
   def videoMovieLink(self, url):
-    link = self.getMovieURLFalse(url)
-    if link != 'None':
-      req = urllib2.Request(link)
-      req.add_header('User-Agent', HOST)
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
-      #match = re.compile('<param name="movie" value="(.+?)"></param>').findall(link)
-      match = re.compile('<param name="movie" value="(.+?)">').findall(link)
-      log.info('match: ' + str(match))
-      if len(match) > 0:
-	p = match[0].split('=')
-	l = p[1].split('&')
-	log.info(str(l[0]))
-	mega = megavideo
-	nUrl = mega.Megavideo(MEGAVIDEO_MOVIE_URL + l[0])
-	#log.info(nUrl)
+  	nUrl = ''
+  	link = self.getMovieURLFalse(url)
+  	if link != 'None':
+  		req = urllib2.Request(link)
+  		req.add_header('User-Agent', HOST)
+	 	response = urllib2.urlopen(req)
+	  	link = response.read()
+	   	response.close()
+		#match = re.compile('<param name="movie" value="(.+?)"></param>').findall(link)
+	 	match = re.compile('<param name="movie" value="(.+?)">').findall(link)
+	  	log.info('match: ' + str(match))
+	   	if len(match) > 0:
+	   		p = match[0].split('=')
+	   		l = p[1].split('&')
+	   		log.info(str(l[0]))
+	   		mega = megavideo
+	   		nUrl = mega.Megavideo(MEGAVIDEO_MOVIE_URL + l[0])
+	   		#log.info(nUrl)
 	return nUrl
 
 
@@ -541,21 +543,28 @@ class EkinoTV:
     link = self.getMovieURLFalse(url)
     log.info('link: ' + link)
     if link != 'None':
-      req = urllib2.Request(link)
-      req.add_header('User-Agent', HOST)
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
-      #match = re.compile('<param name="movie" value="(.+?)"></param>').findall(link)
-      match = re.compile('<param name="movie" value="(.+?)">').findall(link)
-      #log.info('match: ' + str(match))
-      if len(match) > 0:
-	cw = cacaoweb.CacaoWeb()
-	cw.runApp()
-	p = match[0].split('=')
-	l = p[1].split('&')
-	linkVideo = STREAM_LINK + str(l[0])
-	#log.info(str(linkVideo))
+		req = urllib2.Request(link)
+		req.add_header('User-Agent', HOST)
+		response = urllib2.urlopen(req)
+		link = response.read()
+		response.close()
+		#match = re.compile('<param name="movie" value="(.+?)"></param>').findall(link)
+		match = re.compile('<param name="movie" value="(.+?)">').findall(link)
+		#log.info('match: ' + str(match))
+		if len(match) > 0:
+			#log.info(str(match[0]))
+			cw = cacaoweb.CacaoWeb()
+			cw.runApp()
+			if 'megavideo' in match[0]:
+				p = match[0].split('=')
+				l = p[1].split('&')
+				linkVideo = STREAM_LINK_MEGAVIDEO + str(l[0])
+			elif 'videobb' in match[0]:
+				urlTab = match[0].split("/e/")
+				idTab = urlTab[1].split("\" >")
+				id = idTab[0]
+				linkVideo = STREAM_LINK_VIDEOBB + str(id)
+		#log.info(str(linkVideo))
     return linkVideo
     
     
