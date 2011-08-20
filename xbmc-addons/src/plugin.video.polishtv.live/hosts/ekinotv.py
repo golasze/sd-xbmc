@@ -553,8 +553,6 @@ class EkinoTV:
 		#log.info('match: ' + str(match))
 		if len(match) > 0:
 			#log.info(str(match[0]))
-			cw = cacaoweb.CacaoWeb()
-			cw.runApp()
 			if 'megavideo' in match[0]:
 				p = match[0].split('=')
 				l = p[1].split('&')
@@ -753,6 +751,9 @@ class EkinoTV:
 				if self.settings.MegaVideoUnlimit == 'false':
 			  		self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
 			  	elif self.settings.MegaVideoUnlimit == 'true':
-			  		self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))  		
+			  		cw = cacaoweb.CacaoWeb()
+					cw.runApp()
+			  		self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
+			  		cw.stopApp() 		
 		  	except:
 		  		pass
