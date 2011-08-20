@@ -20,12 +20,14 @@ log = pLog.pLog()
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
 URL_IPLA = 'http://getmedia.redefine.pl'
-IDENTITY = 'ver=162&login=common%5Fuser&cuid=%2D11033141'
+IDENTITY = 'login=5zdl1ax9&ver=313&cuid=%2D11218210'
+#IDENTITY = 'ver=162&login=common%5Fuser&cuid=%2D11033141'
 #IDENTITY = { 'ver': '162', 'login': 'common%5Fuser', 'cuid': '%2D11033141' }
 #LIVE = { 'passwdmd5': '', 'ver': '162', 'login': 'common_user', 'cuid': '-11033141' }
 
 URL_CHANNELS = URL_IPLA + '/action/2.0/vod/list/'
-URL_CATEGORIES = URL_IPLA + '/r/cu_x_7_iplalight/categories/list/'
+URL_CATEGORIES = URL_IPLA + '/r/l_x_35_ipla/categories/list/?' + IDENTITY
+#URL_CATEGORIES = URL_IPLA + '/r/cu_x_7_iplalight/categories/list/'
 URL_LIVE = URL_IPLA + '/m/cu_pl_7_iplalight/live/reallive_channels/?passwdmd5=&' + IDENTITY
 URL_MOVIE = URL_IPLA + '/action/2.0/vod/list/?' + IDENTITY + '&category='
 
