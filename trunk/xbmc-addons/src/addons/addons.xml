@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addons>
+	<addon id="plugin.multimedia.players" name="External Multimedia Players" provider-name="Plesken" version="0.1.3">
+		<requires>
+    		<import addon="xbmc.python" version="1.0" />
+  		</requires>
+  		<extension library="addon.py" point="xbmc.python.pluginsource">
+    		<provides>video</provides>
+  		</extension>
+  		<extension point="xbmc.addon.metadata">
+    		<platform>all</platform>
+    		<summary>External Multimedia Players</summary>
+    		<description>These players you can use to play 3D movies from NET and bluray from iso files, or unencrypted disc</description>
+  			<nofanart>true</nofanart>
+  		</extension>
+	</addon>
+	<addon id="plugin.video.polishtv.live" name="Telewizja Polska (kanały, VOD, filmy, seriale)" provider-name="Plesken" version="0.0.1-4">
+		<requires>
+    		<import addon="xbmc.python" version="1.0" />
+  		</requires>
+  		<extension library="addon.py" point="xbmc.python.pluginsource">
+    		<provides>video</provides>
+  		</extension>
+  		<extension point="xbmc.addon.metadata">
+    		<platform>all</platform>
+    		<summary>Polish TV: Watch LIVE VIDEO STREAMING of International Cricket</summary>
+    		<description>Favorite Cricket Channel in Poland.</description>
+  			<nofanart>true</nofanart>
+  		</extension>
+	</addon>
+</addons>
