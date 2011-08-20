@@ -5,7 +5,7 @@ import sys
 import re
 import os, platform
 
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
+BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
 import pLog
