@@ -8,7 +8,7 @@ scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "../resources" )
+BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
 import pLog, megavideo, cacaoweb, settings
@@ -260,6 +260,12 @@ class iiTVInfo:
                     
                 if linkVideo.startswith('http://'):
                     self.LOAD_AND_PLAY_VIDEO(linkVideo)
+                    if tabID[1] == 'megavideo' and self.settings.MegaVideoUnlimit == 'true':
+                        cw = cacaoweb.CacaoWeb()
+                        cw.stopApp()
+                    if tabID[1] == 'videobb':
+                        cw = cacaoweb.CacaoWeb()
+                        cw.stopApp()
             else:
                 d = xbmcgui.Dialog()
                 d.ok('Brak linku MegaVideo.', 'iiTV.info - tymczasowo wyczerpałeś limit ilości uruchamianych seriali.', 'Zapraszamy za godzinę.')

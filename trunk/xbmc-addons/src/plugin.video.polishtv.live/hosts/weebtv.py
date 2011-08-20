@@ -8,7 +8,7 @@ scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "../resources" )
+BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 #sys.path.append( os.path.join( os.getcwd(), "../" ) )
 
