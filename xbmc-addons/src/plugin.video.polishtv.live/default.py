@@ -8,17 +8,19 @@ scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
+#BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
+BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( os.getcwd(), "hosts" ) )
 
 import pLog, settings
-import weebtv, ekinotv, ipla, iitvinfo
+import weebtv, ekinotv, ipla, iitvinfo, stations
 
 log = pLog.pLog()
 
 
-TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]" }
+TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
+					101: "Stacje TV [strumienie]" }
 
 VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
 		     #201: "iTVP [filmy, seriale, vod]",
@@ -47,6 +49,9 @@ class PolishLiveTV:
 		self.LIST(TV_ONLINE_TABLE)
 	elif mode == '100' or service == 'weebtv':
 		tv = weebtv.WeebTV()
+		tv.handleService()
+	elif mode == '101':
+		tv = stations.StreamStations()
 		tv.handleService()
 	elif mode == '2':
 		#log.info('Wejście do TV internetowej')
