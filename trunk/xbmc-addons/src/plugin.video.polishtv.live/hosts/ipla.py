@@ -74,13 +74,14 @@ class IPLA:
             title = elv['title']
             if 'Odcinek' in title:
                 tabTitle = title.split('Odcinek ')
-                num = tabTitle[1]
-                if float(num) < 10:
-                    num = '000' + num
-                elif float(num) < 100:
-                    num = '00' + num
-                elif float(num) < 1000:
-                    num = '0' + num
+                if len(tabTitle) > 1:
+                    num = tabTitle[1]
+                    if float(num) < 10:
+                        num = '000' + num
+                    elif float(num) < 100:
+                        num = '00' + num
+                    elif float(num) < 1000:
+                        num = '0' + num
             thumb = elv['thumbnail_big']
             links = vod.findall("srcreq")
             for link in links:
@@ -218,7 +219,7 @@ class IPLA:
         
     def add(self, service, name, category, title, iconimage, url, folder = True, isPlayable = True):
         u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&url=" + urllib.quote_plus(url)
-        log.info(str(u))
+        #log.info(str(u))
         if name != 'None' and category == 'main-categories':
             name = title
         elif name != 'None' and category == 'title-categories':
@@ -236,7 +237,7 @@ class IPLA:
 
     def addLink(self, title, iconimage, url):
         u= url
-        log.info(str(u))
+        #log.info(str(u))
         liz=xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setProperty("IsPlayable", "true")
         liz.setInfo( type="Video", infoLabels={ "Title": title } )
