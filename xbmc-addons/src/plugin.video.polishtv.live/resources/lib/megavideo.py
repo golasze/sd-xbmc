@@ -12,8 +12,12 @@ import urlparse, urllib, urllib2
 import os.path
 import sys
 import xbmc
-import xbmcplugin
+import xbmcplugin, xbmcaddon
 import settings
+
+scriptID = 'plugin.video.polishtv.live'
+scriptname = "Polish Live TV"
+ptv = xbmcaddon.Addon(scriptID)
 
 #Settings values for megavideo account
 s = settings.TVSettings()
@@ -25,7 +29,7 @@ modoPremium = s.MegaVideoEnable
 #COOKIEFILE = xbmc.translatePath( "special://home/plugins/video/pelisalacarta/cookies.lwp" )
 
 # Esto funciona en plex!
-COOKIEFILE = os.path.join( os.getcwd(), 'cookies.lwp' )
+COOKIEFILE = os.path.join( ptv.getAddonInfo('path'), 'cookies.lwp' )
 print "Cookiefile="+COOKIEFILE
 
 #Python Video Decryption and resolving routines.
