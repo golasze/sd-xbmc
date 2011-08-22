@@ -30,7 +30,6 @@ class CacaoWeb:
                 appRun = '"' + os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux" &'
             elif os.uname()[0] == "Windows":
                 appRun = '"' + os.getenv("USERPROFILE") + '\\AppData\\Roaming\\XBMC\\addons\\plugin.video.polishtv.live\\bin\\cacaoweb.exe"'
-            log.info('ODPALAM: ' + appRun)
             if appRun != '':
                 self.delTMPFiles()
                 os.system(appRun)
