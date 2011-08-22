@@ -3,7 +3,12 @@ import subprocess
 import string, urllib
 import sys
 import re
-import os, platform
+import os
+import xbmcaddon
+
+scriptID = 'plugin.video.polishtv.live'
+scriptname = "Polish Live TV"
+ptv = xbmcaddon.Addon(scriptID)
 
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
@@ -21,10 +26,11 @@ class CacaoWeb:
     def runApp(self):
         try:
             appRun = ''
-            if platform.system() == "Linux":
+            if os.uname()[0] == "Linux":
                 appRun = '"' + os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux" &'
-            elif platform.system() == "Windows":
-                appRun = '"' + os.getenv("USERPROFILE") + '\\AppData\\Roaming\XBMC\\addons\\plugin.video.polishtv.live\\bin\\cacaoweb.exe"'
+            elif os.uname()[0] == "Windows":
+                appRun = '"' + os.getenv("USERPROFILE") + '\\AppData\\Roaming\\XBMC\\addons\\plugin.video.polishtv.live\\bin\\cacaoweb.exe"'
+            log.info('ODPALAM: ' + appRun)
             if appRun != '':
                 self.delTMPFiles()
                 os.system(appRun)
@@ -34,9 +40,9 @@ class CacaoWeb:
 
     def delTMPFiles(self):
         tmpDir = ''
-        if platform.system() == "Linux":
+        if os.uname()[0] == "Linux":
             tmpDir = '"' + os.getenv("HOME") + '/.cacaoweb"'
-        elif platform.system() == "Windows":
+        elif os.uname()[0] == "Windows":
             tmpDir = '"' + os.getenv("USERPROFILE") + '\\AppData\\Roaming\\cacaoweb"'
         if os.path.isdir(tmpDir):
             for fileName in os.listdir(tmpDir):
@@ -49,7 +55,7 @@ class CacaoWeb:
     
     
     def stopApp(self):
-        if platform.system() == "Linux":
+        if os.uname()[0] == "Linux":
             os.system("killall -9 cacaoweb.linux")
-        elif platform.system() == "Windows":
+        elif os.uname()[0] == "Windows":
             os.system("taskkill /F /PID cacaoweb.exe")
