@@ -27,7 +27,6 @@ class CacaoWeb:
         try:
             appRun = ''
             if self.typeOS() == "linux":
-                log.info('odpalam')
                 os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux', stat.S_IRWXU)
                 appRun = '"' + os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux" &'
             elif self.typeOS() == "windows":
