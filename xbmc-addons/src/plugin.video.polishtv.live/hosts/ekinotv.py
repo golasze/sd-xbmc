@@ -752,8 +752,9 @@ class EkinoTV:
 			  		self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
 			  	elif self.settings.MegaVideoUnlimit == 'true':
 			  		cw = cacaoweb.CacaoWeb()
+			  		cw.stopApp()
 					cw.runApp()
 			  		self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
-			  		cw.stopApp() 		
+			  		#cw.stopApp() 		
 		  	except:
 		  		pass

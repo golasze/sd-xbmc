@@ -26,9 +26,9 @@ class CacaoWeb:
     def runApp(self):
         try:
             appRun = ''
-            if os.uname()[0] == "Linux":
+            if self.typeOS() == "linux":
                 appRun = '"' + os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux" &'
-            elif os.uname()[0] == "Windows":
+            elif self.typeOS() == "windows":
                 appRun = '"' + os.getenv("USERPROFILE") + '\\AppData\\Roaming\\XBMC\\addons\\plugin.video.polishtv.live\\bin\\cacaoweb.exe"'
             if appRun != '':
                 self.delTMPFiles()
@@ -39,9 +39,9 @@ class CacaoWeb:
 
     def delTMPFiles(self):
         tmpDir = ''
-        if os.uname()[0] == "Linux":
+        if self.typeOS() == "linux":
             tmpDir = '"' + os.getenv("HOME") + '/.cacaoweb"'
-        elif os.uname()[0] == "Windows":
+        elif self.typeOS() == "windows":
             tmpDir = '"' + os.getenv("USERPROFILE") + '\\AppData\\Roaming\\cacaoweb"'
         if os.path.isdir(tmpDir):
             for fileName in os.listdir(tmpDir):
@@ -54,7 +54,25 @@ class CacaoWeb:
     
     
     def stopApp(self):
-        if os.uname()[0] == "Linux":
+        if self.typeOS() == "linux":
             os.system("killall -9 cacaoweb.linux")
-        elif os.uname()[0] == "Windows":
+        elif self.typeOS() == "windows":
             os.system("taskkill /F /PID cacaoweb.exe")
+            
+            
+    def typeOS(self):
+        os = ''
+        try:
+            #if os.uname()[0] == "Linux":
+            if sys.platform.startswith("linux"):
+                os = 'linux'
+            #elif os.uname()[0] == "Windows":
+            elif sys.platform.startswith("win32"):
+                os = 'windows'
+        except:
+            pass
+        #    if platform.system() == 'Linux':
+        #        os = 'Linux'
+        #    elif platform.system() == 'Windows':
+        #        os = 'Windows'
+        return os

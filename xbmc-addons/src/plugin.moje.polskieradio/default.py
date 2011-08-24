@@ -23,6 +23,8 @@ class MyPolishRadio:
         params = p.getParams()
         if p.getParam(params, 'mode') == None or p.getParam(params, 'mode') == '':
             self.LIST(MENU_MAIN)
+        elif p.getParam(params, 'mode') == '1' and p.getParam(params, 'name') == 'main':
+            p.programyLink()
         elif p.getParam(params, 'mode') == '2' and p.getParam(params, 'name') == 'main':
             p.keyLink('slowo')
         elif p.getParam(params, 'mode') == '3' and p.getParam(params, 'name') == 'main':
