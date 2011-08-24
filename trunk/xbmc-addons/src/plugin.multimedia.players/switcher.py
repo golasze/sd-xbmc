@@ -3,23 +3,21 @@ import xbmc, xbmcgui, subprocess, os, time, sys, urllib, re
 import xbmcplugin, xbmcaddon
 #from urllib import quote_plus
 
-
-# Shared resources
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
-sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
-
-import xbmc3Dplayer, pLog, connection, xbmcBDplayer
-
 __scriptname__ = "Bluray and 3D players"
 __scriptID__      = "plugin.multimedia.players"
 __author__ = "Plesken"
 __url__ = "http://systems-design.pl"
 __credits__ = ""
-__version__ = "0.1.0"
 __addon__ = xbmcaddon.Addon(__scriptID__)
 
 __language__ = __addon__.getLocalizedString
 _ = sys.modules[ "__main__" ].__language__
+
+# Shared resources
+BASE_RESOURCE_PATH = os.path.join( __addon__.getAddonInfo('path'), "resources" )
+sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
+
+import xbmc3Dplayer, pLog, connection, xbmcBDplayer
 
 #action = ''
 _log = pLog.pLog()
@@ -152,17 +150,17 @@ extensionISO = ('.iso')
 extensionDVD = ('.ifo', '.vob')
 extensionBD = ('.bdmv')
 if filter(movie.lower().endswith, extensionFiles):
-  switcher = Switcher("switcherFiles.xml", os.getcwd(), "Default")
+  switcher = Switcher("switcherFiles.xml", __addon__.getAddonInfo('path'), "Default")
   switcher.doModal()
   del Switcher
 elif filter(movie.lower().endswith, extensionISO):
-  switcher = Switcher("switcherISO.xml", os.getcwd(), "Default")
+  switcher = Switcher("switcherISO.xml", __addon__.getAddonInfo('path'), "Default")
   switcher.doModal()
   del Switcher  
 elif filter(movie.lower().endswith, extensionDVD):
   self.play2D()
 elif filter(movie.lower().endswith, extensionBD):
-  sw = Switcher("switcherISO.xml", os.getcwd(), "Default")
+  sw = Switcher("switcherISO.xml", __addon__.getAddonInfo('path'), "Default")
   sw.playBluray(2, movie)
 else:
   xbmc.executebuiltin('XBMC.ActivateWindow(' + movie + ')')

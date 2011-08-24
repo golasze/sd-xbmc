@@ -6,11 +6,10 @@ import string, urllib
 import sys
 import re
 import os
-
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
-sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
-
 import pLog, connection
+
+__scriptID__   = sys.modules[ "__main__" ].__scriptID__
+_ = sys.modules[ "__main__" ].__language__
 
 _log = pLog.pLog()
 
@@ -188,28 +187,23 @@ class StereoscopicPlayer:
 
 
   def getEyeFirst(self, table):
-    inputForm = 'separate-left-right'
-    eye = []
-    for line in table:
-      if 'ID_VID_' in line:
-	eye.append(line)
-	#expr = re.match(r'^.*([Ll][Ee][Ff][Tt]).*$', line, re.M|re.I)
-	#if expr:
-	#  inputForm = 'separate-left-right'
-	#  break
-	#expr = re.match(r'^.*([Rr][Ii][Gg][Hh][Tt]).*$', line, re.M|re.I)
-	#if expr:
-	#  inputForm = 'separate-right-left'
-	#  break
-    exprL = re.match(r'^.*([Ll][Ee][Ff][Tt]).*$', str(eye[0]), re.M|re.I)
-    exprR = re.match(r'^.*([Rr][Ii][Gg][Hh][Tt]).*$', str(eye[0]), re.M|re.I)
-    if exprL:
       inputForm = 'separate-left-right'
-      #_log.info('Set separate: left-right')
-    elif exprR:
-      inputForm = 'separate-right-left'
+      eye = []
+      for line in table:
+          if 'ID_VID_' in line:
+              eye.append(line)
+              if len(eye) > 1:
+                  exprL = re.match(r'^.*([Ll][Ee][Ff][Tt]).*$', str(eye[0]), re.M|re.I)
+                  exprR = re.match(r'^.*([Rr][Ii][Gg][Hh][Tt]).*$', str(eye[0]), re.M|re.I)
+                  if exprL:
+                      inputForm = 'separate-left-right'
+                  #_log.info('Set separate: left-right')
+                  elif exprR:
+                      inputForm = 'separate-right-left'
+              else:
+                  inputForm = ''
       #_log.info('Set separate: right-left')
-    return inputForm	
+      return inputForm	
 
 
   def getAudioLanguage(self, table, lang):
