@@ -249,6 +249,7 @@ class iiTVInfo:
                     if self.settings.MegaVideoUnlimit == 'true':
                         linkVideo = STREAM_MEGALINK + tabID[0]
                         cw = cacaoweb.CacaoWeb()
+                        cw.stopApp()
                         cw.runApp()              
                     elif self.settings.MegaVideoUnlimit == 'false':
                         mega = megavideo
@@ -256,16 +257,17 @@ class iiTVInfo:
                 elif tabID[1] == 'videobb':
                     linkVideo = STREAM_OBBLINK + tabID[0]
                     cw = cacaoweb.CacaoWeb()
+                    cw.stopApp()
                     cw.runApp()                     
                     
                 if linkVideo.startswith('http://'):
                     self.LOAD_AND_PLAY_VIDEO(linkVideo)
-                    if tabID[1] == 'megavideo' and self.settings.MegaVideoUnlimit == 'true':
-                        cw = cacaoweb.CacaoWeb()
-                        cw.stopApp()
-                    if tabID[1] == 'videobb':
-                        cw = cacaoweb.CacaoWeb()
-                        cw.stopApp()
+                    #if tabID[1] == 'megavideo' and self.settings.MegaVideoUnlimit == 'true':
+                    #    cw = cacaoweb.CacaoWeb()
+                    #    cw.stopApp()
+                    #if tabID[1] == 'videobb':
+                    #    cw = cacaoweb.CacaoWeb()
+                    #    cw.stopApp()
             else:
                 d = xbmcgui.Dialog()
                 d.ok('Brak linku MegaVideo.', 'iiTV.info - tymczasowo wyczerpałeś limit ilości uruchamianych seriali.', 'Zapraszamy za godzinę.')

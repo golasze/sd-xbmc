@@ -37,6 +37,15 @@ class Parser:
         #xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_NAME)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
+
+    def programyLink(self):
+        self.addLink('Jedynka', 'http://moje.polskieradio.pl/_img/kanaly/pr1.jpg', 'mms://stream.polskieradio.pl/program1_wma10')
+        self.addLink('Dwójka', 'http://moje.polskieradio.pl/_img/kanaly/pr2.jpg', 'mms://stream.polskieradio.pl/program2_wma10')
+        self.addLink('Trójka', 'http://moje.polskieradio.pl/_img/kanaly/pr3.jpg', 'mms://stream.polskieradio.pl/program3_wma10')
+        self.addLink('Czwórka', 'http://moje.polskieradio.pl/_img/kanaly/pr4.jpg', 'mms://stream.polskieradio.pl/program4_wma10')
+        self.addLink('Zagranica', 'http://moje.polskieradio.pl/_img/kanaly/pr5.jpg', 'mms://stream.polskieradio.pl/program5_wma10')
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
     
     def keyLink(self, key):
         url = channels_url + '&category=' + key

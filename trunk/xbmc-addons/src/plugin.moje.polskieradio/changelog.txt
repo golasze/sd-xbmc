@@ -1,2 +1,6 @@
 [B]0.0.1[/B]
 Initial release
+
+[B]0.0.2[/B]
+- added selection on catalogs
+- improved scripts
