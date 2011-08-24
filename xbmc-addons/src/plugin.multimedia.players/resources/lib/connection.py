@@ -5,11 +5,10 @@ import string
 import sys
 import re
 import os
-
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
-sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
-
 import pLog
+
+__scriptID__   = sys.modules[ "__main__" ].__scriptID__
+_ = sys.modules[ "__main__" ].__language__
 
 _log = pLog.pLog()
 

@@ -3,27 +3,27 @@ import xbmc, xbmcgui, subprocess, os, time, sys, urllib, re
 import xbmcplugin, xbmcaddon
 #import switcher
 
-# Shared resources
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
-sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
-
   
 __scriptname__ = "Bluray and 3D players"
 __scriptID__      = "plugin.multimedia.players"
 __author__ = "Plesken"
 __url__ = "http://systems-design.pl"
 __credits__ = ""
-__version__ = "0.1.0"
 __addon__ = xbmcaddon.Addon(__scriptID__)
 
 __language__ = __addon__.getLocalizedString
 _ = sys.modules[ "__main__" ].__language__
+
+# Shared resources
+BASE_RESOURCE_PATH = os.path.join( __addon__.getAddonInfo('path'), "resources" )
+sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
 import settings, pLog, xbmc3Dplayer, xbmcBDplayer, file3Dsettings, connection
 
 _log = pLog.pLog()
 
 _log.info('Starting Player script') #@UndefinedVariable
+
 
 class StereoscopicInit:
   def __init__(self):
