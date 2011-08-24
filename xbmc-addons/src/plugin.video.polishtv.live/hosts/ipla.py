@@ -73,15 +73,22 @@ class IPLA:
             elv = vod.attrib
             title = elv['title']
             if 'Odcinek' in title:
-                tabTitle = title.split('Odcinek ')
+                tab = title.split(' - ')
+                part = tab[0]
+                if len(tab) > 1:
+                    part = tab[1]
+                tabTitle = part.split('Odcinek ')
                 if len(tabTitle) > 1:
                     num = tabTitle[1]
-                    if float(num) < 10:
-                        num = '000' + num
-                    elif float(num) < 100:
-                        num = '00' + num
-                    elif float(num) < 1000:
-                        num = '0' + num
+                    try :
+                        if float(num) < 10:
+                            num = '000' + num
+                        elif float(num) < 100:
+                            num = '00' + num
+                        elif float(num) < 1000:
+                            num = '0' + num
+                    except:
+                        num = '0'
             thumb = elv['thumbnail_big']
             links = vod.findall("srcreq")
             for link in links:
