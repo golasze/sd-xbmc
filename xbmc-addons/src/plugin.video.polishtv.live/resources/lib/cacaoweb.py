@@ -3,7 +3,7 @@ import subprocess
 import string, urllib
 import sys
 import re
-import os
+import os, stat
 import xbmcaddon
 
 scriptID = 'plugin.video.polishtv.live'
@@ -27,6 +27,8 @@ class CacaoWeb:
         try:
             appRun = ''
             if self.typeOS() == "linux":
+                log.info('odpalam')
+                os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux', stat.S_IRWXU)
                 appRun = '"' + os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux" &'
             elif self.typeOS() == "windows":
                 appRun = '"' + os.getenv("USERPROFILE") + '\\AppData\\Roaming\\XBMC\\addons\\plugin.video.polishtv.live\\bin\\cacaoweb.exe"'
@@ -62,17 +64,8 @@ class CacaoWeb:
             
     def typeOS(self):
         os = ''
-        try:
-            #if os.uname()[0] == "Linux":
-            if sys.platform.startswith("linux"):
-                os = 'linux'
-            #elif os.uname()[0] == "Windows":
-            elif sys.platform.startswith("win32"):
-                os = 'windows'
-        except:
-            pass
-        #    if platform.system() == 'Linux':
-        #        os = 'Linux'
-        #    elif platform.system() == 'Windows':
-        #        os = 'Windows'
+        if sys.platform.startswith("lin"):
+            os = 'linux'
+        elif sys.platform.startswith("win"):
+            os = 'windows'
         return os
