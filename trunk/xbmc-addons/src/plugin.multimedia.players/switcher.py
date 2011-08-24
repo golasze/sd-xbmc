@@ -144,23 +144,23 @@ class Switcher(xbmcgui.WindowXMLDialog):
     return lang
   
   
-
-extensionFiles = ('.mkv', '.wmv', '.avi', '.mp4', '.mp2', '.m2v', '.mpv', '.mpg', '.ts', '.m2ts', '.rmvb')
-extensionISO = ('.iso')
-extensionDVD = ('.ifo', '.vob')
-extensionBD = ('.bdmv')
-if filter(movie.lower().endswith, extensionFiles):
-  switcher = Switcher("switcherFiles.xml", __addon__.getAddonInfo('path'), "Default")
-  switcher.doModal()
-  del Switcher
-elif filter(movie.lower().endswith, extensionISO):
-  switcher = Switcher("switcherISO.xml", __addon__.getAddonInfo('path'), "Default")
-  switcher.doModal()
-  del Switcher  
-elif filter(movie.lower().endswith, extensionDVD):
-  self.play2D()
-elif filter(movie.lower().endswith, extensionBD):
-  sw = Switcher("switcherISO.xml", __addon__.getAddonInfo('path'), "Default")
-  sw.playBluray(2, movie)
+if os.path.isfile(movie):
+    extensionFiles = ('.mkv', '.wmv', '.avi', '.mp4', '.mp2', '.m2v', '.mpv', '.mpg', '.ts', '.m2ts', '.rmvb')
+    extensionISO = ('.iso')
+    extensionDVD = ('.ifo', '.vob')
+    extensionBD = ('.bdmv')
+    if filter(movie.lower().endswith, extensionFiles):
+        switcher = Switcher("switcherFiles.xml", __addon__.getAddonInfo('path'), "Default")
+        switcher.doModal()
+        del Switcher
+    elif filter(movie.lower().endswith, extensionISO):
+        switcher = Switcher("switcherISO.xml", __addon__.getAddonInfo('path'), "Default")
+        switcher.doModal()
+        del Switcher  
+    elif filter(movie.lower().endswith, extensionDVD):
+        self.play2D()
+    elif filter(movie.lower().endswith, extensionBD):
+        sw = Switcher("switcherISO.xml", __addon__.getAddonInfo('path'), "Default")
+        sw.playBluray(2, movie)
 else:
-  xbmc.executebuiltin('XBMC.ActivateWindow(' + movie + ')')
+    xbmc.executebuiltin('XBMC.ActivateWindow(' + movie + ')')
