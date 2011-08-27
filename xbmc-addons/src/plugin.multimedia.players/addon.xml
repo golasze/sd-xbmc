@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.multimedia.players" name="External Multimedia Players"
-	version="1.0.4" provider-name="SYSTEMS DESIGN - Plesken">
+	version="1.1.1" provider-name="SYSTEMS DESIGN - Plesken">
 	<requires>
 		<import addon="xbmc.python" version="1.0" />
 	</requires>
