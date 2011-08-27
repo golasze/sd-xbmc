@@ -38,7 +38,8 @@ class StereoscopicPlayer:
       #playerFile.close()
       #os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
       _log.info('Starting command: ' + appRun)
-      subprocess.call(appRun, shell=True)
+      #subprocess.call(appRun, shell=True)
+      os.system(appRun)
     except OSError, e:
       #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
       return 1
@@ -58,7 +59,8 @@ class StereoscopicPlayer:
       #playerFile.write(appRun)
       #playerFile.close()
       #os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
-      subprocess.call(appRun, shell=True)
+      #subprocess.call(appRun, shell=True)
+      os.system(appRun)
     except OSError, e:
       #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
       return 1
