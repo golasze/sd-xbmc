@@ -22,7 +22,7 @@ class StereoscopicPlayer:
     
   def player3D(self, appMovie, formStreamInput, formStreamOutput, movie, audio, subtitle, subSize, subCode, subColor, subParallax):
     try:
-      playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
+      #playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
       numAudio = str(self.getAudioLanguage(mediaTab, audio))
       numSubtitle = str(self.getSubtitleLanguage(mediaTab, subtitle))
       lircfile = os.getenv("HOME") + '/.lircrc'
@@ -33,12 +33,12 @@ class StereoscopicPlayer:
       if os.path.isfile(lircfile):
           lircOpt = '--lirc-config=' + lircfile
       appRun = appMovie + ' --input=' + formStreamInput + ' ' + movie + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f ' + opt + '  -n'
-      playerFile.write('#!/bin/sh\n')
-      playerFile.write(appRun)
-      playerFile.close()
-      os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
+      #playerFile.write('#!/bin/sh\n')
+      #playerFile.write(appRun)
+      #playerFile.close()
+      #os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
       _log.info('Starting command: ' + appRun)
-      #subprocess.call(appRun, shell=True)
+      subprocess.call(appRun, shell=True)
     except OSError, e:
       #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
       return 1
@@ -46,7 +46,7 @@ class StereoscopicPlayer:
 
   def player3D2files(self, appMovie, formStreamOutput, movieL, movieR, audio, subtitle, subSize, subCode, subColor, subParallax):
     try:
-      playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
+      #playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
       numAudio = str(self.getAudioLanguage(mediaTab, audio))
       numSubtitle = str(self.getSubtitleLanguage(mediaTab, subtitle))
       lircfile = os.getenv("HOME") + '/.lircrc'
@@ -54,11 +54,11 @@ class StereoscopicPlayer:
       if os.path.isfile(lircfile):
 	         lircOpt = '--lirc-config=' + lircfile      
       appRun = appMovie + ' --input=separate-left-right ' + movieL + ' ' + movieR + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f  -n'
-      playerFile.write('#!/bin/sh\n')
-      playerFile.write(appRun)
-      playerFile.close()
-      os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
-      #subprocess.call(appRun, shell=True)
+      #playerFile.write('#!/bin/sh\n')
+      #playerFile.write(appRun)
+      #playerFile.close()
+      #os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
+      subprocess.call(appRun, shell=True)
     except OSError, e:
       #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
       return 1

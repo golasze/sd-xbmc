@@ -1,11 +1,11 @@
 #!/bin/sh
 
 #general
-BINO=`grep "player_location" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"player_location\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
-MEDIAINFO=`grep "mediainfo_location" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"mediainfo_location\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
-VOUTLABEL=`grep "output_video" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"output_video\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'|tr ' ' '-'`
-AUDIO=`grep "audio_language" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"audio_language\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
-SUBTITLE=`grep "subtitle_language" ${HOME}/.xbmc/userdata/addon_data/plugin.3Dvideo.player/settings.xml |awk -F"<setting id=\"subtitle_language\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
+BINO=`grep "player_location" ${HOME}/.xbmc/userdata/addon_data/plugin.multimedia.players/settings.xml |awk -F"<setting id=\"player_location\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
+MEDIAINFO=`grep "mediainfo_location" ${HOME}/.xbmc/userdata/addon_data/plugin.multimedia.players/settings.xml |awk -F"<setting id=\"mediainfo_location\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
+VOUTLABEL=`grep "output_video" ${HOME}/.xbmc/userdata/addon_data/plugin.multimedia.players/settings.xml |awk -F"<setting id=\"output_video\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'|tr ' ' '-'`
+AUDIO=`grep "audio_language" ${HOME}/.xbmc/userdata/addon_data/plugin.multimedia.players/settings.xml |awk -F"<setting id=\"audio_language\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
+SUBTITLE=`grep "subtitle_language" ${HOME}/.xbmc/userdata/addon_data/plugin.multimedia.players/settings.xml |awk -F"<setting id=\"subtitle_language\" value=" '{print $2}'|awk -F"/>" '{print $1}'|awk -F"\"" '{print $2}'`
 SMBCONNECT=`echo "$1"|grep "smb"|wc -l`
 
 
@@ -117,8 +117,10 @@ elif [ ${SMBCONNECT} -eq 0 ]
     IN="$1"
 fi
 
+python tools/mediainfo.py
+
 #scan file
-${MEDIAINFO} "${IN}" > /tmp/_file3Dmediainfo_
+#${MEDIAINFO} -vo null -ao null -identify -frames 0 "${IN}" > /tmp/_file3Dmediainfo_
 
 #width & height for side by side & over/under
 width=`grep "Width" /tmp/_file3Dmediainfo_|head -1|awk -F":" '{print $2}'|awk -F"pixels" '{print $1}'|awk '{print $1$2$3}'`

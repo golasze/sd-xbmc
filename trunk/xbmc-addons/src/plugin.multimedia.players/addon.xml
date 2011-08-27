@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.multimedia.players" name="External Multimedia Players"
-	version="1.1.1" provider-name="SYSTEMS DESIGN - Plesken">
+	version="1.1.2" provider-name="SYSTEMS DESIGN - Plesken">
 	<requires>
 		<import addon="xbmc.python" version="1.0" />
 	</requires>
@@ -10,6 +10,6 @@
 	<extension point="xbmc.addon.metadata">
 		<summary>External Multimedia Players</summary>
 		<description>These players you can use to play 3D movies from NET and bluray from iso files, or unencrypted disc</description>
-		<platform>all</platform>
+		<platform>linux</platform>
 	</extension>
 </addon>
