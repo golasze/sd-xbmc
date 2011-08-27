@@ -1,3 +1,6 @@
+Version 1.0.4
+- improved few files
+
 Version 1.0.1
 - rewrite scripts to use language (audio, subtitles) from xbmc settings
 - add parsing to display 2 mkv (left, right) files from http connection
