@@ -98,7 +98,7 @@ class Switcher(xbmcgui.WindowXMLDialog):
         else:
             self.player.playStereo(self.playerLocation, check, pathMovie, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax)
             #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
-            self.conn.exit(movie)
+        self.conn.exit(movie)
         self.close()
     
 
