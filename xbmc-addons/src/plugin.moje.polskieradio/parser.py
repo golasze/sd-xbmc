@@ -39,11 +39,11 @@ class Parser:
 
 
     def programyLink(self):
-        self.addLink('Jedynka', 'http://moje.polskieradio.pl/_img/kanaly/pr1.jpg', 'mms://stream.polskieradio.pl/program1_wma10')
-        self.addLink('Dwójka', 'http://moje.polskieradio.pl/_img/kanaly/pr2.jpg', 'mms://stream.polskieradio.pl/program2_wma10')
-        self.addLink('Trójka', 'http://moje.polskieradio.pl/_img/kanaly/pr3.jpg', 'mms://stream.polskieradio.pl/program3_wma10')
-        self.addLink('Czwórka', 'http://moje.polskieradio.pl/_img/kanaly/pr4.jpg', 'mms://stream.polskieradio.pl/program4_wma10')
-        self.addLink('Zagranica', 'http://moje.polskieradio.pl/_img/kanaly/pr5.jpg', 'mms://stream.polskieradio.pl/program5_wma10')
+        self.addLink('Jedynka', 'http://moje.polskieradio.pl/_img/kanaly/pr1.jpg', 'mms://stream.polskieradio.pl/program1_wma10', '', '')
+        self.addLink('Dwójka', 'http://moje.polskieradio.pl/_img/kanaly/pr2.jpg', 'mms://stream.polskieradio.pl/program2_wma10', '', '')
+        self.addLink('Trójka', 'http://moje.polskieradio.pl/_img/kanaly/pr3.jpg', 'mms://stream.polskieradio.pl/program3_wma10', '', '')
+        self.addLink('Czwórka', 'http://moje.polskieradio.pl/_img/kanaly/pr4.jpg', 'mms://stream.polskieradio.pl/program4_wma10', '', '')
+        self.addLink('Zagranica', 'http://moje.polskieradio.pl/_img/kanaly/pr5.jpg', 'mms://stream.polskieradio.pl/program5_wma10', '', '')
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     
@@ -67,6 +67,7 @@ class Parser:
             desc = channelTab[i]["description"]
             image = channelTab[i]["image"]
             stream = channelTab[i]["streaming_uri"]
+            category = channelTab[i]["category"]
             #pageUrl = channelTab[i]["link"]
             #rating = channelTab[i]["rating"]
             playPath = channelTab[i]["streaming_channel"]
@@ -78,19 +79,26 @@ class Parser:
                 rtmp += ' playpath=' + playPath
                 rtmp += ' swfVfy=true'
                 rtmp += ' live=true'
-                self.addLink(title, image, rtmp)
+                self.addLink(title, image, rtmp, desc, category)
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))        
                        
               
-    def addLink(self, title, image, url):
+    def addLink(self, title, image, url, desc, category):
         u = url
         #xbmc.output(u)
         if image == '':
             thumbnailImage="DefaultVideo.png"
         liz=xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage=image)
         liz.setProperty("IsPlayable", "true")
-        liz.setInfo( type="Music", infoLabels={ "Title": title } )
+        liz.setProperty("IsLive", "true")
+        liz.setProperty('Album_Description', desc)
+        liz.setInfo( type="Music", infoLabels={ 
+                                               "Title": title,
+                                               "Album": 'Moje Polskie Radio',
+                                               "Artist": "Radio",
+                                               "Genre": category,
+                                               "Comment": desc } )
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False) 
 
 
