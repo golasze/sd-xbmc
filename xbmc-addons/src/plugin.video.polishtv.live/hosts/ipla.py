@@ -90,6 +90,9 @@ class IPLA:
                     except:
                         num = '0'
             thumb = elv['thumbnail_big']
+            desc = elv['descr']
+            rating = elv['vote']
+            duration = elv['dur']
             links = vod.findall("srcreq")
             for link in links:
                 ell = link.attrib
@@ -110,6 +113,8 @@ class IPLA:
                         strTab.append(num)
                     else:
                         strTab.append(title)
+                    strTab.append(desc)
+                    strTab.append(duration)
                     valTab.append(strTab)
                     strTab = []
         valTab.sort(key = lambda x: x[6], reverse = True)
@@ -136,7 +141,9 @@ class IPLA:
             title = value[0]
             url = value[1]
             thumb = value[2]
-            self.addLink(title, thumb, url)
+            desc = value[8]
+            duration = value[9]
+            self.addLink(title, thumb, url, desc, self.getMovieTime(duration))
         xbmcplugin.endOfDirectory(int(sys.argv[1])) 
         
 
@@ -223,6 +230,27 @@ class IPLA:
             self.add('ipla', value[0], 'None', 'None', 'None', value[1], True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
+
+    def getMovieTime(self, seconds):
+        h = '00'
+        m = '00'
+        s = '00'
+        hour = int(int(seconds) / 3600)
+        h = str(int(hour))
+        if len(h) == 1:
+            h = '0' + h
+        minute = int((int(seconds) - int(hour * 3600)) / 60)
+        m = str(minute)
+        if len(m) == 1:
+            m = '0' + m
+        sec = int(int(seconds) - int(hour * 3600) - int(minute * 60))
+        s = str(sec)
+        if len(s) == 1:
+            s = '0' + s
+        time = h + ':' + m + ':' + s
+        return time
+
+
         
     def add(self, service, name, category, title, iconimage, url, folder = True, isPlayable = True):
         u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&url=" + urllib.quote_plus(url)
@@ -242,12 +270,16 @@ class IPLA:
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 
 
-    def addLink(self, title, iconimage, url):
+    def addLink(self, title, iconimage, url, desc, duration):
         u= url
         #log.info(str(u))
         liz=xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setProperty("IsPlayable", "true")
-        liz.setInfo( type="Video", infoLabels={ "Title": title } )
+        liz.setInfo( type="Video", infoLabels={ "Title": title,
+                                               "Plot": desc,
+                                               "Genre": "Film/Serial",
+                                               "PlotOutline": desc,
+                                               "Duration": duration } )
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         
                
