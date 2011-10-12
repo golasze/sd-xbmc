@@ -6,11 +6,11 @@
 	<setting id="player_location" type="file" label="55001" default="bino"/>
 	<setting id="mediainfo_location" type="file" label="55002" default="mplayer"/>
 	<setting id="output_video" type="labelenum" label="55003" values="HDMI pack|2D left|2D right|2D equalizer|3D equalizer|3D OpenGL|3D Over/Under|3D HALF Over/Under|3D Side-By-Side|3D HALF Side-By-Side|3D rows|3D columns|3D checkerboard|Red-Cyan mono|Red-Cyan half color|Red-Cyan color|Red-Cyan dubois|Green-Magenta mono|Green-Magenta half color|Green-Magenta color|Green-Magenta dubois|Amber-Blue mono|Amber-Blue half color|Amber-Blue color|Amber-Blue dubois|Red-Green mono|Red-Blue mono" default="3D rows" />
-	<setting type="sep"/>
+	<!--<setting type="sep"/>-->
 	<setting type="lsep" label="55009"/>
 	<setting id="chooser" type="bool" label="55010" default="true" />
-	<setting id="autoplay_stereo" type="bool" label="55008" default="false" />
-	<setting type="sep"/>
+	<!--<setting id="autoplay_stereo" type="bool" label="55008" default="false" />-->
+	<!--<setting type="sep"/>-->
     </category>
     <!--<category label="55011">
 	<setting type="sep"/>
@@ -30,6 +30,6 @@
 	<setting id="subtitle_coding" type="labelenum" label="55017" values="UTF-8|UTF-16|ISO-8859-1|ISO-8859-2||ISO-8859-3|ISO-8859-4|ISO-8859-5|ISO-8859-6|ISO-8859-7|CP1250|CP1251|CP1252|CP1253|CP1254|CP1255|CP1256|CP1257|CP1258" default="UTF-8"/>
 	<setting id="subtitle_color" type="labelenum" label="55018" values="FFFFFF|02FF01|FFE401" default="FFFFFF"/>
 	<setting id="subtitle_parallax" type="labelenum" label="55021" values="-1|-0.9|-0.8|-0.7|-0.7|-0.6|-0.5|-0.4|-0.3|-0.2|-0.1|0|0.1|0.2|0.3|0.4|0.5|0.6|0.7|0.8|0.9|1" default="0"/>
-	<setting type="sep"/>
+	<!--<setting type="sep"/>-->
     </category>
 </settings>

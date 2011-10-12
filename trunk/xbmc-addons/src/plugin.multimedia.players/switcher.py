@@ -79,26 +79,39 @@ class Switcher(xbmcgui.WindowXMLDialog):
   
     def play2D(self):
         pathMovie = self.conn.connection(movie)
+        xbmcPlayer = xbmc.Player()
         if os.path.isfile(pathMovie):
-            xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
+            #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
+            xbmcPlayer.play(movie)
         elif pathMovie != '':
-            xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
+            #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
+            xbmcPlayer.play(movie)
         self.conn.exit(movie)
         self.close()
     
     
     def play3D(self):
+        is3DFile = open('/tmp/is3D', 'w')
+        is3DFile.write('true')
+        is3DFile.close()
         pathMovie = self.conn.connection(movie)
         check = self.player.checkFile(self.mediainfoLocation, pathMovie)
-        _log.info('Input video: ' + check)
+        #_log.info('Input video: ' + check)
+        xbmcPlayer = xbmc.Player()
         if check == '':
             videoInput = self.inputSettings()
             self.player.playStereoUnknown(self.playerLocation, pathMovie, videoInput, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax)
             #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
+            xbmcPlayer.play(pathMovie)
         else:
             self.player.playStereo(self.playerLocation, check, pathMovie, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax)
             #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
+            xbmcPlayer.play(pathMovie)
         self.conn.exit(movie)
+        try:
+            os.remove('/tmp/is3D')
+        except:
+            pass
         self.close()
     
 
@@ -144,11 +157,17 @@ class Switcher(xbmcgui.WindowXMLDialog):
                     lang = ll.lower()
         return lang
   
+
+try:
+    os.remove('/tmp/is3D')
+except:
+    pass
   
 extensionFiles = ('.mkv', '.wmv', '.avi', '.mp4', '.mp2', '.m2v', '.mpv', '.mpg', '.ts', '.m2ts', '.rmvb')
 extensionISO = ('.iso')
 extensionDVD = ('.ifo', '.vob')
 extensionBD = ('.bdmv')
+
 if filter(movie.lower().endswith, extensionFiles):
     _log.info('Odpalam')
     switcher = Switcher("switcherFiles.xml", __addon__.getAddonInfo('path'), "Default")
