@@ -20,7 +20,7 @@
 </addon>
 
 <addon id="plugin.multimedia.players" name="External Multimedia Players"
-	version="1.0.5" provider-name="SYSTEMS DESIGN - Plesken">
+	version="1.0.4" provider-name="SYSTEMS DESIGN - Plesken">
 	<requires>
 		<import addon="xbmc.python" version="1.0" />
 	</requires>
