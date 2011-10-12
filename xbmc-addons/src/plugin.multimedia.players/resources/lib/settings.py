@@ -81,86 +81,40 @@ class StereoscopicSettings:
     
   
   def initSettings(self):
-    try:
-      if self.autoPlay == 'true' and self.switcher == 'false':
-	#_log.info('Run: ' + os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/playercorefactory.tmp')
-	file1 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/playercorefactory.tmp'
-	file2 = '/usr/share/xbmc/addons/plugin.multimedia.players/playercorefactory.tmp'
-	keymap = os.getenv("HOME") + '/.xbmc/userdata/keymaps/keymap.xml'
-	remote = os.getenv("HOME") + '/.xbmc/userdata/keymaps/remote.xml'
-	if os.path.isfile(keymap):
-	  os.remove(keymap)
-	if os.path.isfile(remote):
-	  os.remove(remote)
-	if os.path.isfile(file1):
-	  tmpfile = open(file1, 'r').read()
-	  outtext = tmpfile.replace('%arg0%', os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer')
-	  os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
-	  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/playercorefactory.xml', 'w')
-	  xmlfile.write(outtext)
-	  xmlfile.close()
-	elif os.path.isfile(file2):
-	  tmpfile = open(file2, 'r').read()
-	  outtext = tmpfile.replace('%arg0%', os.getenv("HOME") + '/usr/share/xbmc/addons/plugin.multimedia.players/xbmc3Dplayer')
-	  os.chmod('/usr/share/xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
-	  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/playercorefactory.xml', 'w')
-	  xmlfile.write(outtext)
-	  xmlfile.close()	  
-	self.message(_(50003))
-	#xbmc.executebuiltin('Reboot')
-      elif self.autoPlay == 'false' and self.switcher == 'false':
-	file1 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/remote.tmp'
-	file2 = '/usr/share/xbmc/addons/plugin.multimedia.players/remote.tmp'
-	os.remove(os.getenv("HOME") + '/.xbmc/userdata/playercorefactory.xml')
-	os.remove(os.getenv("HOME") + '/.xbmc/userdata/keymaps/keymap.xml')
-	if os.path.isfile(file1) or os.path.isfile(file2):
-	  tmpfile = ''
-	  if os.path.isfile(file1):
-	    tmpfile = open(file1, 'r').read()
-	  elif os.path.isfile(file2):
-	    tmpfile = open(file2, 'r').read()
-	  outtext = tmpfile.replace('%arg1%', 'Play')
-	  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/keymaps/remote.xml', 'w')
-	  xmlfile.write(outtext)
-	  xmlfile.close()
-	self.message(_(50004))
-      elif self.autoPlay == 'false' and self.switcher == 'true':
-	player = os.getenv("HOME") + '/.xbmc/userdata/playercorefactory.xml'
-	if os.path.isfile(player):
-	  os.remove(player)
-	file1 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/keymap.tmp'
-	file2 = '/usr/share/xbmc/addons/plugin.multimedia.players/keymap.tmp'
-	file3 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/remote.tmp'
-	file4 = '/usr/share/xbmc/addons/plugin.multimedia.players/remote.tmp'
-	if os.path.isfile(file1):
-	  tmpfile = open(file1, 'r').read()
-	  outtext = tmpfile.replace('%arg0%', os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/switcher.py')
-	  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/keymaps/keymap.xml', 'w')
-	  xmlfile.write(outtext)
-	  xmlfile.close()
-	elif os.path.isfile(file2):
-	  tmpfile = open(file2, 'r').read()
-	  outtext = tmpfile.replace('%arg0%', '/usr/share/xbmc/addons/plugin.multimedia.players/switcher.py')
-	  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/keymaps/keymap.xml', 'w')
-	  xmlfile.write(outtext)
-	  xmlfile.close()
-	if os.path.isfile(file3) or os.path.isfile(file4):
-	  outtext = ''
-	  if os.path.isfile(file3):
-	    tmpfile = open(file3, 'r').read()
-	    outtext = tmpfile.replace('%arg1%', 'XBMC.RunScript(' + os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/switcher.py)')
-	  elif os.path.isfile(file4):
-	    tmpfile = open(file4, 'r').read()
-	    outtext = tmpfile.replace('%arg1%', 'XBMC.RunScript(/usr/share/xbmc/addons/plugin.multimedia.players/switcher.py)')
-	  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/keymaps/remote.xml', 'w')
-	  xmlfile.write(outtext)
-	  xmlfile.close()	  
-	self.message(_(50007))
-      elif self.autoPlay == 'true' and self.switcher == 'true':
-	self.message(_(50008))
-    except OSError, e:
-      self.message(_(50005))
-      return 1
+      try:
+          if self.switcher == 'true':
+              file1 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/playercorefactory.tmp'
+              file2 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/keymap.tmp'
+              file3 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/remote.tmp'
+              if os.path.isfile(file1):
+                  tmpfile = open(file1, 'r').read()
+                  outtext = tmpfile.replace('%arg0%', os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer')
+                  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/playercorefactory.xml', 'w')
+                  xmlfile.write(outtext)
+                  xmlfile.close()
+              if os.path.isfile(file2):
+                  tmpfile = open(file2, 'r').read()
+                  outtext = tmpfile.replace('%arg0%', os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/switcher.py')
+                  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/keymaps/keymap.xml', 'w')
+                  xmlfile.write(outtext)
+                  xmlfile.close()
+              if os.path.isfile(file3):
+                  tmpfile = open(file3, 'r').read()
+                  outtext = tmpfile.replace('%arg1%', 'XBMC.RunScript(' + os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/switcher.py)')
+                  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/keymaps/remote.xml', 'w')
+                  xmlfile.write(outtext)
+                  xmlfile.close()
+              self.message(_(50007))
+          elif self.switcher == 'false':
+              player = os.getenv("HOME") + '/.xbmc/userdata/playercorefactory.xml'
+              keymap = os.getenv("HOME") + '/.xbmc/userdata/keymaps/keymap.xml'
+              remote = os.getenv("HOME") + '/.xbmc/userdata/keymaps/remote.xml'
+              os.remove(player)
+              os.remove(keymap)
+              os.remove(remote)
+              self.message(_(50004))
+      except:
+          pass
       
       
   def message(self, messageText):
