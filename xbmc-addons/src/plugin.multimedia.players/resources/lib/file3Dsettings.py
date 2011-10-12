@@ -26,15 +26,17 @@ class File3DSettings:
   
   
   def playUnknown(self, videoInput, movie):
-    Player = xbmc3Dplayer.StereoscopicPlayer()
-    conn = connection.Connection()
-    setting = settings.StereoscopicSettings()
-    #check = Player.checkFile(self.settings.mediainfoLocation, movie)
-    check = Player.checkFile(setting.mediainfoLocation, movie)
-    pathMovie = conn.connection(movie)
-    #Player.playStereoUnknown(self.settings.playerLocation, pathMovie, videoInput, self.settings.outputVideo, self.settings.audioLang. self.settings.subtitleLang, self.settings.subtitleSize, self.settings.subtitleCoding, self.settings.subtitleColor)
-    Player.playStereoUnknown(setting.playerLocation, pathMovie, videoInput, setting.outputVideo, setting.audioLang, setting.subtitleLang, setting.subtitleSize, setting.subtitleCoding, setting.subtitleColor, setting.subtitleParallax)
-    conn.exit(movie)
+      xbmcPlayer = xbmc.Player()
+      Player = xbmc3Dplayer.StereoscopicPlayer()
+      conn = connection.Connection()
+      setting = settings.StereoscopicSettings()
+      #check = Player.checkFile(self.settings.mediainfoLocation, movie)
+      check = Player.checkFile(setting.mediainfoLocation, movie)
+      pathMovie = conn.connection(movie)
+      #Player.playStereoUnknown(self.settings.playerLocation, pathMovie, videoInput, self.settings.outputVideo, self.settings.audioLang. self.settings.subtitleLang, self.settings.subtitleSize, self.settings.subtitleCoding, self.settings.subtitleColor)
+      Player.playStereoUnknown(setting.playerLocation, pathMovie, videoInput, setting.outputVideo, setting.audioLang, setting.subtitleLang, setting.subtitleSize, setting.subtitleCoding, setting.subtitleColor, setting.subtitleParallax)
+      xbmcPlayer.play(pathMovie)
+      conn.exit(movie)
 
 
  

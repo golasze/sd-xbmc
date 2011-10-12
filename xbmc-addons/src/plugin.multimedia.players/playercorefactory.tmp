@@ -1,14 +1,14 @@
 <playercorefactory>
  <players>
-   <player name="3Dbino" type="ExternalPlayer" audio="false" video="true">
+   <player name="3Dbino" type="ExternalPlayer" audio="true" video="true">
      <filename>%arg0%</filename>
      <args>"{1}"</args>
-     <hidexbmc>false</hidexbmc>
+     <hidexbmc>true</hidexbmc>
      <hideconsole>false</hideconsole>
      <warpcursor>none</warpcursor>
    </player>
  </players>
  <rules action="prepend">
-   <rule filetypes="mkv|wmv" filename=".*3D.*|.*3d.*" player="3Dbino"/>
+   <rule stereoscopic="true" player="3Dbino"/>
  </rules>
 </playercorefactory>

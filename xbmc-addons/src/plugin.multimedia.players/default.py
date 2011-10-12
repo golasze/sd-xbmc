@@ -74,29 +74,45 @@ class StereoscopicInit:
 
 
   def play3DMovie(self, appMovie, appMediaInfo, fileLocation, outVideoFormat, audio, subtitle, subSize, subCode, subColor, subParallax):
-    try:
-      if fileLocation != '':
-	Player = xbmc3Dplayer.StereoscopicPlayer()
-	conn = connection.Connection()
-	pathMovie = conn.connection(fileLocation)
-	check = Player.checkFile(appMediaInfo, pathMovie)
-	_log.info('Input video: ' + check)
-	if check == '':
-	   Set = file3Dsettings.File3DSettings()
-	   videoInput = Set.inputSettings()
-	   if videoInput != '':
-	     Set.playUnknown(videoInput, pathMovie)
-	else:
-	    Player.playStereo(appMovie, check, pathMovie, outVideoFormat, audio, subtitle, subSize, subCode, subColor, subParallax)
-	conn.exit(fileLocation)
-    except IOError:
-      pass
+      try:
+          if fileLocation != '':
+              is3DFile = open('/tmp/is3D', 'w')
+              is3DFile.write('true')
+              is3DFile.close()
+              xbmcPlayer = xbmc.Player()
+              Player = xbmc3Dplayer.StereoscopicPlayer()
+              conn = connection.Connection()
+              pathMovie = conn.connection(fileLocation)
+              check = Player.checkFile(appMediaInfo, pathMovie)
+              _log.info('Input video: ' + check)
+              if check == '':
+                  Set = file3Dsettings.File3DSettings()
+                  videoInput = Set.inputSettings()
+                  if videoInput != '':
+                      Set.playUnknown(videoInput, pathMovie)
+              else:
+                  Player.playStereo(appMovie, check, pathMovie, outVideoFormat, audio, subtitle, subSize, subCode, subColor, subParallax)
+                  xbmcPlayer.play(pathMovie)
+                  conn.exit(fileLocation)
+              try:
+                  os.remove('/tmp/is3D')
+              except:
+                  pass
+      except IOError:
+          pass
        
   
   
   def play3DUnknown(self):
-    Set = file3Dsettings.File3DSettings()
-    Set.browseUnknown()
+      is3DFile = open('/tmp/is3D', 'w')
+      is3DFile.write('true')
+      is3DFile.close()
+      Set = file3Dsettings.File3DSettings()
+      Set.browseUnknown()
+      try:
+          os.remove('/tmp/is3D')
+      except:
+          pass
   
   
   
@@ -152,6 +168,11 @@ class StereoscopicInit:
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u,listitem=liz, isFolder= not autoplay)
     
 
+
+try:
+    os.remove('/tmp/is3D')
+except:
+    pass
 
 mydisplay = StereoscopicInit()
 mydisplay.handleListing()
