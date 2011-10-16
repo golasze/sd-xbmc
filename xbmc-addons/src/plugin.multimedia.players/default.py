@@ -75,11 +75,14 @@ class StereoscopicInit:
 
   def play3DMovie(self, appMovie, appMediaInfo, fileLocation, outVideoFormat, audio, subtitle, subSize, subCode, subColor, subParallax):
       try:
+          optExp3D = False
           if fileLocation != '':
-              is3DFile = open('/tmp/is3D', 'w')
-              is3DFile.write('true')
-              is3DFile.close()
-              xbmcPlayer = xbmc.Player()
+              if self.settings.switcherExp == 'true':
+                  is3DFile = open('/tmp/is3D', 'w')
+                  is3DFile.write('true')
+                  is3DFile.close()
+                  xbmcPlayer = xbmc.Player()
+                  optExp3D = True
               Player = xbmc3Dplayer.StereoscopicPlayer()
               conn = connection.Connection()
               pathMovie = conn.connection(fileLocation)
@@ -91,13 +94,14 @@ class StereoscopicInit:
                   if videoInput != '':
                       Set.playUnknown(videoInput, pathMovie)
               else:
-                  Player.playStereo(appMovie, check, pathMovie, outVideoFormat, audio, subtitle, subSize, subCode, subColor, subParallax)
-                  xbmcPlayer.play(pathMovie)
-                  conn.exit(fileLocation)
-              try:
-                  os.remove('/tmp/is3D')
-              except:
-                  pass
+                  Player.playStereo(appMovie, check, pathMovie, outVideoFormat, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
+                  if self.settings.switcherExp == 'true':
+                      xbmcPlayer.play(pathMovie)
+                      try:
+                          os.remove('/tmp/is3D')
+                      except:
+                          pass
+              conn.exit(fileLocation)
       except IOError:
           pass
        
@@ -167,7 +171,6 @@ class StereoscopicInit:
     _log.info(name)
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u,listitem=liz, isFolder= not autoplay)
     
-
 
 try:
     os.remove('/tmp/is3D')

@@ -38,6 +38,8 @@ class Switcher(xbmcgui.WindowXMLDialog):
         self.subtitleCoding = addon.getSetting('subtitle_coding')
         self.subtitleColor = addon.getSetting('subtitle_color')
         self.subtitleParallax = addon.getSetting('subtitle_parallax')
+        self.switcher = addon.getSetting('chooser')
+        self.switcherExp = addon.getSetting('chooser_exp')
         self.player = xbmc3Dplayer.StereoscopicPlayer()
         self.conn = connection.Connection()
 
@@ -91,27 +93,34 @@ class Switcher(xbmcgui.WindowXMLDialog):
     
     
     def play3D(self):
-        is3DFile = open('/tmp/is3D', 'w')
-        is3DFile.write('true')
-        is3DFile.close()
+        optExp3D = False
+        if self.switcherExp == 'true':
+            is3DFile = open('/tmp/is3D', 'w')
+            is3DFile.write('true')
+            is3DFile.close()
+            optExp3D = True
         pathMovie = self.conn.connection(movie)
         check = self.player.checkFile(self.mediainfoLocation, pathMovie)
         #_log.info('Input video: ' + check)
-        xbmcPlayer = xbmc.Player()
+        if self.switcherExp == 'true':
+            xbmcPlayer = xbmc.Player()
         if check == '':
             videoInput = self.inputSettings()
-            self.player.playStereoUnknown(self.playerLocation, pathMovie, videoInput, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax)
-            #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
-            xbmcPlayer.play(pathMovie)
+            self.player.playStereoUnknown(self.playerLocation, pathMovie, videoInput, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax, optExp3D)
+            if self.switcherExp == 'true':
+                #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
+                xbmcPlayer.play(pathMovie)
         else:
-            self.player.playStereo(self.playerLocation, check, pathMovie, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax)
-            #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
-            xbmcPlayer.play(pathMovie)
+            self.player.playStereo(self.playerLocation, check, pathMovie, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax, optExp3D)
+            if self.switcherExp == 'true':
+                #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
+                xbmcPlayer.play(pathMovie)
         self.conn.exit(movie)
-        try:
-            os.remove('/tmp/is3D')
-        except:
-            pass
+        if self.switcherExp == 'true':
+            try:
+                os.remove('/tmp/is3D')
+            except:
+                pass
         self.close()
     
 
