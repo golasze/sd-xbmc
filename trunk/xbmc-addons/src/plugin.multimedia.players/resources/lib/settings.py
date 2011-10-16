@@ -32,6 +32,7 @@ class StereoscopicSettings:
     self.subtitleParallax = addon.getSetting('subtitle_parallax')
     self.autoPlay = addon.getSetting('autoplay_stereo')
     self.switcher = addon.getSetting('chooser')
+    self.switcherExp = addon.getSetting('chooser_exp')
 
 
   def getParam(self, params, name):
@@ -82,7 +83,26 @@ class StereoscopicSettings:
   
   def initSettings(self):
       try:
-          if self.switcher == 'true':
+          if self.switcher == 'true' and self.switcherExp == 'false':
+              file1 = os.getenv("HOME") + '/.xbmc/userdata/playercorefactory.xml'
+              file2 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/keymap.tmp'
+              file3 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/remote.tmp'
+              if os.path.isfile(file1):
+                  os.remove(file1)
+              if os.path.isfile(file2):
+                  tmpfile = open(file2, 'r').read()
+                  outtext = tmpfile.replace('%arg0%', os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/switcher.py')
+                  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/keymaps/keymap.xml', 'w')
+                  xmlfile.write(outtext)
+                  xmlfile.close()
+              if os.path.isfile(file3):
+                  tmpfile = open(file3, 'r').read()
+                  outtext = tmpfile.replace('%arg1%', 'XBMC.RunScript(' + os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/switcher.py)')
+                  xmlfile = open(os.getenv("HOME") + '/.xbmc/userdata/keymaps/remote.xml', 'w')
+                  xmlfile.write(outtext)
+                  xmlfile.close()
+              self.message(_(50007))
+          elif self.switcher == 'false' and self.switcherExp == 'true':
               file1 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/playercorefactory.tmp'
               file2 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/keymap.tmp'
               file3 = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/remote.tmp'
@@ -105,7 +125,7 @@ class StereoscopicSettings:
                   xmlfile.write(outtext)
                   xmlfile.close()
               self.message(_(50007))
-          elif self.switcher == 'false':
+          elif self.switcher == 'false' and self.switcherExp == 'false':
               player = os.getenv("HOME") + '/.xbmc/userdata/playercorefactory.xml'
               keymap = os.getenv("HOME") + '/.xbmc/userdata/keymaps/keymap.xml'
               remote = os.getenv("HOME") + '/.xbmc/userdata/keymaps/remote.xml'
@@ -113,6 +133,8 @@ class StereoscopicSettings:
               os.remove(keymap)
               os.remove(remote)
               self.message(_(50004))
+          elif self.switcher == 'true' and self.switcherExp == 'true':
+              self.message(_(50008))
       except:
           pass
       

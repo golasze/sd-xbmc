@@ -6,6 +6,7 @@ import string, urllib
 import sys
 import re
 import os, stat
+import xbmc
 import pLog, connection
 
 __scriptID__   = sys.modules[ "__main__" ].__scriptID__
@@ -20,9 +21,10 @@ class StereoscopicPlayer:
     self.conn = connection.Connection()
     
     
-  def player3D(self, appMovie, formStreamInput, formStreamOutput, movie, audio, subtitle, subSize, subCode, subColor, subParallax):
+  def player3D(self, appMovie, formStreamInput, formStreamOutput, movie, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D):
     try:
-      playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
+      if optExp3D == True:
+          playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
       numAudio = str(self.getAudioLanguage(mediaTab, audio))
       numSubtitle = str(self.getSubtitleLanguage(mediaTab, subtitle))
       lircfile = os.getenv("HOME") + '/.lircrc'
@@ -36,20 +38,27 @@ class StereoscopicPlayer:
       #Jebie sie cos i bez "strace" nie dziala
       #appRun = appMovie + ' --input=' + formStreamInput + ' ' + movie + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f ' + opt + ' -n|/usr/bin/strace -o /dev/null -p `/bin/ps ax|/bin/grep -v "' + appMovie + '"|/bin/grep -v grep|/bin/awk \'{print $1}\'`'
       #playerFile.write('#!/bin/sh\n')
-      playerFile.write(appRun)
-      playerFile.close()
-      os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
+      if optExp3D == True:
+          playerFile.write(appRun)
+          playerFile.close()
+          os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
+      elif optExp3D == False:
+          #subprocess.call(appRun, shell=True)
+          xbmc.executebuiltin('LIRC.Stop')
+          xbmc.executebuiltin('Hide')
+          os.system(appRun)
+          xbmc.executebuiltin('Restore')
+          xbmc.executebuiltin('LIRC.Start')
       _log.info('Starting command: ' + appRun)
-      #subprocess.call(appRun, shell=True)
-      #os.system(appRun)
     except OSError, e:
       #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
       return 1
 
 
-  def player3D2files(self, appMovie, formStreamOutput, movieL, movieR, audio, subtitle, subSize, subCode, subColor, subParallax):
+  def player3D2files(self, appMovie, formStreamOutput, movieL, movieR, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D):
     try:
-      playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
+      if optExp3D == True:
+          playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
       numAudio = str(self.getAudioLanguage(mediaTab, audio))
       numSubtitle = str(self.getSubtitleLanguage(mediaTab, subtitle))
       lircfile = os.getenv("HOME") + '/.lircrc'
@@ -60,11 +69,18 @@ class StereoscopicPlayer:
       #Jebie się bez "strace" 
       #appRun = appMovie + ' --input=separate-left-right ' + movieL + ' ' + movieR + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f -n|/usr/bin/strace -o /dev/null -p `/bin/ps ax|/bin/grep -v "' + appMovie + '"|/bin/grep -v grep|/bin/awk \'{print $1}\'`'
       #playerFile.write('#!/bin/sh\n')
-      playerFile.write(appRun)    
-      playerFile.close()
-      os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
-      #subprocess.call(appRun, shell=True)
-      #os.system(appRun)
+      if optExp3D == True:
+          playerFile.write(appRun)    
+          playerFile.close()
+          os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
+      elif optExp3D == False:
+          #subprocess.call(appRun, shell=True)
+          xbmc.executebuiltin('LIRC.Stop')
+          xbmc.executebuiltin('Hide')
+          os.system(appRun)
+          xbmc.executebuiltin('Restore')
+          xbmc.executebuiltin('LIRC.Start')
+      _log.info('Starting command: ' + appRun)
     except OSError, e:
       #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
       return 1
@@ -386,7 +402,7 @@ class StereoscopicPlayer:
 
 
 
-  def playStereo(self, appMovie, formVideo, pathMovie, outputVideo, audio, subtitle, subSize, subCode, subColor, subParallax):
+  def playStereo(self, appMovie, formVideo, pathMovie, outputVideo, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D):
     outputForm = self.getOutputFormat(outputVideo)
     _log.info('Output video form is: ' + outputForm)
     
@@ -396,21 +412,21 @@ class StereoscopicPlayer:
     IN = '"' + pathMovie + '"'
     
     if formVideo == 'left-right':
-      self.player3D(appMovie, 'left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, 'left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
     elif formVideo == 'top-bottom':
-      self.player3D(appMovie, 'top-bottom', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, 'top-bottom', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
     elif 'separate-files;' in formVideo:
       tab = formVideo.split(";")
       left = tab[1]
       right = tab[2]
-      self.player3D2files(appMovie, outputForm, left, right, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D2files(appMovie, outputForm, left, right, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
     elif 'internal-files;' in formVideo:
       tab = formVideo.split(";")
-      self.player3D(appMovie, tab[1], outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, tab[1], outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
 
     
     
-  def playStereoUnknown(self, appMovie, pathMovie, inputVideo, outputVideo, audio, subtitle, subSize, subCode, subColor, subParallax):
+  def playStereoUnknown(self, appMovie, pathMovie, inputVideo, outputVideo, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D):
     #start script
     _log.info('Prepare to play 3D movie')
     
@@ -423,27 +439,27 @@ class StereoscopicPlayer:
     IN = '"' + pathMovie + '"'
 
     if inputVideo == '2D mono':
-      self.player3D(appMovie, 'mono', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, 'mono', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
       
     if inputVideo == '3D rows':
-      self.player3D(appMovie, 'even-odd-rows', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, 'even-odd-rows', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
 
     #width & height for side by side & over/under
     _log.info('if movie is sbs or over/under play unknown. Input: ' + inputVideo)
     if inputVideo == '3D Side-By-Side':
-      self.player3D(appMovie, 'left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, 'left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
     elif inputVideo == '3D Over/Under':
-      self.player3D(appMovie, 'top-bottom', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, 'top-bottom', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
       
     #side by side & over/under halfsbs
     _log.info('if movie is half sbs or half over/under play unknown. Input: ' + inputVideo)
     
     if inputVideo == '3D HALF Side-By-Side':
-      self.player3D(appMovie, 'left-right-half', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, 'left-right-half', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
     elif inputVideo == '3D HALF Over/Under':
-      player3D(appMovie, 'top-bottom-half', outputForm, IN, audio, subtitle)
+      self.player3D(appMovie, 'top-bottom-half', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
 
     #mkv dualstream
     _log.info('if movie is dual stream play unknown. Input: ' + inputVideo)
     if inputVideo == '3D Dual Stream':
-      self.player3D(appMovie, 'separate-left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax)
+      self.player3D(appMovie, 'separate-left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)

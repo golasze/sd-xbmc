@@ -32,6 +32,7 @@
     <string id="55009">Ustawienia odtwarzania</string>
     <string id="55010">Włącz wybór pomiędzy 2D/3D przy odtwarzaniu</string>
     <string id="55020">Format wejściowy</string>
+    <string id="55040">Włącz wybór pomiędzy 2D/3D przy odtwarzaniu [eksperymentalne]</string>
     
     <!-- functions -->
     <string id="50000">ODTWARZAJ 3D: rozpoznawaj parametry</string>

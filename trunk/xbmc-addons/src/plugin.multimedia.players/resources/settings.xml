@@ -9,6 +9,7 @@
 	<!--<setting type="sep"/>-->
 	<setting type="lsep" label="55009"/>
 	<setting id="chooser" type="bool" label="55010" default="true" />
+	<setting id="chooser_exp" type="bool" label="55040" default="false" />
 	<!--<setting id="autoplay_stereo" type="bool" label="55008" default="false" />-->
 	<!--<setting type="sep"/>-->
     </category>

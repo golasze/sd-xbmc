@@ -32,6 +32,7 @@
     <string id="55009">Play Settings</string>
     <string id="55010">Enable choice between 2D/3D on start play</string>
     <string id="55020">Input format</string>
+    <string id="55040">Enable choice between 2D/3D on start play [experimental]</string>
     
     <!-- functions -->
     <string id="50000">PLAY 3D: autorecognize input values</string>
