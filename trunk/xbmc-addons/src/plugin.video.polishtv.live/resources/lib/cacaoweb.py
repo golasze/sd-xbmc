@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import subprocess
 import string, urllib
-import sys
+import sys, platform
 import re
 import os, stat
 import xbmcaddon
@@ -29,6 +29,9 @@ class CacaoWeb:
             if self.typeOS() == "linux":
                 os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux', stat.S_IRWXU)
                 appRun = '"' + os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux" &'
+            elif self.typeOS() == "linux64":
+                os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux64', stat.S_IRWXU)
+                appRun = '"' + os.getenv("HOME") + '/.xbmc/addons/plugin.video.polishtv.live/bin/cacaoweb.linux64" &'
             elif self.typeOS() == "windows":
                 appRun = '"' + os.getenv("USERPROFILE") + '\\AppData\\Roaming\\XBMC\\addons\\plugin.video.polishtv.live\\bin\\cacaoweb.exe"'
             if appRun != '':
@@ -64,7 +67,10 @@ class CacaoWeb:
     def typeOS(self):
         os = ''
         if sys.platform.startswith("lin"):
-            os = 'linux'
+            if platform.machine() == "i686":
+                os = 'linux'
+            elif platform.machine() == "x86_64":
+                os = 'linux64'
         elif sys.platform.startswith("win"):
             os = 'windows'
         return os
