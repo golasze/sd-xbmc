@@ -91,7 +91,6 @@ class IPLA:
                         num = '0'
             thumb = elv['thumbnail_big']
             desc = elv['descr']
-            rating = elv['vote']
             duration = elv['dur']
             links = vod.findall("srcreq")
             for link in links:
