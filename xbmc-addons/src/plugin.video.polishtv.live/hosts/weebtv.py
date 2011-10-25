@@ -3,6 +3,7 @@ import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys
 import xbmcgui, xbmcplugin, xbmcaddon, xbmc
+import elementtree.ElementTree as ET
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -21,42 +22,63 @@ mainUrl = 'http://weeb.tv'
 #             2: '46.105.112.31' }
 #APP_HOST = '46.105.112.31'
 
+IMAGE_TAB = {'TVP1': '1.png',
+             'TVP2': '2.png',
+             'TVN': 'tvn.png',
+             'TVN24': '24.png',
+             'TVN Turbo': 'tvnturbo.png',
+             'Canal+ HD': 'canal.png',
+             'Canal+ Film HD': 'cfilm.png',
+             '4fun.tv': '4fun.png',
+             'Cartoon Network': 'cn.png',
+             'EskaTV': 'eska.png',
+             'HBO HD': 'hbo.png',
+             'HBO 2 HD': 'hbo2.png',
+             'MTV': 'mtv.png',
+             'nFilm HD': 'nfilm.png',
+             'nSport HD': 'nsport.png',
+             'Discovery Science': 'science.png',
+             'VIVA': 'viva.png'}
+
 
 class WeebTV:
   def __init__(self):
     log.info('Loading WeebTV')
     self.settings = settings.TVSettings()
+
+
+  def getImage(self, tvname):
+      image = ''
+      for name, img in IMAGE_TAB.items():
+          if name.lower() == tvname.lower():
+              image = os.path.join( ptv.getAddonInfo('path'), "images/" ) + img
+      return image
   
 
   def getChannels(self):
       outTab = []
-      tabURL = []
       strTab = []
       urlChans = mainUrl + '/channels'
       openURL = urllib.urlopen(urlChans)
       readURL = openURL.read()
       openURL.close()
-      match_opt1 = re.compile('<p style="color: green;font-weight:bold;">.+?<span style="color:#ccc;">(.+?)</span></p>').findall(readURL)
-      match_opt2 = re.compile('<a href="(.+?)" title=".+?"><img src="(.+?)" alt="(.+?)" height="100" width="100" /></a>').findall(readURL)
-      if len(match_opt2) > 0:
-          for i in range(len(match_opt2)):
-              quality = 'Brak'
-              if len(match_opt1) > 0:
-                  quality = match_opt1[i]
-              link = match_opt2[i][0]
-              image = match_opt2[i][1]
-              title = match_opt2[i][2]
-              #self.addLink('weebtv', title + ' --- [' + quality + ']', image, link)
-          #xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
-          #xbmcplugin.endOfDirectory(int(sys.argv[1]))
+      match_opt = re.compile('<p style="font-size:14px;font-weight:bold;margin-top:-8px;"><a href="(.*?)" title="(.*?)">(.*?)</a></p>').findall(readURL)
+      if len(match_opt) > 0:
+          for i in range(len(match_opt)):
+              link = match_opt[i][0]
+              link = link.replace('online', 'channel')
+              title = match_opt[i][2]
+              image = self.getImage(str(title))
+              desc = match_opt[i][1]
+              #log.info(link + ', ' + image + ', ' + title)
               strTab.append(link)
               strTab.append(title)
               strTab.append(image)
-              strTab.append(quality)
+              strTab.append(desc)
               outTab.append(strTab)
               strTab = []
       return outTab
-
+      
 
   def getChannelNames(self):
     nameTab = []
@@ -77,8 +99,8 @@ class WeebTV:
           url = value[0]
           name = value[1]
           iconimage = value[2]
-          quality = value[3]
-          self.addLink('weebtv', name + ' --- [' + quality + ']', iconimage, url)
+          desc = value[3]
+          self.addLink('weebtv', name, iconimage, url, desc)
       xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
     
@@ -158,11 +180,14 @@ class WeebTV:
       return False
 
 
-  def addLink(self, service, name, iconimage, url):
+  def addLink(self, service, name, iconimage, url, desc):
     u=self.videoLink(url)
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     liz.setProperty("IsPlayable", "true")
-    liz.setInfo( type="Video", infoLabels={ "Title": name } )
+    liz.setInfo( type="Video", infoLabels={ "Title": name,
+                                           "Plot": desc,
+                                           "Genre": "Telewizja online",
+                                           "PlotOutline": desc } )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 
 
