@@ -26,7 +26,7 @@ VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
 		     #201: "iTVP [filmy, seriale, vod]",
 		     #202: "AnyFiles [różne filmy]",
 		     #203: "IPLEX",
-		     201: "IPLA",
+		     #201: "IPLA",
 		     202: "iiTV info [seriale]" }
 
 
@@ -68,9 +68,9 @@ class PolishLiveTV:
 	#elif mode == '203':
 	#	vod = iplex.IPLEX()
 	#	vod.handleService()
-	elif mode == '201' or service == 'ipla':
-		vod = ipla.IPLA()
-		vod.handleService()
+	#elif mode == '201' or service == 'ipla':
+	#	vod = ipla.IPLA()
+	#	vod.handleService()
 	elif mode == '202' or service == 'iitvinfo':
 		vod = iitvinfo.iiTVInfo()
 		vod.handleService()

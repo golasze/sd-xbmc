@@ -36,7 +36,7 @@
 
 <addon id="plugin.video.polishtv.live"
        name="Telewizja Polska (kanały, VOD, filmy, seriale)"
-       version="0.0.2-1"
+       version="0.0.3"
        provider-name="Plesken">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
