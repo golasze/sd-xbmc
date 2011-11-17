@@ -5,7 +5,6 @@ import urllib, urllib2, re, sys, math
 import xbmcgui, xbmc, xbmcaddon, xbmcplugin
 import elementtree.ElementTree as ET
 
-#p off
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
