@@ -490,7 +490,8 @@ class EkinoTV:
     response = urllib2.urlopen(req)
     link = response.read()
     response.close()
-    match = re.compile('<div style=".+?" onclick="(.+?)"></div>').findall(link)
+    #match = re.compile('<div style=".+?" onclick="(.+?)"></div>').findall(link)
+    match = re.compile('<div style=".+?" onclick="(.+?)"><img src="http://static.ekino.tv/static/img/player_kliknij.jpg" alt="player" /></div>').findall(link)
     if len(match) == 1:
       fLink = match[0].split('\'')
       fl = str(fLink[1])
@@ -754,7 +755,6 @@ class EkinoTV:
 			  		cw = cacaoweb.CacaoWeb()
 			  		cw.stopApp()
 					cw.runApp()
-			  		self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))
-			  		#cw.stopApp() 		
+		  			self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))		
 		  	except:
 		  		pass
