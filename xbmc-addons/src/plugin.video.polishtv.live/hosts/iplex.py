@@ -59,20 +59,21 @@ class IPLEX:
         openURL.close()
         if len(readURL) > 0:
             for i in range(len(readURL)):
-                #<a class="cover" href="/filmy/trick,3400" title="Trick"> <img src="http://static.iplex.pl/1791/media/covers/0/3400.cover.jpg" alt="Trick" /> <span class="hover sprite"></span> </a> <a class="controls login favourite sprite" href="#" title="Dodaj do zapamiętanych">Dodaj do zapamiętanych</a> <a class="controls iplexplus sprite" href="/iplexplus/" title="iplex plus">iplex plus</a> <h1><a class="title" href="/filmy/trick,3400"> Trick</a></h1> <span class="duration">czas: 96 min.</span> <div class="rating-graph {'id': 3400, 'rating': 6.8, 'readOnly': true, 'type': 'vod'}"> <input type="radio" name="rating" value="1" title="strata czasu" /> <input type="radio" name="rating" value="2" title="bardzo zły" /> <input type="radio" name="rating" value="3" title="zły" /> <input type="radio" name="rating" value="4" title="nie polecam" /> <input type="radio" name="rating" value="5" title="ok" /> <input type="radio" name="rating" value="6" title="niezły" /> <input type="radio" name="rating" value="7" title="dobry" /> <input type="radio" name="rating" value="8" title="bardzo dobry" /> <input type="radio" name="rating" value="9" title="rewelacyjny" /> <input type="radio" name="rating" value="10" title="genialny!" /></div><span class="label rating-label"></span> <span class="duration">&nbsp;</span></div><div class="details sprite">     <span class="age">15<span class="plus">+</span></span> <span class="age iplexplus-contralogo sprite"></span> <img class="frame" src="http://static.iplex.pl/1791/media/covers/0/3400.details.frame.jpg" alt="" /> <span class="title">Trick</span> <span class="time"> <span class="label">czas:</span> <span class="value">96 min.</span> </span> <span class="country"> <span class="label">Kraj:</span> <span class="value">Polska</span> </span> <span class="year"> <span class="label">Rok produkcji:</span> <span class="value">2010</span> </span> <span class="genre"> <span class="label">Tagi:</span> <span class="value"><a href="/kanaly/tylko-polskie,17">Tylko polskie</a> / <a href="/kanaly/smieszne,19">Śmieszne</a> / <a href="/kolekcje/kino-polskie,27">Kino polskie</a> / <a href="/kategorie/akcja,34">Akcja</a> / <a href="/kategorie/komedia,46">Komedia</a> / <a href="/kategorie/kryminal,47">Kryminał</a></span> </span> <span class="rating"> <span class="label">Ocena:</span> <span class="value rating-desc">6.8</span> </span> <span class="votes"> <span class="label">Liczba głosów:</span> <span class="value">75</span> </span> <span class="description"> <span class="label">Opis:</span><br /> <span class="value">Filmowa opowieść o ucieczce z więzienia dwóch inteligentów odsiadujących wysokie wyroki: Marka Kowalewskiego – utalentowanego fałszerza studolarówek oraz jego starszego współtowarzysza z celi -„Profesora” Witka. Przypadkowo zamieszani w rządowe malwersacje przestępcy postanawiają zagrać va banque, a przy okazji wyrównać rachunki z przeszłości.</span> </span> </div> </div>
-                match = re.compile('<a class="cover" href="(.+?)" title=".+?"> <img src="(.+?)" alt=".+?" /> <span class="hover sprite"></span> </a>.+?<h1><a class="title" href=".+?">(.+?)</a></h1>.+?<span class="title">(.+?)</span>.+?<span class="description"> <span class="label">Opis:</span><br /> <span class="value">(.+?)</span> </span> </div> </div>').findall(readURL[i])
+                match = re.compile('<a class=".+?" href="(.+?)" title=".+?"> <img src="(.+?)" alt=".+?" /> <span class="hover sprite"></span> </a>.+?<h1><a class="title" href=".+?">(.+?)</a></h1>.+?<span class="title">(.+?)</span>.+?<span class="description"> <span class="label">Opis:</span><br /> <span class="value">(.+?)</span> </span> </div> </div>').findall(readURL[i])
                 if len(match) > 0:
                     for a in range(len(match)):
                         log.info('url: ' + match[a][0])
                         if 'liczba odcinków:' in readURL[i]:
-                            self.add('iplex', 'season-menu', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
+                            sizeOfSerialParts = readURL[i].split('liczba odcinków: ')[1].split('</span>')[0]
+                            self.add('iplex', 'season-menu', sizeOfSerialParts, match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
                         else:
                             self.add('iplex', 'playSelectedMovie', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
     def listsItemsPage(self, url):
-        self.getSizeItemsPerPage(url)
+        if not url.startswith("http://"):
+            url = mainUrl + url
         if self.getSizeAllItems(url) > 0  and self.getSizeItemsPerPage(url) > 0:
             a = math.ceil(float(self.getSizeAllItems(url)) / float(self.getSizeItemsPerPage(url)))
             for i in range(int(a)):
@@ -81,6 +82,19 @@ class IPLEX:
                 destUrl = url + sort_asc + '&page=' + str(num)
                 self.add('iplex', 'items-menu', 'None', title, 'None', destUrl, 'None', 'None', True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))        
+
+
+    def listsItemsSerialPage(self, url, sizeOfSerialParts):
+        if not url.startswith("http://"):
+            url = mainUrl + url
+        if sizeOfSerialParts > 0  and self.getSizeItemsPerPage(url) > 0:
+            a = math.ceil(float(sizeOfSerialParts) / float(self.getSizeItemsPerPage(url)))
+            for i in range(int(a)):
+                num = i + 1
+                title = 'Lista ' + str(num)
+                destUrl = url + sort_asc + '&page=' + str(num)
+                self.add('iplex', 'items-menu', 'None', title, 'None', destUrl, 'None', 'None', True, False)
+        xbmcplugin.endOfDirectory(int(sys.argv[1])) 
 
 
     def getMovieLinkFromXML(self, url):
@@ -218,8 +232,11 @@ class IPLEX:
             self.searchInputText()
         elif name == 'categories-menu' and category != 'None':
             self.listsItemsPage(url)
+        elif name == 'season-menu' and category != 'None':
+            self.listsItemsSerialPage(url, category)
         elif name == 'items-menu':
             self.listsItems(url)
+        #elif name == 'season-menu':
             
         if name == 'playSelectedMovie':
             #self.getMovieLinkFromXML(url)
