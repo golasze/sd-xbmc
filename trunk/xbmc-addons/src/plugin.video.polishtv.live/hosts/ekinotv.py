@@ -685,7 +685,10 @@ class EkinoTV:
 		return False
 	try:
 		xbmcPlayer = xbmc.Player()
-		xbmcPlayer.play(videoUrl)
+		title = str(self.settings.paramTitle)
+		liz=xbmcgui.ListItem()
+		liz.setInfo( type="Video", infoLabels={ "Title": title } )
+		xbmcPlayer.play(videoUrl, liz)
 	except:
 		d = xbmcgui.Dialog()
 		d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')		
