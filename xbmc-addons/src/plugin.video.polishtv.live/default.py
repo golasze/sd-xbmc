@@ -14,7 +14,7 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings
-import weebtv, ekinotv, ipla, iitvinfo, stations
+import weebtv, ekinotv, ipla, iitvinfo, stations, tvp
 
 log = pLog.pLog()
 
@@ -27,7 +27,8 @@ VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
 		     #202: "AnyFiles [różne filmy]",
 		     #203: "IPLEX",
 		     #201: "IPLA",
-		     202: "iiTV info [seriale]" }
+		     202: "iiTV info [seriale]",
+             204: "TVP [info]" }
 
 
 
@@ -73,6 +74,9 @@ class PolishLiveTV:
 	#	vod.handleService()
 	elif mode == '202' or service == 'iitvinfo':
 		vod = iitvinfo.iiTVInfo()
+		vod.handleService()
+	elif mode == '204' or service == 'tvp':
+		vod = tvp.tvp()
 		vod.handleService()
 	elif mode == '20':
 		log.info('Wyświetlam ustawienia')
