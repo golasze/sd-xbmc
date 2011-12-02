@@ -160,6 +160,7 @@ class WeebTV:
       response.close()
       match_src = re.compile('<param name="movie" value="(.+?)" />').findall(link)
       match_chn = re.compile('<param name="flashvars" value="(.+?)" />').findall(link)
+      bitrate = re.search('selected(.*\n){5}.*"programmeListTextRightQuality"[^<]+>([^<]+)<',link).groups()[1]
       if len(match_src) == 1 and len(match_chn) == 1:
           channel = str(match_chn[0]).split('=')
           tab = self.tableConnParams(playerUrl, '1', channel[1], username, password)
@@ -174,7 +175,7 @@ class WeebTV:
           rtmp += ' pageUrl=' + url
           rtmp += ' tcUrl=' + str(rtmpLink)
           rtmp += ' weeb=' + str(ticket)
-          rtmp += ' playpath=live'
+          rtmp += ' playpath=%s' % ('liveHI' if bitrate == 'MULTI' and self.settings.WeebHQ == 'true' else 'live',)
           rtmp += ' swfVfy=true'
           rtmp += ' live=true'
           log.info(rtmp)
