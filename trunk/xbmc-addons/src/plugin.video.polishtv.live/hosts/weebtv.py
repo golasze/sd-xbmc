@@ -170,12 +170,16 @@ class WeebTV:
           if ticket == None:
               tabb = self.tableConnParams(playerUrl, '0', channel[1], username, password)
               ticket = tabb['ticket']
+          if bitrate == 'MULTI' and self.settings.WeebHQ == 'true':
+              playpath = 'liveHI'
+          else:
+              playpath = 'live'
           rtmp = str(rtmpLink) + '/'
           rtmp += ' swfUrl='  + urllib.unquote_plus(str(match_src[0]))
           rtmp += ' pageUrl=' + url
           rtmp += ' tcUrl=' + str(rtmpLink)
           rtmp += ' weeb=' + str(ticket)
-          rtmp += ' playpath=%s' % ('liveHI' if bitrate == 'MULTI' and self.settings.WeebHQ == 'true' else 'live',)
+          rtmp += ' playpath=%s' % (playpath,)
           rtmp += ' swfVfy=true'
           rtmp += ' live=true'
           log.info(rtmp)
