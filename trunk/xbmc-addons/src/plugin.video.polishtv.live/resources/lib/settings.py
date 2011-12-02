@@ -26,6 +26,7 @@ class TVSettings:
     self.WeebTVPassword = addon.getSetting('weebtv_password')
     self.WeebTVEnable = addon.getSetting('weebtv_enable')
     self.WeebIP = addon.getSetting('weebtv_ip')
+    self.WeebHQ = addon.getSetting('weebtv_hq')
     self.MegaVideoLogin = addon.getSetting('megavideo_login')
     self.MegaVideoPassword = addon.getSetting('megavideo_password')
     self.MegaVideoEnable = addon.getSetting('megavideo_enable')
