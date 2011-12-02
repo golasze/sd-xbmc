@@ -62,7 +62,6 @@ class IPLEX:
                 match = re.compile('<a class=".+?" href="(.+?)" title=".+?"> <img src="(.+?)" alt=".+?" /> <span class="hover sprite"></span> </a>.+?<h1><a class="title" href=".+?">(.+?)</a></h1>.+?<span class="title">(.+?)</span>.+?<span class="description"> <span class="label">Opis:</span><br /> <span class="value">(.+?)</span> </span> </div> </div>').findall(readURL[i])
                 if len(match) > 0:
                     for a in range(len(match)):
-                        log.info('url: ' + match[a][0])
                         if 'liczba odcinków:' in readURL[i]:
                             sizeOfSerialParts = readURL[i].split('liczba odcinków: ')[1].split('</span>')[0]
                             self.add('iplex', 'season-menu', sizeOfSerialParts, match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
