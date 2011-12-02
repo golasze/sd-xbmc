@@ -28,7 +28,7 @@ VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
 		     #203: "IPLEX",
 		     #201: "IPLA",
 		     202: "iiTV info [seriale]",
-             204: "TVP [info]" }
+		     204: "TVP [info]" }
 
 
 
