@@ -2,7 +2,7 @@
 import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
-import xbmcgui, xbmc, xbmcplugin
+import xbmcgui, xbmc, xbmcplugin, xbmcaddon
 from datetime import datetime
 
 import elementtree.ElementTree as ET
