@@ -66,7 +66,7 @@ class PolishLiveTV:
 	#elif mode == '202':
 	#	vod = anyfiles.AnyFiles()
 	#	vod.handleService()
-	#elif mode == '203':
+	#elif mode == '203' or service == 'iplex':
 	#	vod = iplex.IPLEX()
 	#	vod.handleService()
 	#elif mode == '201' or service == 'ipla':
