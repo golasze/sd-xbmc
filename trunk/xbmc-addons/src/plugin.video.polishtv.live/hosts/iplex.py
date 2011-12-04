@@ -41,7 +41,9 @@ class IPLEX:
 
 
     def listsCategoriesMenu(self):
-        openURL = urllib.urlopen(mainUrl)
+        req = urllib2.Request(mainUrl)
+        req.add_header('User-Agent', HOST)
+        openURL = urllib2.urlopen(req)
         readURL = openURL.read()
         openURL.close()
         match = re.compile('<li><a href="/kategorie(.+?)">(.+?)</a></li>').findall(readURL)
@@ -53,7 +55,9 @@ class IPLEX:
 
 
     def listsItems(self, url):
-        openURL = urllib.urlopen(url)
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', HOST)
+        openURL = urllib2.urlopen(req)
         readURL = openURL.read()
         readURL = readURL.replace('\n', '').replace('     ', ' ').replace('    ', ' ').replace('   ', ' ').replace('  ', ' ').split('class="movie"')
         openURL.close()
@@ -136,12 +140,15 @@ class IPLEX:
 
     def getSizeAllItems(self, url):
         numItems = 0
-        openURL = urllib.urlopen(url)
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', HOST)
+        openURL = urllib2.urlopen(req)
         readURL = openURL.read()
         openURL.close()
-        match = re.compile('<h2>\((.+?) filmów\)</h2>').findall(readURL)
+        match = re.compile('<h2>\((.+?) film.+?\)</h2>').findall(readURL)
         if len(match) == 1:
             numItems = match[0]
+        log.info('All items: ' + str(numItems))
         return numItems
     
     
@@ -153,6 +160,7 @@ class IPLEX:
         match = re.compile('<div class="movie-(.+?)>').findall(readURL)
         if len(match) > 0:
             numItemsPerPage = len(match)
+        log.info('Items per Page: ' + str(numItemsPerPage))
         return numItemsPerPage        
 
     def getMovieID(self, url):
@@ -222,7 +230,7 @@ class IPLEX:
         name = str(self.settings.paramName)
         category = str(self.settings.paramCategory)
         url = self.settings.paramURL
-        log.info('url: ' + str(url))
+        log.info('url: ' + str(url) + ', name: ' + name + ', category: ' + category)
         if name == 'None':
             self.listsMainMenu(MENU_TAB)
         elif name == 'main-menu' and category == 'Kategorie':
