@@ -62,14 +62,13 @@ class WeebTV:
       openURL = urllib.urlopen(urlChans)
       readURL = openURL.read()
       openURL.close()
-      match_opt = re.compile('<p style="font-size:14px;font-weight:bold;margin-top:-8px;"><a href="(.*?)" title="(.*?)">(.*?)</a></p>').findall(readURL)
+      match_opt = re.compile('<p style="font-size:14px;.+>(.+)</a></p>(.*\n){6}.*<a href="(.+)" title="(.+)"><img src="(.+)" alt=".+" height="100" width="100" /></a>').findall(readURL)
       if len(match_opt) > 0:
           for i in range(len(match_opt)):
-              link = match_opt[i][0]
-              link = link.replace('online', 'channel')
-              title = match_opt[i][2]
-              image = self.getImage(str(title))
-              desc = match_opt[i][1]
+              link = match_opt[i][2]
+              title = match_opt[i][0]
+              image = match_opt[i][4]
+              desc = match_opt[i][3]
               #log.info(link + ', ' + image + ', ' + title)
               strTab.append(link)
               strTab.append(title)
@@ -127,6 +126,13 @@ class WeebTV:
 	break
     return icon
 
+  def getChannelByURL(self, url):
+    icon = ''
+    origTab = self.getChannels()
+    for chan in origTab:
+      if chan[0] == url:
+        return chan
+    return []
 
   def videoLink(self, url):
     req = urllib2.Request(url)
@@ -184,7 +190,7 @@ class WeebTV:
           rtmp += ' live=true'
           log.info(rtmp)
           #self.ticketSender(ticket, str(rtmpLink))
-          self.LOAD_AND_PLAY_VIDEO(rtmp)                   
+          self.LOAD_AND_PLAY_VIDEO(rtmp, self.getChannelByURL(url))                   
                 
 
   def tableConnParams(self, playerUrl, numConn, channel, username, password):
@@ -293,15 +299,19 @@ class WeebTV:
         return param
 
 
-  def LOAD_AND_PLAY_VIDEO(self, videoUrl):
+  def LOAD_AND_PLAY_VIDEO(self, videoUrl, chanInfo):
       ok=True
       if videoUrl == '':
           d = xbmcgui.Dialog()
           d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
           return False
+      name = chanInfo[1]
+      icon = chanInfo[2]
+      liz=xbmcgui.ListItem(name, iconImage=icon, thumbnailImage=icon)
+      liz.setInfo( type="Video", infoLabels={ "Title": name, } )
       try:
           xbmcPlayer = xbmc.Player()
-          xbmcPlayer.play(videoUrl)
+          xbmcPlayer.play(videoUrl, liz)
       except:
           d = xbmcgui.Dialog()
           d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
