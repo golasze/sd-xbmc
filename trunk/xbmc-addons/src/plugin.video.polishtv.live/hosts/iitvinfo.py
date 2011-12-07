@@ -154,9 +154,9 @@ class iiTVInfo:
                     og_e  = match[i][1]
                 elif match[i][0] == 'og_url':
                     og_url = match[i][1]
-                elif match[i][0] == 'og_code':
+                elif match[i][0] == 'og_coda':
                     og_code = match[i][1] 
-            values = {'og_ser': og_ser, 'og_sez': og_s, 'og_e': og_e, 'og_url': og_url, 'og_code': og_code}
+            values = {'og_ser': og_ser, 'og_sez': og_s, 'og_e': og_e, 'og_url': og_url, 'og_coda': og_code}
             headers = { 'User-Agent' : HOST }
             data = urllib.urlencode(values)
             req = urllib2.Request(watchUrl, data, headers)
