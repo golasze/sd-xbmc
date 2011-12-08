@@ -40,6 +40,11 @@ IMAGE_TAB = {'TVP1': '1.png',
              'Discovery Science': 'science.png',
              'VIVA POLSKA': 'viva.png'}
 
+EXTRA_CHANNELS = [	
+			['http://weeb.tv/channel/jedynka','TVP1','http://weeb.tv/static/ci/13.jpg', 'TVP1'],
+			['http://weeb.tv/channel/dwójka', 'TVP2', 'http://weeb.tv/static/ci/6.jpg', 'TVP2'],
+			['http://weeb.tv/channel/tvp', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD']
+]
 
 class WeebTV:
   def __init__(self):
@@ -56,13 +61,13 @@ class WeebTV:
   
 
   def getChannels(self):
-      outTab = []
+      outTab = EXTRA_CHANNELS
       strTab = []
       urlChans = mainUrl + '/channels'
       openURL = urllib.urlopen(urlChans)
       readURL = openURL.read()
       openURL.close()
-      match_opt = re.compile('<p style="font-size:14px;.+>(.+)</a></p>(.*\n){6}.*<a href="(.+)" title="(.+)"><img src="(.+)" alt=".+" height="100" width="100" /></a>').findall(readURL)
+      match_opt = re.compile('<p style="font-size:14px;.+>(.*?)</a></p>(.*\n){6}.*<a href="(.*?)" title="(.*?)"><img src="(.*)" alt=".*?" height="100" width="100" /></a>').findall(readURL)
       if len(match_opt) > 0:
           for i in range(len(match_opt)):
               link = match_opt[i][2]
