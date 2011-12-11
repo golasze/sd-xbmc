@@ -43,7 +43,7 @@ IMAGE_TAB = {'TVP1': '1.png',
 EXTRA_CHANNELS = [	
 			['http://weeb.tv/channel/jedynka','TVP1','http://weeb.tv/static/ci/13.jpg', 'TVP1'],
 			['http://weeb.tv/channel/dwójka', 'TVP2', 'http://weeb.tv/static/ci/6.jpg', 'TVP2'],
-			['http://weeb.tv/channel/tvp', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD']
+			['http://weeb.tv/channel/tvpolskahd', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD']
 ]
 
 class WeebTV:
