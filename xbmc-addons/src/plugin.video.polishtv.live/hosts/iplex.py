@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import cookielib, os, string, cookielib, StringIO
-import os, time, base64, logging, calendar
-import urllib, urllib2, re, sys, math
+import urllib, urllib2, re, os, sys, math
 import xbmcgui, xbmc, xbmcaddon, xbmcplugin
 import elementtree.ElementTree as ET
 import hashlib
@@ -21,6 +19,7 @@ mainUrl = 'http://www.iplex.pl'
 playerUrl = mainUrl + '/player_feed/'
 sort_asc = '?o=rosnaco&f=tytul'
 sort_desc = '?o=malejaco&f=tytul'
+iplexplus = False
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
@@ -54,6 +53,15 @@ class IPLEX:
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
+    def getSearchURL(self, key):
+        url = mainUrl + '/szukaj/?q=' + urllib.quote_plus(key) + '&i='
+        return url
+        #req = urllib2.Request(url)
+        #req.add_header('User-Agent', HOST)
+        #openURL = urllib2.urlopen(req)
+        #readURL = openURL.read()
+        
+
     def listsItems(self, url):
         req = urllib2.Request(url)
         req.add_header('User-Agent', HOST)
@@ -70,7 +78,13 @@ class IPLEX:
                             sizeOfSerialParts = readURL[i].split('liczba odcinków: ')[1].split('</span>')[0]
                             self.add('iplex', 'season-menu', sizeOfSerialParts, match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
                         else:
-                            self.add('iplex', 'playSelectedMovie', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
+                            if 'iplexplus' in readURL[i]:
+                                if iplexplus:
+                                    self.add('iplex', 'playSelectedMovie', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
+                                else:
+                                    self.add('iplex', 'blockPlaySelectedMovie', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
+                            else:
+                                self.add('iplex', 'playSelectedMovie', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -148,7 +162,6 @@ class IPLEX:
         match = re.compile('<h2>\((.+?) film.+?\)</h2>').findall(readURL)
         if len(match) == 1:
             numItems = match[0]
-        log.info('All items: ' + str(numItems))
         return numItems
     
     
@@ -160,7 +173,6 @@ class IPLEX:
         match = re.compile('<div class="movie-(.+?)>').findall(readURL)
         if len(match) > 0:
             numItemsPerPage = len(match)
-        log.info('Items per Page: ' + str(numItemsPerPage))
         return numItemsPerPage        
 
     def getMovieID(self, url):
@@ -230,13 +242,14 @@ class IPLEX:
         name = str(self.settings.paramName)
         category = str(self.settings.paramCategory)
         url = self.settings.paramURL
-        log.info('url: ' + str(url) + ', name: ' + name + ', category: ' + category)
+        #log.info('url: ' + str(url) + ', name: ' + name + ', category: ' + category)
         if name == 'None':
             self.listsMainMenu(MENU_TAB)
         elif name == 'main-menu' and category == 'Kategorie':
             self.listsCategoriesMenu()
         elif name == 'main-menu' and category == "Szukaj":
-            self.searchInputText()
+            key = self.searchInputText()
+            self.listsItems(self.getSearchURL(key))
         elif name == 'categories-menu' and category != 'None':
             self.listsItemsPage(url)
         elif name == 'season-menu' and category != 'None':
@@ -248,5 +261,8 @@ class IPLEX:
         if name == 'playSelectedMovie':
             #self.getMovieLinkFromXML(url)
             self.LOAD_AND_PLAY_VIDEO(self.getMovieLinkFromXML(url))
+        elif name == 'blockPlaySelectedMovie':
+            dialog = xbmcgui.Dialog()
+            dialog.ok("IPLEX PLUS", "Ten film nie będzie odtwarzany.", "Brak obsługi IPLEX-PLUS.")
         
   
