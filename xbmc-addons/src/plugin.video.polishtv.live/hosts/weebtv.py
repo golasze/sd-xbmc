@@ -19,31 +19,31 @@ import pLog, settings
 log = pLog.pLog()
 
 mainUrl = 'http://weeb.tv'
-playerUrl = mainUrl + '/player.php'
+playerUrl = mainUrl + '/setplayer'
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
-IMAGE_TAB = {'TVP1': '1.png',
-             'TVP2': '2.png',
-             'TVN': 'tvn.png',
-             'TVN24': '24.png',
-             'TVN Turbo': 'tvnturbo.png',
-             'Canal+ HD': 'canal.png',
-             'Canal+ Film HD': 'cfilm.png',
-             '4fun.tv': '4fun.png',
-             'Cartoon Network': 'cn.png',
-             'EskaTV': 'eska.png',
-             'HBO HD': 'hbo.png',
-             'HBO 2 HD': 'hbo2.png',
-             'MTV': 'mtv.png',
-             'nFilm HD': 'nfilm.png',
-             'nSport HD': 'nsport.png',
-             'Discovery Science': 'science.png',
-             'VIVA POLSKA': 'viva.png'}
+#IMAGE_TAB = {'TVP1': '1.png',
+#             'TVP2': '2.png',
+#             'TVN': 'tvn.png',
+#             'TVN24': '24.png',
+#             'TVN Turbo': 'tvnturbo.png',
+#             'Canal+ HD': 'canal.png',
+#             'Canal+ Film HD': 'cfilm.png',
+#             '4fun.tv': '4fun.png',
+#             'Cartoon Network': 'cn.png',
+#             'EskaTV': 'eska.png',
+#             'HBO HD': 'hbo.png',
+#             'HBO 2 HD': 'hbo2.png',
+#             'MTV': 'mtv.png',
+#             'nFilm HD': 'nfilm.png',
+#             'nSport HD': 'nsport.png',
+#             'Discovery Science': 'science.png',
+#             'VIVA POLSKA': 'viva.png'}
 
 EXTRA_CHANNELS = [	
 			['http://weeb.tv/channel/jedynka','TVP1','http://weeb.tv/static/ci/13.jpg', 'TVP1'],
 			['http://weeb.tv/channel/dwójka', 'TVP2', 'http://weeb.tv/static/ci/6.jpg', 'TVP2'],
-			['http://weeb.tv/channel/tvpolskahd', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD']
+			['http://weeb.tv/channel/tvp', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD']
 ]
 
 class WeebTV:
@@ -139,62 +139,40 @@ class WeebTV:
         return chan
     return []
 
-  def videoLink(self, url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
-    match_src = re.compile('<param name="movie" value="(.+?)" />').findall(link)
-    match_chn = re.compile('<param name="flashvars" value="(.+?)" />').findall(link)
-    #log.info('src: ' + str(len(match_src)) + ', chn: ' + str(len(match_chn)))
-    if len(match_src) == 1 and len(match_chn) == 1:
-        channel = str(match_chn[0]).split('=')
-        #rtmp = 'rtmp://' + APP_HOST + '/live/' + channel[1] + '/'
-        rtmp = 'rtmp://' + self.settings.WeebIP + '/live/' + channel[1] + '/'
-        rtmp += ' swfUrl='  + urllib.unquote_plus(str(match_src[0]))
-        rtmp += ' pageUrl=' + url
-        #rtmp += ' tcUrl=rtmp://' + APP_HOST + '/live/' + channel[1]
-        rtmp += ' tcUrl=rtmp://' + self.settings.WeebIP + '/live/' + channel[1]
-        rtmp += ' playpath=live'
-        rtmp += ' swfVfy=true'
-        rtmp += ' live=true'
-        #log.info(rtmp)
-        return rtmp
 
-
-  def playConnection(self, url, username, password):
-      req = urllib2.Request(url)
-      req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
-      match_src = re.compile('<param name="movie" value="(.+?)" />').findall(link)
-      match_chn = re.compile('<param name="flashvars" value="(.+?)" />').findall(link)
-      bitrate = re.search('selected(.*\n){5}.*"programmeListTextRightQuality"[^<]+>([^<]+)<',link).groups()[1]
-      if len(match_src) == 1 and len(match_chn) == 1:
-          channel = str(match_chn[0]).split('=')
+  def playConnection(self, url):
+  	  username = 'username'
+  	  password = 'password'
+  	  if self.settings.WeebTVEnable == 'true':
+  	  	  username = self.settings.WeebTVLogin
+  	  	  password = self.settings.WeebTVPassword
+  	  req = urllib2.Request(url)
+  	  req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+  	  response = urllib2.urlopen(req)
+  	  link = response.read()
+  	  response.close()
+  	  match_src = re.compile('<param name="movie" value="(.+?)" />').findall(link)
+  	  match_chn = re.compile('<param name="flashvars" value="(.+?)" />').findall(link)
+  	  bitrate = re.search('selected(.*\n){5}.*"programmeListTextRightQuality"[^<]+>([^<]+)<',link).groups()[1]
+  	  if len(match_src) == 1 and len(match_chn) == 1:
+  	  	  channel = str(match_chn[0]).split('=')
           tab = self.tableConnParams(playerUrl, '1', channel[1], username, password)
           rtmpLink = tab['rtmp']
           ticket = tab['ticket']
           time = tab['time']
+          play = tab['play']
           if ticket == None:
               tabb = self.tableConnParams(playerUrl, '0', channel[1], username, password)
               ticket = tabb['ticket']
           if bitrate == 'MULTI' and self.settings.WeebHQ == 'true':
-              playpath = 'liveHI'
+              playpath = play + 'HI'
           else:
-              playpath = 'live'
-          rtmp = str(rtmpLink) + '/'
+              playpath = play
+          rtmp = str(rtmpLink) + '/' + playpath
           rtmp += ' swfUrl='  + urllib.unquote_plus(str(match_src[0]))
-          rtmp += ' pageUrl=' + url
-          rtmp += ' tcUrl=' + str(rtmpLink)
-          rtmp += ' weeb=' + str(ticket)
-          rtmp += ' playpath=%s' % (playpath,)
-          rtmp += ' swfVfy=true'
+          rtmp += ' weeb=' + str(ticket) + ';' + username + ';' + password
           rtmp += ' live=true'
           log.info(rtmp)
-          #self.ticketSender(ticket, str(rtmpLink))
           self.LOAD_AND_PLAY_VIDEO(rtmp, self.getChannelByURL(url))                   
                 
 
@@ -209,39 +187,12 @@ class WeebTV:
       response = urllib2.urlopen(reqUrl)
       link = response.read()
       params = self.getParams(link)
-      ticket = self.getParam(params, "15")
+      ticket = self.getParam(params, "73")
       time = self.getParam(params, "16")
       rtmpLink = self.getParam(params, "10")
-      data = {'rtmp': rtmpLink, 'ticket': ticket, 'time': time}
+      playPath = self.getParam(params, "11")
+      data = {'rtmp': rtmpLink, 'ticket': ticket, 'time': time, 'play': playPath}
       return data     
-              
-      
-  def login(self, user, password):
-    loginUrl = mainUrl + '/account/login/after&go=home'
-    try:
-      cookiejar = cookielib.LWPCookieJar()
-      cookiejar = urllib2.HTTPCookieProcessor(cookiejar) 
-      opener = urllib2.build_opener(cookiejar)
-      urllib2.install_opener(opener)
-      values = {'username': user, 'userpassword': password, 'go': 'home', 'v1': '', 'v2': ''}
-      headers = { 'User-Agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3' }
-      data = urllib.urlencode(values)
-      req = urllib2.Request(loginUrl, data, headers)
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
-      web = ''.join(link.splitlines()).replace('\t','').replace('\'','"')
-      match=re.compile('Nazwa użytkownika lub hasło są nie poprawne.').findall(web)
-      if(len(match) > 0):
-	d = xbmcgui.Dialog()
-        d.ok('BŁĄD logowania', 'Podana nazwa użytkownika,', 'lub hasło jest niepoprawne.', 'Wpisz poprawnie te dane.')
-        return False
-      else:
-	return True
-    except:
-      d = xbmcgui.Dialog()
-      d.ok('BŁĄD logowania.', 'Upłynął czas limitu rządania', 'Spróbuj ponownie za jakiś czas.')
-      return False
 
 
   def addLink(self, service, name, iconimage, url, desc, play):
@@ -332,19 +283,10 @@ class WeebTV:
     log.info('b: '+chn + ', play: ' + play + ', url: ' + url + ', name: ' + name)
     if chn == 'None':
         try:
-            if self.settings.WeebTVEnable == 'true':
-                log.info('zalogowany')
-                self.getChannelNamesAddLink()
-                #self.getChannels()
-            else:
-                log.info('bez logowania')
-                self.getChannelNamesAddLink()
-                #self.getChannels()
+            self.getChannelNamesAddLink()
         except:
             d = xbmcgui.Dialog()
             d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')
     if play == 'playSelectedMovie':
-        log.info('Odtwarzam')
-        self.playConnection(url, '', '')
-              
 
+        self.playConnection(url)
