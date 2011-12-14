@@ -179,8 +179,11 @@ class tvn:
             else:
                 print qualityName
         rankSorted =sorted(videoUrls)
-        videoUrl = videoUrls.get(rankSorted[0])
-        print videoUrl
+        if len(rankSorted) > 0:
+            videoUrl = videoUrls.get(rankSorted[0])
+            print videoUrl
+        else:
+            videoUrl = ''
         return videoUrl
 
 
