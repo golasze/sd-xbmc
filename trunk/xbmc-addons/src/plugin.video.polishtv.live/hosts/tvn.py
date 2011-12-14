@@ -153,7 +153,7 @@ class tvn:
         method = 'getItem'
         groupName = 'item'
         urlQuery = '&type=%s&id=%s&limit=30&page=1&sort=newest&m=%s' % (category, id,method)
-        urlQuery = urlQuery + '&deviceScreenHeight=1920&deviceScreenWidth=1080'
+        urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
 
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
