@@ -22,6 +22,7 @@ class TVSettings:
     self.paramCategory = self.getParam(params, "category")
     self.paramPage = self.getParam(params, "page")
     self.paramURL = self.getParam(params, "url")
+    self.paramIcon = self.getParam(params, "icon")
     self.WeebTVLogin = addon.getSetting('weebtv_login')
     self.WeebTVPassword = addon.getSetting('weebtv_password')
     self.WeebTVEnable = addon.getSetting('weebtv_enable')

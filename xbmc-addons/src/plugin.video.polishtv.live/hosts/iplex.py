@@ -210,7 +210,7 @@ class IPLEX:
     
 
     def add(self, service, name, category, title, iconimage, url, desc, rating, folder = True, isPlayable = True):
-        u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&url=" + urllib.quote_plus(url)
+        u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&url=" + urllib.quote_plus(url) + "&icon=" + urllib.quote_plus(iconimage)
         #log.info(str(u))
         if name == 'main-menu' or name == 'categories-menu':
             title = category 
@@ -223,15 +223,17 @@ class IPLEX:
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
             
 
-    def LOAD_AND_PLAY_VIDEO(self, videoUrl):
+    def LOAD_AND_PLAY_VIDEO(self, videoUrl, title, icon):
         ok=True
         if videoUrl == '':
                 d = xbmcgui.Dialog()
                 d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
                 return False
+        liz=xbmcgui.ListItem(title, iconImage=icon, thumbnailImage=icon)
+        liz.setInfo( type="Video", infoLabels={ "Title": title, } )
         try:
             xbmcPlayer = xbmc.Player()
-            xbmcPlayer.play(videoUrl)
+            xbmcPlayer.play(videoUrl, liz)
         except:
             d = xbmcgui.Dialog()
             d.ok('Błąd przy przetwarzaniu.', 'Najprawdopodobniej brak wsparcia vividas w ffmpeg.')        
@@ -242,6 +244,8 @@ class IPLEX:
         name = str(self.settings.paramName)
         category = str(self.settings.paramCategory)
         url = self.settings.paramURL
+        title = str(self.settings.paramTitle)
+        icon = self.settings.paramIcon
         #log.info('url: ' + str(url) + ', name: ' + name + ', category: ' + category)
         if name == 'None':
             self.listsMainMenu(MENU_TAB)
@@ -260,7 +264,7 @@ class IPLEX:
             
         if name == 'playSelectedMovie':
             #self.getMovieLinkFromXML(url)
-            self.LOAD_AND_PLAY_VIDEO(self.getMovieLinkFromXML(url))
+            self.LOAD_AND_PLAY_VIDEO(self.getMovieLinkFromXML(url), title, icon)
         elif name == 'blockPlaySelectedMovie':
             dialog = xbmcgui.Dialog()
             dialog.ok("IPLEX PLUS", "Ten film nie będzie odtwarzany.", "Brak obsługi IPLEX-PLUS.")
