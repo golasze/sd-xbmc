@@ -7,6 +7,9 @@ from xml.dom.minidom import parseString
 from time import strftime,strptime, localtime
 from datetime import date
 
+#from Crypto.Cipher import AES
+import binascii, hashlib, time
+
 import pLog, settings
 
 log = pLog.pLog()
@@ -74,13 +77,13 @@ class tvn:
         if self.category != 'None' and self.id != 'None':
             method = 'getItems'
             groupName = 'items'
-            urlQuery = '&type=%s&id=%s&limit=30&page=1&sort=newest&m=%s' % (self.category, self.id,method)
+            urlQuery = '&type=%s&id=%s&limit=50&page=1&sort=newest&m=%s' % (self.category, self.id,method)
 
         else:
             method = 'mainInfo'
             groupName = 'categories'
             urlQuery = '&m=' + method
-        #print urlQuery
+        print self.contentHost+self.startUrl + urlQuery
 
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
@@ -130,7 +133,8 @@ class tvn:
                 iconUrl = self.mediaHost + self.mediaMainUrl + icon + '?quality=70&dstw=290&dsth=187&type=1'
 
             self.addDir(name,id,self.mode,type,iconUrl,videoUrl,listsize)
-
+        xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_UNSORTED )
+        xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -154,7 +158,7 @@ class tvn:
         groupName = 'item'
         urlQuery = '&type=%s&id=%s&limit=30&page=1&sort=newest&m=%s' % (category, id,method)
         urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
-
+        print self.contentHost+self.startUrl + urlQuery
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
         response = urllib2.urlopen(req)
@@ -186,6 +190,29 @@ class tvn:
             videoUrl = ''
         return videoUrl
 
+    def generateToken(self, url):
+        url = url.replace('http://redir.atmcdn.pl/http/','')
+        SecretKey = 'AB9843DSAIUDHW87Y3874Q903409QEWA'
+        iv = 'ab5ef983454a21bd'
+        KeyStr = '0f12f35aa0c542e45926c43a39ee2a7b38ec2f26975c00a30e1292f7e137e120e5ae9d1cfe10dd682834e3754efc1733'
+        salt = '5F4CF8D6E9EF29BC7200B31292EAF96B'
 
+        tvncrypt = AES.new(SecretKey, AES.MODE_CBC, iv)
+        key = tvncrypt.decrypt(binascii.unhexlify(KeyStr))[:32]
+
+        expire = 3600000L + long(time.time()*1000) - 946684800000L
+
+        unencryptedToken = "name=%s&expire=%s\0" % (url, expire)
+
+        pkcs5_pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
+        pkcs5_unpad = lambda s : s[0:-ord(s[-1])]
+
+        unencryptedToken = pkcs5_pad(unencryptedToken)
+
+        tvncrypt = AES.new(binascii.unhexlify(key), AES.MODE_CBC, binascii.unhexlify(TestSalt))
+        encryptedToken = tvncrypt.encrypt(unencryptedToken)
+        encryptedTokenHEX = binascii.hexlify(encryptedToken).upper()
+
+        return "http://redir.atmcdn.pl/http/%s?salt=%s&token=%s" % (url, salt, encryptedTokenHEX)
 
 
