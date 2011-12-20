@@ -7,7 +7,7 @@ from xml.dom.minidom import parseString
 from time import strftime,strptime, localtime
 from datetime import date
 
-#from Crypto.Cipher import AES
+from Crypto.Cipher import AES
 import binascii, hashlib, time
 
 import pLog, settings
@@ -185,6 +185,7 @@ class tvn:
         rankSorted =sorted(videoUrls)
         if len(rankSorted) > 0:
             videoUrl = videoUrls.get(rankSorted[0])
+            videoUrl = self.generateToken(videoUrl)
             print videoUrl
         else:
             videoUrl = ''
@@ -209,7 +210,7 @@ class tvn:
 
         unencryptedToken = pkcs5_pad(unencryptedToken)
 
-        tvncrypt = AES.new(binascii.unhexlify(key), AES.MODE_CBC, binascii.unhexlify(TestSalt))
+        tvncrypt = AES.new(binascii.unhexlify(key), AES.MODE_CBC, binascii.unhexlify(salt))
         encryptedToken = tvncrypt.encrypt(unencryptedToken)
         encryptedTokenHEX = binascii.hexlify(encryptedToken).upper()
 
