@@ -1,2 +1,11 @@
-[B]0.0.1[/B]
+Version 0.0.1
 Initial release
+
+Version 0.0.4
+- added iplex (need patch ffmpeg)
+- added tvp info
+- added tvn player (need install PyCrypto)
+- fixed weebtv (need patch rtmp library)
+- fixed ekino
+- fixed iitv
+- disabled ipla
