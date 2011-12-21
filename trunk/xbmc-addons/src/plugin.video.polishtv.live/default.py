@@ -25,11 +25,11 @@ TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
 VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
 		     #201: "iTVP [filmy, seriale, vod]",
 		     #202: "AnyFiles [różne filmy]",
-		     #203: "IPLEX",
+		     203: "IPLEX",
 		     #201: "IPLA",
 		     202: "iiTV info [seriale]",
 		     204: "TVP [info]",
-             #205: "TVN Player"
+             205: "TVN Player"
 }
 
 
@@ -68,9 +68,9 @@ class PolishLiveTV:
 	#elif mode == '202':
 	#	vod = anyfiles.AnyFiles()
 	#	vod.handleService()
-	#elif mode == '203' or service == 'iplex':
-	#	vod = iplex.IPLEX()
-	#	vod.handleService()
+	elif mode == '203' or service == 'iplex':
+		vod = iplex.IPLEX()
+		vod.handleService()
 	#elif mode == '201' or service == 'ipla':
 	#	vod = ipla.IPLA()
 	#	vod.handleService()
