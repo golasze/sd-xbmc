@@ -43,7 +43,10 @@ HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mand
 EXTRA_CHANNELS = [	
 			['http://weeb.tv/channel/jedynka','TVP1','http://weeb.tv/static/ci/13.jpg', 'TVP1'],
 			['http://weeb.tv/channel/dwójka', 'TVP2', 'http://weeb.tv/static/ci/6.jpg', 'TVP2'],
-			['http://weeb.tv/channel/tvpolskahd', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD']
+			['http://weeb.tv/channel/tvpolskahd', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD'],
+			['http://weeb.tv/channel/hbo-HBO', 'HBO HD', 'http://weeb.tv/static/ci/53.jpg', 'HBO HD'],
+			['http://weeb.tv/channel/hbo-HBO2', 'HBO2 HD', 'http://weeb.tv/static/ci/56.jpg', 'HBO 2 HD'],
+			['http://weeb.tv/channel/hbo-HBOCOMEDY', 'HBO Comedy HD', 'http://weeb.tv/static/ci/71.jpg', 'HBO Comedy HD']
 ]
 
 class WeebTV:
@@ -280,7 +283,7 @@ class WeebTV:
     play = str(self.settings.paramPage)
     url = str(self.settings.paramURL)
     chn = name.replace("+", " ")
-    log.info('b: '+chn + ', play: ' + play + ', url: ' + url + ', name: ' + name)
+    #log.info('b: '+chn + ', play: ' + play + ', url: ' + url + ', name: ' + name)
     if chn == 'None':
         try:
             self.getChannelNamesAddLink()
@@ -288,5 +291,4 @@ class WeebTV:
             d = xbmcgui.Dialog()
             d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')
     if play == 'playSelectedMovie':
-
         self.playConnection(url)
