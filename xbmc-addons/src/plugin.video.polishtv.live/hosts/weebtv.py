@@ -46,7 +46,8 @@ EXTRA_CHANNELS = [
 			['http://weeb.tv/channel/tvpolskahd', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD'],
 			['http://weeb.tv/channel/hbo-HBO', 'HBO HD', 'http://weeb.tv/static/ci/53.jpg', 'HBO HD'],
 			['http://weeb.tv/channel/hbo-HBO2', 'HBO2 HD', 'http://weeb.tv/static/ci/56.jpg', 'HBO 2 HD'],
-			['http://weeb.tv/channel/hbo-HBOCOMEDY', 'HBO Comedy HD', 'http://weeb.tv/static/ci/71.jpg', 'HBO Comedy HD']
+			['http://weeb.tv/channel/hbo-HBOCOMEDY', 'HBO Comedy HD', 'http://weeb.tv/static/ci/71.jpg', 'HBO Comedy HD'],
+			['http://weeb.tv/channel/hbo-CINEMAX', 'Cinemax HD', 'http://weeb.tv/static/ci/58.jpg', 'Cinemax HD']
 ]
 
 class WeebTV:
