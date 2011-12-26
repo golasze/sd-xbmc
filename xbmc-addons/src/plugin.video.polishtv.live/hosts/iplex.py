@@ -2,7 +2,10 @@
 import urllib, urllib2, re, os, sys, math
 import xbmcgui, xbmc, xbmcaddon, xbmcplugin
 import elementtree.ElementTree as ET
-import hashlib
+try:
+	from hashlib import md5
+except ImportError:
+	import md5
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -116,8 +119,8 @@ class IPLEX:
 
     def getMovieLinkFromXML(self, url):
         urlLink = 'None'
-        log.info('url: ' + playerUrl + self.getMovieID(url) + '?sessionid=' + str(hashlib.md5(url).hexdigest()) + '&chlck=hhi7ep&r=1321745471310')
-        urlXml = playerUrl + self.getMovieID(url) + '?sessionid=' + str(hashlib.md5(url).hexdigest()) + '&chlck=hhi7ep&r=1321745471310'
+        log.info('url: ' + playerUrl + self.getMovieID(url) + '?sessionid=' + str(md5(url).hexdigest()) + '&chlck=hhi7ep&r=1321745471310')
+        urlXml = playerUrl + self.getMovieID(url) + '?sessionid=' + str(md5(url).hexdigest()) + '&chlck=hhi7ep&r=1321745471310'
         elems = ET.parse(urllib.urlopen(urlXml)).getroot()
         mediaItems = elems.find("Media").findall("MediaItem")
         for mediaItem in mediaItems:
