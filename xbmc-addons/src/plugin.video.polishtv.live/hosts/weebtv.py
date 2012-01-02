@@ -71,7 +71,7 @@ class WeebTV:
       openURL = urllib.urlopen(urlChans)
       readURL = openURL.read()
       openURL.close()
-      match_opt = re.compile('<p style="font-size:14px;.+>(.*?)</a></p>(.*\n){6}.*<a href="(.*?)" title="(.*?)"><img src="(.*)" alt=".*?" height="100" width="100" /></a>').findall(readURL)
+      match_opt = re.compile('<p style="font-size:12px;.+>(.*?)</a></p>(.*\n){5}.*<a href="(.*?)" title="(.*?)"><img src="(.*)" alt=".*?" height="100" width="100" /></a>').findall(readURL)
       if len(match_opt) > 0:
           for i in range(len(match_opt)):
               link = match_opt[i][2]
