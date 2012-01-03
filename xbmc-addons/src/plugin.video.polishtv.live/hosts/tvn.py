@@ -70,7 +70,7 @@ class tvn:
         liz.setInfo( type="Video", infoLabels={
             "Title": prop['title'],
             "Plot": prop['description'],
-            "Duration": str(prop['time']/60),
+            "Duration": str(prop['time']),
             "Premiered": prop['aired'],
             "Overlay": prop['overlay'],
             "TVShowTitle" : prop['TVShowTitle'],
@@ -112,7 +112,8 @@ class tvn:
             if ET.iselement(episodeNode):
                 episodeNo = episodeNode.text
                 if episodeNo:
-                    name = name + ", odcinek " + str(episodeNode.text)
+                    if episodeNode.text != "0":
+                        name = name + ", odcinek " + str(episodeNode.text)
 
             airDateNode = category.find('start_date')
             if ET.iselement(airDateNode):
@@ -130,7 +131,8 @@ class tvn:
             id = category.find('id').text.encode('utf-8')
             videoUrl = ''
             if type == 'episode':
-                videoUrl = self.getVideoUrl(type,id)
+                videoProp = self.getVideoUrl(type,id)
+                videoUrl = videoProp[0]
 
             thumbnails = category.findall('thumbnail/row')
             iconUrl = ''
@@ -139,7 +141,20 @@ class tvn:
                 icon = thumbnails[0].find('url').text.encode('utf-8')
                 iconUrl = self.mediaHost + self.mediaMainUrl + icon + '?quality=70&dstw=290&dsth=187&type=1'
 
-            self.addDir(name,id,self.mode,type,iconUrl,videoUrl,listsize)
+            if videoUrl == "":
+                self.addDir(name,id,self.mode,type,iconUrl,videoUrl,listsize)
+            else:
+                prop = {
+                    'title': name,
+                    'TVShowTitle' : name,
+                    'aired' : airDate,
+                    'episode' : 0,
+                    'description': videoProp[2],
+                    'time': int(videoProp[1])
+                    }
+                if self.watched(videoUrl):
+                    prop['overlay'] = 7
+                self.addVideoLink(prop,videoUrl,iconUrl,listsize)
         xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_UNSORTED )
         xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -165,13 +180,24 @@ class tvn:
         groupName = 'item'
         urlQuery = '&type=%s&id=%s&limit=30&page=1&sort=newest&m=%s' % (category, id,method)
         urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
-        print self.contentHost+self.startUrl + urlQuery
+        #print self.contentHost+self.startUrl + urlQuery
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
         response = urllib2.urlopen(req)
         xmlDoc = ET.parse(response).getroot()
+        runtime = xmlDoc.find(method + "/" + groupName + "/run_time")
+        videoTime = 0
+        #print ET.dump(runtime)
+        if ET.iselement(runtime):
+            videoTimeStr = runtime.text
+            videoTimeElems = videoTimeStr.split(":")
+            videoTime = int(videoTimeElems[0])*60*60+int(videoTimeElems[1])*60+int(videoTimeElems[2])
+        plot = xmlDoc.find(method + "/" + groupName + "/lead")
+        videoPlot = ""
+        if ET.iselement(plot):
+            videoPlot = plot.text.encode('utf-8')
+
         videos = xmlDoc.findall(method + "/" + groupName + "/videos/main/video_content/row")
-        videosCount = len(videos)
         videoUrls={}
         for video in videos:
             qualityName = video.find('profile_name').text
@@ -193,18 +219,18 @@ class tvn:
         if len(rankSorted) > 0:
             videoUrl = videoUrls.get(rankSorted[0])
             videoUrl = self.generateToken(videoUrl)
-            print videoUrl
+            #print videoUrl
         else:
             videoUrl = ''
-        return videoUrl
+        return [videoUrl, videoTime, videoPlot]
 
     def generateToken(self, url):
         url = url.replace('http://redir.atmcdn.pl/http/','')
         SecretKey = 'AB9843DSAIUDHW87Y3874Q903409QEWA'
         iv = 'ab5ef983454a21bd'
         KeyStr = '0f12f35aa0c542e45926c43a39ee2a7b38ec2f26975c00a30e1292f7e137e120e5ae9d1cfe10dd682834e3754efc1733'
-        salt = sha1()
-        salt.update(os.urandom(16))
+        salt = sha1(url)
+        #salt.update(os.urandom(16))
         salt = salt.hexdigest()[:32]
 
         tvncrypt = crypto.cipher.aes_cbc.AES_CBC(SecretKey, padding=crypto.cipher.base.noPadding(), keySize=32)
@@ -225,4 +251,13 @@ class tvn:
 
         return "http://redir.atmcdn.pl/http/%s?salt=%s&token=%s" % (url, salt, encryptedTokenHEX)
 
-
+    def watched(self, videoUrl):
+        videoFile = videoUrl.split('?')[-1]
+        videoFile = videoFile.split('&')[0]
+        sql_data = "SELECT COUNT(*) FROM files WHERE files.strFilename LIKE '%%" + videoFile + "%%' AND files.playCount > 0"
+        xml_data = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % urllib.quote_plus( sql_data ), )
+        wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
+        if wasWatched == "1":
+            return True
+        else :
+            return False
