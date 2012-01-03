@@ -7,8 +7,9 @@ from xml.dom.minidom import parseString
 from time import strftime,strptime, localtime
 from datetime import date
 
-from Crypto.Cipher import AES
-import binascii, hashlib, time
+import crypto.cipher.aes_cbc
+import crypto.cipher.base
+import binascii, hashlib, time, os
 
 import pLog, settings
 
@@ -196,10 +197,12 @@ class tvn:
         SecretKey = 'AB9843DSAIUDHW87Y3874Q903409QEWA'
         iv = 'ab5ef983454a21bd'
         KeyStr = '0f12f35aa0c542e45926c43a39ee2a7b38ec2f26975c00a30e1292f7e137e120e5ae9d1cfe10dd682834e3754efc1733'
-        salt = '5F4CF8D6E9EF29BC7200B31292EAF96B'
+        salt = hashlib.sha1()
+        salt.update(os.urandom(16))
+        salt = salt.hexdigest()[:32]
 
-        tvncrypt = AES.new(SecretKey, AES.MODE_CBC, iv)
-        key = tvncrypt.decrypt(binascii.unhexlify(KeyStr))[:32]
+        tvncrypt = crypto.cipher.aes_cbc.AES_CBC(SecretKey, padding=crypto.cipher.base.noPadding(), keySize=32)
+        key = tvncrypt.decrypt(binascii.unhexlify(KeyStr), iv=iv)[:32]
 
         expire = 3600000L + long(time.time()*1000) - 946684800000L
 
@@ -210,8 +213,8 @@ class tvn:
 
         unencryptedToken = pkcs5_pad(unencryptedToken)
 
-        tvncrypt = AES.new(binascii.unhexlify(key), AES.MODE_CBC, binascii.unhexlify(salt))
-        encryptedToken = tvncrypt.encrypt(unencryptedToken)
+        tvncrypt = crypto.cipher.aes_cbc.AES_CBC(binascii.unhexlify(key), padding=crypto.cipher.base.noPadding(), keySize=16)
+        encryptedToken = tvncrypt.encrypt(unencryptedToken, iv=binascii.unhexlify(salt))
         encryptedTokenHEX = binascii.hexlify(encryptedToken).upper()
 
         return "http://redir.atmcdn.pl/http/%s?salt=%s&token=%s" % (url, salt, encryptedTokenHEX)
