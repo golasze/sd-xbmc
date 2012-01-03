@@ -9,7 +9,13 @@ from datetime import date
 
 import crypto.cipher.aes_cbc
 import crypto.cipher.base
-import binascii, hashlib, time, os
+import binascii, time, os
+
+try:
+	from hashlib import sha1
+except ImportError:
+	import sha
+	sha1 = sha.new
 
 import pLog, settings
 
@@ -197,7 +203,7 @@ class tvn:
         SecretKey = 'AB9843DSAIUDHW87Y3874Q903409QEWA'
         iv = 'ab5ef983454a21bd'
         KeyStr = '0f12f35aa0c542e45926c43a39ee2a7b38ec2f26975c00a30e1292f7e137e120e5ae9d1cfe10dd682834e3754efc1733'
-        salt = hashlib.sha1()
+        salt = sha1()
         salt.update(os.urandom(16))
         salt = salt.hexdigest()[:32]
 
