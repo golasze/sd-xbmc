@@ -25,4 +25,10 @@
 	<setting id="weebtv_info" type="text" label="55106" default="" />
 	<setting id="weebtv_info" type="text" label="55107" default="" />
     </category>
+    <category label="55200">
+        <setting id="tvn_perpage" type="labelenum" label="55201" values="10|20|30|40|50" default="50" />
+    </category>
+    <category label="55300">
+        <setting id="tvp_perpage" type="labelenum" label="55301" values="10|20|30|40|50" default="12" />
+    </category>
 </settings>
