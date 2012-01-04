@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import urllib, urllib2, sys, re
-import xbmcgui, xbmc, xbmcplugin
+import xbmcgui, xbmc, xbmcplugin, xbmcaddon
 
 import elementtree.ElementTree as ET
 from xml.dom.minidom import parseString
@@ -12,18 +12,20 @@ import crypto.cipher.base
 import binascii, time, os
 
 try:
-	from hashlib import sha1
+    from hashlib import sha1
 except ImportError:
-	import sha
-	sha1 = sha.new
+    import sha
+    sha1 = sha.new
 
 import pLog, settings
 
 log = pLog.pLog()
 HANDLE = int(sys.argv[1])
+PAGE_LIMIT = 50
 
 class tvn:
     mode = 0
+    __settings__ = xbmcaddon.Addon(sys.modules[ "__main__" ].scriptID)
     __moduleSettings__ =  settings.TVSettings()
     contentHost = 'http://tvnplayer.pl'
     mediaHost = 'http://redir.atmcdn.pl'
@@ -37,8 +39,10 @@ class tvn:
     def __init__(self):
         log.info("Starting TVN Player")
 
-    def addDir(self,name,id,mode,category,iconimage,videoUrl='',listsize=0):
+    def addDir(self,name,id,mode,category,iconimage,videoUrl='',listsize=0,season=0):
         u = sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&category="+urllib.quote_plus(category)+"&id="+urllib.quote_plus(id)
+        if season > 0:
+            u = u + "&season=" + str(season)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         if category == 'episode':
@@ -84,7 +88,10 @@ class tvn:
         if self.category != 'None' and self.id != 'None':
             method = 'getItems'
             groupName = 'items'
-            urlQuery = '&type=%s&id=%s&limit=50&page=1&sort=newest&m=%s' % (self.category, self.id,method)
+            page = 1+self.page
+            urlQuery = '&type=%s&id=%s&limit=%s&page=%s&sort=newest&m=%s' % (self.category, self.id, str(PAGE_LIMIT), str(page), method)
+            if self.season > 0:
+                urlQuery = urlQuery + "&season=" + str(self.season)
 
         else:
             method = 'mainInfo'
@@ -97,7 +104,22 @@ class tvn:
         response = urllib2.urlopen(req)
         xmlDoc = ET.parse(response).getroot()
         categories = xmlDoc.findall(method + "/" + groupName + "/row")
+        countItemNode = xmlDoc.find(method + "/count_items")
+        showNextPage = False
+        if ET.iselement(countItemNode):
+            countItem = int(countItemNode.text)
+            if countItem > PAGE_LIMIT*(1+self.page):
+                showNextPage = True
+
         listsize = len(categories)
+
+
+        seasons = xmlDoc.find(method + "/seasons")
+        showSeasons = False
+        if ET.iselement(seasons):
+            showSeasons = True
+            listsize = listsize + seasons.__len__()
+
         hasVideo = False
 
         for category in categories:
@@ -116,6 +138,13 @@ class tvn:
                 if episodeNo:
                     if episodeNode.text != "0":
                         name = name + ", odcinek " + str(episodeNode.text)
+            seasonNode = category.find('season')
+            if ET.iselement(seasonNode):
+                seasonNo = seasonNode.text
+                if seasonNo:
+                    if seasonNo != "0":
+                        name = name + ", sezon " + str(seasonNo)
+
 
             airDateNode = category.find('start_date')
             if ET.iselement(airDateNode):
@@ -136,12 +165,7 @@ class tvn:
                 videoProp = self.getVideoUrl(type,id)
                 videoUrl = videoProp[0]
 
-            thumbnails = category.findall('thumbnail/row')
-            iconUrl = ''
-
-            if len(thumbnails) > 0:
-                icon = thumbnails[0].find('url').text.encode('utf-8')
-                iconUrl = self.mediaHost + self.mediaMainUrl + icon + '?quality=70&dstw=290&dsth=187&type=1'
+            iconUrl = self.getIconUrl(category)
 
             if videoUrl == "":
                 self.addDir(name,id,self.mode,type,iconUrl,videoUrl,listsize)
@@ -159,6 +183,15 @@ class tvn:
 
                 self.addVideoLink(prop,videoUrl,iconUrl,listsize)
                 hasVideo = True
+
+        if showSeasons:
+            for season in seasons:
+                iconUrl = self.getIconUrl(season)
+                self.addDir(season.find('name').text,self.id,self.mode,self.category,iconUrl,"",listsize,season.find('id').text)
+                print "1" #ET.dump(season)
+
+        if showNextPage:
+            self.addNextPage()
         xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_UNSORTED )
         xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
         if hasVideo:
@@ -174,6 +207,18 @@ class tvn:
         self.mode = str(self.__moduleSettings__.paramMode)
         self.url = str(self.__moduleSettings__.paramURL)
         self.id = str(self.__moduleSettings__.getParam(self.__moduleSettings__.getParams(), 'id'))
+        self.page = self.__moduleSettings__.getParam(self.__moduleSettings__.getParams(), 'page')
+        self.season = self.__moduleSettings__.getParam(self.__moduleSettings__.getParams(), 'season')
+        if not self.page:
+            self.page = 0
+        else:
+            self.page = int(self.page)
+
+        if not self.season:
+            self.season = 0
+        else:
+            self.season = int(self.season)
+
         print "name:" + self.name + ", title:" + self.title + ", category:" + self.category + ", mode:" + self.mode + ", id:" + self.id
 
         if self.name == 'None':
@@ -196,8 +241,9 @@ class tvn:
         #print ET.dump(runtime)
         if ET.iselement(runtime):
             videoTimeStr = runtime.text
-            videoTimeElems = videoTimeStr.split(":")
-            videoTime = int(videoTimeElems[0])*60*60+int(videoTimeElems[1])*60+int(videoTimeElems[2])
+            if  videoTimeStr:
+                videoTimeElems = videoTimeStr.split(":")
+                videoTime = int(videoTimeElems[0])*60*60+int(videoTimeElems[1])*60+int(videoTimeElems[2])
         plot = xmlDoc.find(method + "/" + groupName + "/lead")
         videoPlot = ""
         if ET.iselement(plot):
@@ -266,3 +312,27 @@ class tvn:
             return True
         else :
             return False
+
+    def addNextPage(self):
+        page = self.page
+        if not page:
+            page = 0
+
+        u = sys.argv[0]+"?mode="+self.mode+"&name="+urllib.quote_plus(self.name)+"&category="+urllib.quote_plus(self.category)+"&page="+str(page+1)+"&url="+urllib.quote_plus(self.url)+"&id="+urllib.quote_plus(self.id)
+        ok=True
+        image = os.path.join( self.__settings__.getAddonInfo('path'), "images/" ) + "next.png"
+
+        liz=xbmcgui.ListItem("Następna", iconImage="DefaultFolder.png", thumbnailImage=image)
+        liz.setProperty( "Folder", "true" )
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+        return ok
+
+    def getIconUrl(self, node):
+        thumbnails = node.findall('thumbnail/row')
+        iconUrl = ''
+
+        if len(thumbnails) > 0:
+            icon = thumbnails[0].find('url').text.encode('utf-8')
+            iconUrl = self.mediaHost + self.mediaMainUrl + icon + '?quality=70&dstw=290&dsth=187&type=1'
+
+        return iconUrl
