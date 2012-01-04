@@ -142,8 +142,9 @@ class IPLA:
             thumb = value[2]
             desc = value[8]
             duration = value[9]
-            self.addLink(title, thumb, url, desc, self.getMovieTime(duration))
-        xbmcplugin.endOfDirectory(int(sys.argv[1])) 
+            self.addLink(title, thumb, url, desc, self.getMovieTime(duration), self.watched(url))
+        xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
 
     def listsCategories(self, url):
@@ -269,8 +270,12 @@ class IPLA:
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 
 
-    def addLink(self, title, iconimage, url, desc, duration):
+    def addLink(self, title, iconimage, url, desc, duration, watched):
         u= url
+        if watched:
+            overlay = 7
+        else:
+            overlay = 0
         #log.info(str(u))
         liz=xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setProperty("IsPlayable", "true")
@@ -278,7 +283,8 @@ class IPLA:
                                                "Plot": desc,
                                                "Genre": "Film/Serial",
                                                "PlotOutline": desc,
-                                               "Duration": duration } )
+                                               "Duration": duration,
+                                               "Overlay": overlay} )
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
         
                
@@ -314,4 +320,13 @@ class IPLA:
             self.listsMovieVOD(name)
         
         #if name == 'Filmy' and url != 'None':
-        #    self.listsMovieVOD(url)   
+        #    self.listsMovieVOD(url)
+    def watched(self, videoUrl):
+        videoFile = videoUrl[1+videoUrl.rfind('/'):]
+        sql_data = "SELECT count(*) FROM files WHERE strFilename = '" + videoFile + "' AND files.playCount > 0"
+        xml_data = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % urllib.quote_plus( sql_data ), )
+        wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
+        if wasWatched == "1":
+            return True
+        else :
+            return False
