@@ -21,4 +21,12 @@
     <string id="55105">Wyłącz limit (dla nie posiadających kont)</string>
     <string id="55106">Dotyczy serwisu [B]Ekino TV[/B].</string>
     <string id="55107">Więcej na ([B]http://megavideo.com[/B]).</string>
+
+    <!-- TVN settings -->
+    <string id="55200">TVN</string>
+    <string id="55201">Plików Video na stronie</string>
+
+    <!-- TVN settings -->
+    <string id="55300">TVP</string>
+    <string id="55301">Plików Video na stronie</string>
 </strings>
