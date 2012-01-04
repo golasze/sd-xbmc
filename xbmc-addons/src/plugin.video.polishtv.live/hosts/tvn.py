@@ -20,6 +20,7 @@ except ImportError:
 import pLog, settings
 
 log = pLog.pLog()
+HANDLE = int(sys.argv[1])
 
 class tvn:
     mode = 0
@@ -64,7 +65,6 @@ class tvn:
         if not 'episode' in prop:
             prop['episode'] = 0
 
-
         liz=xbmcgui.ListItem(prop['title'], iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setProperty("IsPlayable", "true")
         liz.setInfo( type="Video", infoLabels={
@@ -98,6 +98,8 @@ class tvn:
         xmlDoc = ET.parse(response).getroot()
         categories = xmlDoc.findall(method + "/" + groupName + "/row")
         listsize = len(categories)
+        hasVideo = False
+
         for category in categories:
             titleNode = category.find('name')
             if not ET.iselement(titleNode):
@@ -154,9 +156,13 @@ class tvn:
                     }
                 if self.watched(videoUrl):
                     prop['overlay'] = 7
+
                 self.addVideoLink(prop,videoUrl,iconUrl,listsize)
+                hasVideo = True
         xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_UNSORTED )
         xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
+        if hasVideo:
+            xbmcplugin.setContent(int( sys.argv[ 1 ] ), 'episodes')
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -229,8 +235,8 @@ class tvn:
         SecretKey = 'AB9843DSAIUDHW87Y3874Q903409QEWA'
         iv = 'ab5ef983454a21bd'
         KeyStr = '0f12f35aa0c542e45926c43a39ee2a7b38ec2f26975c00a30e1292f7e137e120e5ae9d1cfe10dd682834e3754efc1733'
-        salt = sha1(url)
-        #salt.update(os.urandom(16))
+        salt = sha1()
+        salt.update(os.urandom(16))
         salt = salt.hexdigest()[:32]
 
         tvncrypt = crypto.cipher.aes_cbc.AES_CBC(SecretKey, padding=crypto.cipher.base.noPadding(), keySize=32)
@@ -252,9 +258,8 @@ class tvn:
         return "http://redir.atmcdn.pl/http/%s?salt=%s&token=%s" % (url, salt, encryptedTokenHEX)
 
     def watched(self, videoUrl):
-        videoFile = videoUrl.split('?')[-1]
-        videoFile = videoFile.split('&')[0]
-        sql_data = "SELECT COUNT(*) FROM files WHERE files.strFilename LIKE '%%" + videoFile + "%%' AND files.playCount > 0"
+        videoPath = videoUrl[0:1+videoUrl.rfind('/')]
+        sql_data = "SELECT count(*) FROM files LEFT JOIN path ON files.idPath = path.idPath WHERE path.strPath = '" + videoPath + "' AND files.playCount > 0"
         xml_data = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % urllib.quote_plus( sql_data ), )
         wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
         if wasWatched == "1":
