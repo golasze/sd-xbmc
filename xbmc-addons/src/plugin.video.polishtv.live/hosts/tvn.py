@@ -247,7 +247,9 @@ class tvn:
         plot = xmlDoc.find(method + "/" + groupName + "/lead")
         videoPlot = ""
         if ET.iselement(plot):
-            videoPlot = plot.text.encode('utf-8')
+            videoPlot = plot.text
+            if  videoPlot:
+                videoPlot = plot.text.encode('utf-8')
 
         videos = xmlDoc.findall(method + "/" + groupName + "/videos/main/video_content/row")
         videoUrls={}
