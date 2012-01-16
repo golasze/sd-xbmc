@@ -144,7 +144,7 @@ class WeebTV:
     icon = ''
     origTab = self.getChannels()
     for chan in origTab:
-      if chan[0] == url:
+      if chan[0] in url:
         return chan
     return []
 
