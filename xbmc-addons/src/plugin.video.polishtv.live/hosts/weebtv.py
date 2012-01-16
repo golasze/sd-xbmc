@@ -65,9 +65,14 @@ class WeebTV:
   
 
   def getChannels(self):
-      outTab = EXTRA_CHANNELS
+      #outTab = EXTRA_CHANNELS
+      outTab = []
       strTab = []
       urlChans = mainUrl + '/channels'
+      if self.settings.WeebTVEnable == 'true':
+  	  	  username = self.settings.WeebTVLogin
+  	  	  password = self.settings.WeebTVPassword
+  	  	  urlChans = mainUrl + '/channels&username=' + urllib.quote_plus(username) + '&userpassword=' + urllib.quote_plus(password) + '&option=andback'      	
       openURL = urllib.urlopen(urlChans)
       readURL = openURL.read()
       openURL.close()
@@ -150,6 +155,7 @@ class WeebTV:
   	  if self.settings.WeebTVEnable == 'true':
   	  	  username = self.settings.WeebTVLogin
   	  	  password = self.settings.WeebTVPassword
+  	  	  url = url + '&username=' + urllib.quote_plus(username) + '&userpassword=' + urllib.quote_plus(password)
   	  req = urllib2.Request(url)
   	  req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
   	  response = urllib2.urlopen(req)
@@ -185,6 +191,7 @@ class WeebTV:
           values = {'firstConnect': numConn, 'watchTime': '0', 'cid': channel, 'ip': 'Nan'}
       else:
           values = {'firstConnect': numConn, 'watchTime': '0', 'cid': channel, 'ip': 'Nan', 'username': username, 'password': password}
+          playerUrl = playerUrl + '&username=' + urllib.quote_plus(username) + '&userpassword=' + urllib.quote_plus(password)
       headers = { 'User-Agent' : HOST }
       dataConn = urllib.urlencode(values)
       reqUrl = urllib2.Request(playerUrl, dataConn, headers)
