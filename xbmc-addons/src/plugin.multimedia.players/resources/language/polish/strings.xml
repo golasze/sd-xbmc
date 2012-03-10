@@ -51,4 +51,47 @@
     <string id="50013">Inicjacja</string>
     <string id="50014">Skanowanie struktury BluRay...</string>
     <string id="50015">Oczekiwanie na strumień...</string>
+    
+    <!-- input formats -->
+    <string id="50080">Oddzielny lewy/prawy</string>
+    <string id="50081">Oddzielny prawy/lewy</string>
+    <string id="50082">Obraz Góra/Dół</string>
+    <string id="50083">Obraz Góra/Dół połowa</string>
+    <string id="50084">Obraz Dół/Góra</string>
+    <string id="50085">Obraz Dół/Góra połowa</string>
+    <string id="50086">SBS Lewy/Prawy</string>
+    <string id="50087">SBS Lewy/Prawy połowa</string>
+    <string id="50088">SBS Prawy/Lewy</string>
+    <string id="50089">SBS Prawy/Lewy połowa</string>
+    <string id="50090">Przeplot parzyste/nieparzyste</string>
+    <string id="50091">Przeplot nieparzyste/parzyste</string>
+    
+    <!-- output formats -->
+    <string id="50100">HDMI</string>
+    <string id="50101">Przeplot</string>
+    <string id="50102">Kolumny</string>
+    <string id="50103">Szachownica</string>
+    <string id="50104">Anaglif Red-Cyan: czarnobiały</string>
+    <string id="50105">Anaglif Red-Cyan: połowa koloru</string>
+    <string id="50106">Anaglif Red-Cyan: pełny kolor</string>
+    <string id="50107">Anaglif Red-Cyan: dubois</string>
+    <string id="50108">Anaglif Green-Magenta: czarnobiały</string>
+    <string id="50109">Anaglif Green-Magenta: połowa koloru</string>
+    <string id="50110">Anaglif Green-Magenta: pełny kolor</string>
+    <string id="50111">Anaglif Green-Magenta: dubois</string>
+    <string id="50112">Anaglif Amber-Blue: czarnobiały</string>
+    <string id="50113">Anaglif Amber-Blue: połowa koloru</string>
+    <string id="50114">Anaglif Amber-Blue: pełny kolor</string>
+    <string id="50115">Anaglif Amber-Blue: dubois</string>
+    <string id="50116">Anaglif Red-Green: czarnobiały</string>
+    <string id="50117">Anaglif Red-Blue: czarnobiały</string>
+    <string id="50118">2D Korektor</string>
+    <string id="50119">3D Korektor</string>
+    <string id="50120">OpenGL</string>
+    <string id="50121">2D obraz Lewy</string>
+    <string id="50122">2D obraz prawy</string>
+    <string id="50123">Obraz Góra/Dół</string>
+    <string id="50124">Obraz Góra/Dół - połowa</string>
+    <string id="50125">SBS Lewy/Prawy</string>
+    <string id="50126">SBS Lewy/Prawy - połowa</string>
 </strings>

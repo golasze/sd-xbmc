@@ -5,7 +5,7 @@
 	<setting type="lsep" label="55000"/>
 	<setting id="player_location" type="file" label="55001" default="bino"/>
 	<setting id="mediainfo_location" type="file" label="55002" default="mplayer"/>
-	<setting id="output_video" type="labelenum" label="55003" values="HDMI pack|2D left|2D right|2D equalizer|3D equalizer|3D OpenGL|3D Over/Under|3D HALF Over/Under|3D Side-By-Side|3D HALF Side-By-Side|3D rows|3D columns|3D checkerboard|Red-Cyan mono|Red-Cyan half color|Red-Cyan color|Red-Cyan dubois|Green-Magenta mono|Green-Magenta half color|Green-Magenta color|Green-Magenta dubois|Amber-Blue mono|Amber-Blue half color|Amber-Blue color|Amber-Blue dubois|Red-Green mono|Red-Blue mono" default="3D rows" />
+	<setting id="output_video" type="labelenum" label="55003" values="HDMI|Rows|Columns|Checkerboard|Red-Cyan mono|Red-Cyan half color|Red-Cyan color|Red-Cyan dubois|Green-Magenta mono|Green-Magenta half color|Green-Magenta color|Green-Magenta dubois|Amber-Blue mono|Amber-Blue half color|Amber-Blue color|Amber-Blue dubois|Red-Green mono|Red-Blue mono|Equalizer|3D Equalizer|OpenGL|Left|Right|Over/Under [Top/Bottom]|HALF Over/Under (HALF Top/Bottom)|Side-By-Side|HALF Side-By-Side" default="Rows" />
 	<!--<setting type="sep"/>-->
 	<setting type="lsep" label="55009"/>
 	<setting id="chooser" type="bool" label="55010" default="true" />

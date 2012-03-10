@@ -17,31 +17,47 @@ _ = sys.modules[ "__main__" ].__language__
 BASE_RESOURCE_PATH = os.path.join( __addon__.getAddonInfo('path'), "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import xbmc3Dplayer, pLog, connection, xbmcBDplayer
+import xbmc3Dplayer, pLog, connection
 
 #action = ''
 _log = pLog.pLog()
 movie = xbmc.getInfoLabel("ListItem.FileNameAndPath")
 
+TAB_PREFS = {'prog': 'None',
+             'mediainfo': 'None',
+             'file1': 'None',
+             'file2': 'None',
+             'input': 'None',
+             'output': 'None',
+             'audio': 'None',
+             'audnum': 0,
+             'subtitle': 'None',
+             'subnum': 0,
+             'subsize': 0,
+             'subenc': 'None',
+             'subcolor': 'None',
+             'subparallax': 0,
+             'switcher': 'false',
+             'switcherexp': 'false'}
+
 
 class Switcher(xbmcgui.WindowXMLDialog):
     def __init__(self, strXMLname, strFallbackPath, strDefaultName, forceFallback=0):
         addon = xbmcaddon.Addon(__scriptID__)
-        self.playerLocation = addon.getSetting('player_location')
-        self.mediainfoLocation = addon.getSetting('mediainfo_location')
-        self.outputVideo = addon.getSetting('output_video')
-        #self.audioLang = addon.getSetting('audio_language')
-        #self.subtitleLang = addon.getSetting('subtitle_language')
-        self.audioLang = self.getLang()
-        self.subtitleLang = self.getLang()
-        self.subtitleSize = addon.getSetting('subtitle_size')
-        self.subtitleCoding = addon.getSetting('subtitle_coding')
-        self.subtitleColor = addon.getSetting('subtitle_color')
-        self.subtitleParallax = addon.getSetting('subtitle_parallax')
-        self.switcher = addon.getSetting('chooser')
-        self.switcherExp = addon.getSetting('chooser_exp')
         self.player = xbmc3Dplayer.StereoscopicPlayer()
         self.conn = connection.Connection()
+        TAB_PREFS['prog'] = addon.getSetting('player_location')
+        TAB_PREFS['mediainfo'] = addon.getSetting('mediainfo_location')
+        TAB_PREFS['file1'] = '"' + xbmc.getInfoLabel("ListItem.FileNameAndPath") + '"'
+        TAB_PREFS['output'] = self.player.getOutputFormat(addon.getSetting('output_video'))
+        TAB_PREFS['audio'] = self.getLang()
+        TAB_PREFS['subtitle'] = self.getLang()
+        TAB_PREFS['subsize'] = addon.getSetting('subtitle_size')
+        TAB_PREFS['subenc'] = addon.getSetting('subtitle_coding')
+        TAB_PREFS['subcolor'] =  addon.getSetting('subtitle_color')
+        TAB_PREFS['subparallax'] = addon.getSetting('subtitle_parallax')
+        TAB_PREFS['switcher'] = addon.getSetting('chooser')
+        TAB_PREFS['switcherexp'] = addon.getSetting('chooser_exp')       
 
 
     def onInit(self):
@@ -93,30 +109,30 @@ class Switcher(xbmcgui.WindowXMLDialog):
     
     
     def play3D(self):
-        optExp3D = False
-        if self.switcherExp == 'true':
+        if TAB_PREFS['switcherexp'] == 'true':
             is3DFile = open('/tmp/is3D', 'w')
             is3DFile.write('true')
             is3DFile.close()
-            optExp3D = True
-        pathMovie = self.conn.connection(movie)
-        check = self.player.checkFile(self.mediainfoLocation, pathMovie)
-        #_log.info('Input video: ' + check)
-        if self.switcherExp == 'true':
+        #pathMovie = self.conn.connection(movie)
+        #check = self.player.checkFile(self.mediainfoLocation, pathMovie)
+        #TAB_PREFS['input'] = self.player.checkFile(TAB_PREFS['mediainfo'], pathMovie)
+        ##_log.info('Input video: ' + check)
+        if TAB_PREFS['switcherexp'] == 'true':
             xbmcPlayer = xbmc.Player()
-        if check == '':
-            videoInput = self.inputSettings()
-            self.player.playStereoUnknown(self.playerLocation, pathMovie, videoInput, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax, optExp3D)
-            if self.switcherExp == 'true':
+        #if check == '':
+        #    videoInput = self.inputSettings()
+        #    self.player.playStereoUnknown(self.playerLocation, pathMovie, videoInput, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax, optExp3D)
+        #    if TAB_PREFS['switcherexp'] == 'true':
                 #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
-                xbmcPlayer.play(pathMovie)
-        else:
-            self.player.playStereo(self.playerLocation, check, pathMovie, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax, optExp3D)
-            if self.switcherExp == 'true':
+        #        xbmcPlayer.play(pathMovie)
+        #else:
+        #    self.player.playStereo(self.playerLocation, check, pathMovie, self.outputVideo, self.audioLang, self.subtitleLang, self.subtitleSize, self.subtitleCoding, self.subtitleColor, self.subtitleParallax, optExp3D)
+        #    if TAB_PREFS['switcherexp'] == 'true':
                 #xbmc.executebuiltin('XBMC.PlayMedia(' + pathMovie + ')')
-                xbmcPlayer.play(pathMovie)
-        self.conn.exit(movie)
-        if self.switcherExp == 'true':
+        #        xbmcPlayer.play(pathMovie)
+        #self.conn.exit(movie)
+        self.player.playStereo(TAB_PREFS)
+        if TAB_PREFS['switcherexp'] == 'true':
             try:
                 os.remove('/tmp/is3D')
             except:

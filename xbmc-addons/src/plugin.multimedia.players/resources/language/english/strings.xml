@@ -51,4 +51,47 @@
     <string id="50013">Initializing</string>
     <string id="50014">Scan BluRay structure...</string>
     <string id="50015">Waiting for the stream...</string>
+
+	<!-- input formats -->
+    <string id="50080">Separate left/right</string>
+    <string id="50081">Separate right/left</string>
+    <string id="50082">Picture Over/Under (Top/Bottom)</string>
+    <string id="50083">Picture Over/Under HALF (HALF Top/Bottom)</string>
+    <string id="50084">Picture Under/Over (Bottom/Top)</string>
+    <string id="50085">Picture Under/Over HALF (HALF Bottom/Top)</string>
+    <string id="50086">SBS Left/Right</string>
+    <string id="50087">SBS Left/Right HALF</string>
+    <string id="50088">SBS Right/Left</string>
+    <string id="50089">SBS Right/Left HALF</string>
+    <string id="50090">Rows - Even Odd</string>
+    <string id="50091">Rows - Odd Even</string>
+    
+    <!-- output formats -->
+    <string id="50100">HDMI</string>
+    <string id="50101">Rows</string>
+    <string id="50102">Columns</string>
+    <string id="50103">Checkerboard</string>
+    <string id="50104">Anaglyph Red-Cyan: mono</string>
+    <string id="50105">Anaglyph Red-Cyan: half color</string>
+    <string id="50106">Anaglyph Red-Cyan: color</string>
+    <string id="50107">Anaglyph Red-Cyan: dubois</string>
+    <string id="50108">Anaglyph Green-Magenta: mono</string>
+    <string id="50109">Anaglyph Green-Magenta: half color</string>
+    <string id="50110">Anaglyph Green-Magenta: color</string>
+    <string id="50111">Anaglyph Green-Magenta: dubois</string>
+    <string id="50112">Anaglyph Amber-Blue: mono</string>
+    <string id="50113">Anaglyph Amber-Blue: half color</string>
+    <string id="50114">Anaglyph Amber-Blue: color</string>
+    <string id="50115">Anaglyph Amber-Blue: dubois</string>
+    <string id="50116">Anaglyph Red-Green: mono</string>
+    <string id="50117">Anaglyph Red-Blue: mono</string>
+    <string id="50118">2D Equalizer</string>
+    <string id="50119">3D equalizer</string>
+    <string id="50120">OpenGL</string>
+    <string id="50121">2D Left</string>
+    <string id="50122">2D Right</string>
+    <string id="50123">Over/Under [Top/Bottom]</string>
+    <string id="50124">Over/Under HALF (HALF Top/Bottom)</string>
+    <string id="50125">Side-By-Side</string>
+    <string id="50126">Side-By-Side HALF</string>
 </strings>
