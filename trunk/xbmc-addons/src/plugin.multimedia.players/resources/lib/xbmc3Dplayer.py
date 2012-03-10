@@ -6,7 +6,7 @@ import string, urllib
 import sys
 import re
 import os, stat
-import xbmc
+import xbmc, xbmcgui
 import pLog, connection
 
 __scriptID__   = sys.modules[ "__main__" ].__scriptID__
@@ -14,452 +14,301 @@ _ = sys.modules[ "__main__" ].__language__
 
 _log = pLog.pLog()
 
+TAB_INPUTS = {_(50080): 'separate-left-right',
+              _(50081): 'separate-right-left',
+              _(50082): 'top-bottom',
+              _(50083): 'top-bottom-half',
+              _(50084): 'bottom-top',
+              _(50085): 'bottom-top-half',
+              _(50086): 'left-right',
+              _(50087): 'left-right-half',
+              _(50088): 'right-left',
+              _(50089): 'right-left-half',
+              _(50090): 'even-odd-rows',
+              _(50091): 'odd-even-rows'}
+
+TAB_OUTPUTS = {_(50100): 'hdmi-frame-pack',
+               _(50101): 'even-odd-rows',
+               _(50102): 'even-odd-columns',
+               _(50103): 'checkerboard',
+               _(50104): 'red-cyan-monochrome',
+               _(50105): 'red-cyan-half-color',
+               _(50106): 'red-cyan-full-color',
+               _(50107): 'red-cyan-dubois',
+               _(50108): 'green-magenta-monochrome',
+               _(50109): 'green-magenta-half-color',
+               _(50110): 'green-magenta-full-color',
+               _(50111): 'green-magenta-dubois',
+               _(50112): 'amber-blue-monochrome',
+               _(50113): 'amber-blue-half-color',
+               _(50114): 'amber-blue-full-color',
+               _(50115): 'amber-blue-dubois',
+               _(50116): 'red-green-monochrome',
+               _(50117): 'red-blue-monochrome',
+               _(50118): 'equalizer',
+               _(50119): 'equalizer-3d',
+               _(50120): 'stereo',
+               _(50121): 'left',
+               _(50122): 'right',
+               _(50123): 'top-bottom',
+               _(50124): 'top-bottom-half',
+               _(50125): 'left-right',
+               _(50126): 'left-right-half'}
+
 
 class StereoscopicPlayer:
-  def __init__(self):
-    _log.info('Starting') #@UndefinedVariable
-    self.conn = connection.Connection()
+    def __init__(self):
+        _log.info('Starting') #@UndefinedVariable
+        self.conn = connection.Connection()
+        #self.settings = settings.StereoscopicSettings()
     
     
-  def player3D(self, appMovie, formStreamInput, formStreamOutput, movie, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D):
-    try:
-      if optExp3D == True:
-          playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
-      numAudio = str(self.getAudioLanguage(mediaTab, audio))
-      numSubtitle = str(self.getSubtitleLanguage(mediaTab, subtitle))
-      lircfile = os.getenv("HOME") + '/.lircrc'
-      opt = ''
-      lircOpt = ''
-      if formStreamOutput == 'even-odd-rows':
-          opt = '-S'
-      if os.path.isfile(lircfile):
-          lircOpt = '--lirc-config=' + lircfile
-      appRun = appMovie + ' --input=' + formStreamInput + ' ' + movie + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f ' + opt + '  -n'
-      #Jebie sie cos i bez "strace" nie dziala
-      #appRun = appMovie + ' --input=' + formStreamInput + ' ' + movie + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f ' + opt + ' -n|/usr/bin/strace -o /dev/null -p `/bin/ps ax|/bin/grep -v "' + appMovie + '"|/bin/grep -v grep|/bin/awk \'{print $1}\'`'
-      #playerFile.write('#!/bin/sh\n')
-      if optExp3D == True:
-          playerFile.write(appRun)
-          playerFile.close()
-          os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
-      elif optExp3D == False:
-          #subprocess.call(appRun, shell=True)
-          xbmc.executebuiltin('LIRC.Stop')
-          xbmc.executebuiltin('Hide')
-          os.system(appRun)
-          xbmc.executebuiltin('Restore')
-          xbmc.executebuiltin('LIRC.Start')
-      _log.info('Starting command: ' + appRun)
-    except OSError, e:
-      #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
-      return 1
+    def player3D(self, prefs):
+        try:
+            if prefs['switcher'] == 'false' and prefs['switcherexp'] == 'true':
+                playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
+            #numAudio = str(self.getAudioLanguage(mediaTab, prefs['audio']))
+            numAudio = '1'
+            #numSubtitle = str(self.getSubtitleLanguage(mediaTab, prefs['subtitle']))
+            numSubtitle = '0'
+            lircfile = os.getenv("HOME") + '/.lircrc'
+            opt = ''
+            lircOpt = ''
+            if prefs['output'] == 'even-odd-rows':
+                opt = '-S'
+            if os.path.isfile(lircfile):
+                lircOpt = '--lirc-config=' + lircfile
+            if prefs['input'] != 'None':
+                appRun = 'None'
+                if prefs['file1'] != 'None' and prefs['file2'] == 'None':
+                    appRun = prefs['prog'] + ' --input=' + prefs['input'] + ' ' + prefs['file1'] + ' --output=' + prefs['output'] + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + prefs['subsize'] + ' --subtitle-encoding=' + prefs['subenc'] + ' --subtitle-color=' + prefs['subcolor'] + ' --subtitle-parallax=' + prefs['subparallax'] + ' ' + lircOpt +  ' ' + opt + ' -f -n'
+                elif prefs['input'] == 'separate-left-right' and prefs['file1'] != 'None' and prefs['file2'] != 'None':
+                    appRun = prefs['prog'] + ' --input=' + prefs['input'] + ' ' + prefs['file1'] + ' ' + prefs['file2'] + ' --output=' + prefs['output'] + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + prefs['subsize'] + ' --subtitle-encoding=' + prefs['subenc'] + ' --subtitle-color=' + prefs['subcolor'] + ' --subtitle-parallax=' + prefs['subparallax'] + ' ' + lircOpt + ' -f  -n'
+                elif prefs['input'] == 'separate-right-left' and prefs['file1'] != 'None' and prefs['file2'] != 'None':
+                    appRun = prefs['prog'] + ' --input=' + prefs['input'] + ' ' + prefs['file1'] + ' ' + prefs['file2'] + ' --output=' + prefs['output'] + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + prefs['subsize'] + ' --subtitle-encoding=' + prefs['subenc'] + ' --subtitle-color=' + prefs['subcolor'] + ' --subtitle-parallax=' + prefs['subparallax'] + ' ' + lircOpt + ' -f  -n'
+                #Jebie sie cos i bez "strace" nie dziala
+                #appRun = appMovie + ' --input=' + formStreamInput + ' ' + movie + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f ' + opt + ' -n|/usr/bin/strace -o /dev/null -p `/bin/ps ax|/bin/grep -v "' + appMovie + '"|/bin/grep -v grep|/bin/awk \'{print $1}\'`'
+                #playerFile.write('#!/bin/sh\n')
+                if prefs['switcher'] == 'false' and prefs['switcherexp'] == 'true':
+                    playerFile.write(appRun)
+                    playerFile.close()
+                    os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
+                elif prefs['switcher'] == 'true' and prefs['switcherexp'] == 'false':
+                    #subprocess.call(appRun, shell=True)
+                    xbmc.executebuiltin('LIRC.Stop')
+                    xbmc.executebuiltin('Hide')
+                    os.system(appRun)
+                    xbmc.executebuiltin('Restore')
+                    xbmc.executebuiltin('LIRC.Start')
+                _log.info('Starting command: ' + appRun)
+        except OSError, e:
+            #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
+            return 1
 
 
-  def player3D2files(self, appMovie, formStreamOutput, movieL, movieR, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D):
-    try:
-      if optExp3D == True:
-          playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
-      numAudio = str(self.getAudioLanguage(mediaTab, audio))
-      numSubtitle = str(self.getSubtitleLanguage(mediaTab, subtitle))
-      lircfile = os.getenv("HOME") + '/.lircrc'
-      lircOpt = ''
-      if os.path.isfile(lircfile):
-	         lircOpt = '--lirc-config=' + lircfile      
-      appRun = appMovie + ' --input=separate-left-right ' + movieL + ' ' + movieR + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f  -n'
-      #Jebie się bez "strace" 
-      #appRun = appMovie + ' --input=separate-left-right ' + movieL + ' ' + movieR + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f -n|/usr/bin/strace -o /dev/null -p `/bin/ps ax|/bin/grep -v "' + appMovie + '"|/bin/grep -v grep|/bin/awk \'{print $1}\'`'
-      #playerFile.write('#!/bin/sh\n')
-      if optExp3D == True:
-          playerFile.write(appRun)    
-          playerFile.close()
-          os.chmod(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', stat.S_IRWXU)
-      elif optExp3D == False:
-          #subprocess.call(appRun, shell=True)
-          xbmc.executebuiltin('LIRC.Stop')
-          xbmc.executebuiltin('Hide')
-          os.system(appRun)
-          xbmc.executebuiltin('Restore')
-          xbmc.executebuiltin('LIRC.Start')
-      _log.info('Starting command: ' + appRun)
-    except OSError, e:
-      #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
-      return 1
+    def getFileName(self, movie):
+        fileName = movie
+        pref = "/"
+        if "/" in movie:
+            pref = "/"
+        elif "\\" in movie:
+            pref = "\\"
+        tabFile = movie.split(pref)
+        fileName = tabFile[len(tabFile) - 1]
+        return fileName
 
 
-  def mediaInfo(self, appMediaInfo, movie):
-    try:
-      tab = []
-      if movie != '':
-	appRun = appMediaInfo + ' -vo null -ao null -identify -frames 0 ' + movie 
-	p = subprocess.Popen(appRun, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-	while True:
-	  line = p.stdout.readline()
-	  if line == '':
-	    break
-	  #if line == '' and p.poll() != None:
-	  #  break
-	  if 'ID_' in line:
-	    tab.append(line)
-	  sys.stdout.flush()
-      return tab
-    except OSError, e:
-      #ekg.printf(subprocess.sys.stderr, "Błąd wykonania:", e)
-      return 1
-
-
-  def getWidth(self, table):
-    width = '0'
-    for line in table:
-      if "ID_VIDEO_WIDTH" in line:
-	a = line.split("=")
-	width = a[1]
-	break
-    return width
-	
-	
-  def getHeight(self, table):
-    height = '0'
-    for line in table:
-      if "ID_VIDEO_HEIGHT" in line:
-	a = line.split("=")
-	height = a[1]
-	break
-    return height
-
+    def getPathFileName(self, movie):
+        separate = ''
+        path = ''
+        if '\\' in movie:
+            tab = movie.split('\\')
+            separate = '\\'
+        elif '/' in movie:
+            tab = movie.split('/')
+            separate = '/'
+        if len(tab) > 0:
+            for i in range(len(tab - 1)):
+                if i == 0:
+                    if tab[i].startswith('http:'):
+                        path += tab[i] + separate
+                    else:
+                        path += separate + tab[i] + separate
+                else:
+                    path += tab[i] + separate
+        _log.info('Ściażka absolutna: ' + path)
+        return path
     
     
-  def isLeftEye(self, movie):
-    matchEye = re.match(r'^.*([Ll][Ee][Ff][Tt]).*$', movie, re.M|re.I)
-    if matchEye:
-      return True
-    else:
-      return False
+    def isLeftEye(self, movie):
+        matchEye = re.match(r'^.*([Ll][Ee][Ff][Tt]).*$', self.getFileName(movie), re.M|re.I)
+        if matchEye:
+            return True
+        else:
+            return False
       
 
-  def isRightEye(self, movie):
-    matchEye = re.match(r'^.*([Rr][Ii][Gg][Hh][Tt]).*$', movie, re.M|re.I)
-    if matchEye:
-      return True
-    else:
-      return False
+    def isRightEye(self, movie):
+        matchEye = re.match(r'^.*([Rr][Ii][Gg][Hh][Tt]).*$', self.getFileName(movie), re.M|re.I)
+        if matchEye:
+            return True
+        else:
+            return False
       
 
-  def movieDir(self, movie):
-    outDir = ''
-    tab = movie.split('/')
-    if len(tab) > 0:
-      ntab = len(tab) - 1
-      for i in range(ntab):
-	outDir += tab[i] + '/'
-    outDir = outDir.replace('"', '')
-    return outDir    
+    def movieDir(self, movie):
+        outDir = ''
+        tab = movie.split('/')
+        if len(tab) > 0:
+            ntab = len(tab) - 1
+            for i in range(ntab):
+                outDir += tab[i] + '/'
+                outDir = outDir.replace('"', '')
+        return outDir    
 	
-
-  def getEyeName(self, eye, movie):
-    out = ''
-    if self.conn.isHTTPConnect(movie):
-      readTab = []
-      http1 = ''
-      http2 = ''
-      httpPath = ''
-      expr = re.match(r'^\"(http://.*?)(/.*)\"$', movie, re.M|re.I)
-      if expr:
-	http1 = expr.group(1)
-	http2 = expr.group(2)
-      fTab = http2.split('/')
-      if len(fTab) > 1:
-	p = len(fTab) - 1
-	pp = ''
-	for i in range(p):
-	  if i == 0:
-	    pp = '/' + str(fTab[i])
-	  else:
-	    pp = pp + str(fTab[i]) + '/'
-	httpPath = http1 + pp
-      else:
-	httpPath = http1
-      try:
-	listHTTP = urllib.urlopen(httpPath)
-	readHTML = listHTTP.read()
-	listHTTP.close()
-	readTab = readHTML.split('\n')
-      except IOError, e:
-	return 1
-      if eye == 'left':
-	for line in readTab:
-	  expr = re.match(r'^.*<a href=\"(.*?[Ll][Ee][Ff][Tt].*?)\">.*?</a>.*$', line, re.M|re.I)
-	  if expr:
-	    out = '"' + httpPath + expr.group(1) + '"'
-      elif eye == 'right':
-	for line in readTab:
-	  expr = re.match(r'^.*<a href=\"(.*?[Rr][Ii][Gg][Hh][Tt].*?)\">.*?</a>.*$', line, re.M|re.I)
-	  if expr:
-	    out = '"' + httpPath + expr.group(1) + '"'
-    else:
-      listTable = os.listdir(self.movieDir(movie))
-      for fname in listTable:
-	expr = ''
-	if eye == 'left':
-	  expr = re.match(r'^.*([Ll][Ee][Ff][Tt]).*$', fname, re.M|re.I)
-	elif eye == 'right':
-	  expr = re.match(r'^.*([Rr][Ii][Gg][Hh][Tt]).*$', fname, re.M|re.I)
-	if expr:
-	  if expr.group(1) in fname:
-	    out = '"' + self.movieDir(movie) + fname + '"'      
-    return str(out)
-
-      
-  def isStereo(self, table):
-    videos = []
-    for line in table:
-      if 'ID_VIDEO_ID' in line:
-	videos.append(line)
-    if len(videos) > 1:
-      return True
+    
+    def isStereo(self, table):
+        videos = []
+        for line in table:
+            if 'ID_VIDEO_ID' in line:
+                videos.append(line)
+            if len(videos) > 1:
+                return True
 
 
-  def getEyeFirst(self, table):
-      inputForm = 'separate-left-right'
-      eye = []
-      for line in table:
-          if 'ID_VID_' in line:
-              eye.append(line)
-              if len(eye) > 1:
-                  exprL = re.match(r'^.*([Ll][Ee][Ff][Tt]).*$', str(eye[0]), re.M|re.I)
-                  exprR = re.match(r'^.*([Rr][Ii][Gg][Hh][Tt]).*$', str(eye[0]), re.M|re.I)
-                  if exprL:
-                      inputForm = 'separate-left-right'
-                  #_log.info('Set separate: left-right')
-                  elif exprR:
-                      inputForm = 'separate-right-left'
-              else:
-                  inputForm = ''
-      #_log.info('Set separate: right-left')
-      return inputForm	
+    def getMovieName(self, movie):
+        TAB_EYE = { 
+                     "LEFT": "RIGHT",
+                     "left": "right",
+                     "Left": "Right",
+                     "LEft": "RIght",
+                     "LEFt": "RIGht",
+                     "lEFT": "rIGHT",
+                     "leFT": "riGHT",
+                     "lefT": "rigHT",
+                     "left": "righT",
+                     "Right": "Left",
+                     "RIght": "LEft",
+                     "RIGht": "LEFt",
+                     "RIGHT": "LEFT",
+                     "rIGHT": "lEFT",
+                     "riGHT": "leFT",
+                     "rigHT": "lefT",
+                     "righT": "left",
+                     "right": "left"
+                    }
+        name = self.getFileName(movie)
+        newName = ""
+        for k,v in TAB_EYE.items():
+            if k in name:
+                newName = name.replace(k, v)
+        movie = movie.replace(name, newName)
+        return movie
+                
+
+    def getEyeFirst(self, table):
+        inputForm = 'separate-left-right'
+        eye = []
+        for line in table:
+            if 'ID_VID_' in line:
+                eye.append(line)
+                if len(eye) > 1:
+                    exprL = re.match(r'^.*([Ll][Ee][Ff][Tt]).*$', str(eye[0]), re.M|re.I)
+                    exprR = re.match(r'^.*([Rr][Ii][Gg][Hh][Tt]).*$', str(eye[0]), re.M|re.I)
+                    if exprL:
+                        inputForm = 'separate-left-right'
+                        #_log.info('Set separate: left-right')
+                    elif exprR:
+                        inputForm = 'separate-right-left'
+                else:
+                    inputForm = ''
+                    #_log.info('Set separate: right-left')
+        return inputForm	
 
 
-  def getAudioLanguage(self, table, lang):
-    language = 1
-    numLang = []
-    for line in table:
-      if 'ID_AUDIO_ID' in line:
-	numLang.append(line)
-    for i in range(len(numLang)):
-      for line in table:
-	if 'ID_AID_' + str(i) + '_LANG' in line:
-	  lineTab = line.split('=')
-	  llang = lineTab[1].split("\n")
-	  #_log.info('Language: ' + line + ', ' + llang[0] + ', ' + str(lang.find(llang[0])))
-	  if lang.rfind(llang[0]) == 0:
-	    #_log.info('Language2: ' + line + ', ' + lineTab[1] + '=' + lang)
-	    language = i + 1
-    return language
+    def getAudioLanguage(self, table, lang):
+        language = 1
+        numLang = []
+        for line in table:
+            if 'ID_AUDIO_ID' in line:
+                numLang.append(line)
+        for i in range(len(numLang)):
+            for line in table:
+                if 'ID_AID_' + str(i) + '_LANG' in line:
+                    lineTab = line.split('=')
+                    llang = lineTab[1].split("\n")
+                    #_log.info('Language: ' + line + ', ' + llang[0] + ', ' + str(lang.find(llang[0])))
+                    if lang.rfind(llang[0]) == 0:
+                        #_log.info('Language2: ' + line + ', ' + lineTab[1] + '=' + lang)
+                        language = i + 1
+        return language
   
 
-  def getSubtitleLanguage(self, table, lang):
-    language = 0
-    numLang = []
-    _log.info('lang: ' + lang)
-    for line in table:
-      if 'ID_SUBTITLE_ID' in line:
-	numLang.append(line)
-    for i in range(len(numLang)):
-      for line in table:
-	if 'ID_SID_' + str(i) + '_LANG' in line:
-	  lineTab = line.split('=')
-	  llang = lineTab[1].split("\n")
-	  #_log.info('Language: ' + line + ', ' + llang[0] + ', ' + str(lang.find(llang[0])))
-	  if lang.rfind(llang[0]) == 0:
-	    #_log.info('Language2: ' + line + ', ' + lineTab[1] + '=' + lang)
-	    language = i + 1
-    return language
+    def getSubtitleLanguage(self, table, lang):
+        language = 0
+        numLang = []
+        _log.info('lang: ' + lang)
+        for line in table:
+            if 'ID_SUBTITLE_ID' in line:
+                numLang.append(line)
+        for i in range(len(numLang)):
+            for line in table:
+                if 'ID_SID_' + str(i) + '_LANG' in line:
+                    lineTab = line.split('=')
+                    llang = lineTab[1].split("\n")
+                    #_log.info('Language: ' + line + ', ' + llang[0] + ', ' + str(lang.find(llang[0])))
+                    if lang.rfind(llang[0]) == 0:
+                        #_log.info('Language2: ' + line + ', ' + lineTab[1] + '=' + lang)
+                        language = i + 1
+        return language
 
 
-  def getOutputFormat(self, output):
-    out = ''
-    if output == '2D left':
-      out = 'mono-left'
-    elif output == '2D right':
-      out = 'mono-right'
-    elif output == '2D equalizer':
-      out = 'equalizer'
-    elif output == '3D equalizer':
-      out = 'equalizer-3d'
-    elif output == '3D OpenGL':
-      out = 'stereo'
-    elif output == '3D Over/Under':
-      out = 'top-bottom'
-    elif output == '3D HALF Over/Under':
-      out = 'top-bottom-half'
-    elif output == '3D Side-By-Side':
-      out = 'left-right'
-    elif output == '3D HALF Side-By-Side':
-      out = 'left-right-half'
-    elif output == '3D rows':
-      out = 'even-odd-rows'
-    elif output == '3D columns':
-      out = 'even-odd-columns'
-    elif output == '3D checkerboard':
-      out = 'checkerboard'
-    elif output == 'Red-Cyan mono':
-      out = 'red-cyan-monochrome'
-    elif output == 'Red-Cyan half color':
-      out = 'red-cyan-half-color'
-    elif output == 'Red-Cyan color':
-      out = 'red-cyan-full-color'
-    elif output == 'Red-Cyan dubois':
-      out = 'red-cyan-dubois'
-    elif output == 'Green-Magenta mono':
-      out = 'green-magenta-monochrome'
-    elif output == 'Green-Magenta half color':
-      out = 'green-magenta-half-color'
-    elif output == 'Green-Magenta color':
-      out = 'green-magenta-full-color'
-    elif output == 'Green-Magenta dubois':
-      out = 'green-magenta-dubois'
-    elif output == 'Amber-Blue mono':
-      out = 'amber-blue-monochrome'
-    elif output == 'Amber-Blue half color':
-      out = 'amber-blue-half-color'
-    elif output == 'Amber-Blue color':
-      out = 'amber-blue-full-color'
-    elif output == 'Amber-Blue dubois':
-      out = 'amber-blue-dubois'
-    elif output == 'HDMI pack':
-      out = 'hdmi-frame-pack'
-    elif output == 'Red-Green mono':
-      out = 'red-green-monochrome'
-    elif output == 'Red-Blue mono':
-      out = 'red-blue-monochrome'
-    return out
-
-
-
-  def getInputFormat(self, inn):
-    out = 'mono'
-    if inn == '2D mono':
-      out = 'mono'
-    elif inn == '3D Over/Under':
-      out = 'top-bottom'
-    elif inn == '3D HALF Over/Under':
-      out = 'top-bottom-half'
-    elif inn == '3D Side-By-Side':
-      out = 'left-right'
-    elif inn == '3D HALF Side-By-Side':
-      out = 'left-right-half'
-    elif inn == '3D rows':
-      out = 'even-odd-rows'
-    elif inn == '3D Dual Stream':
-      out = 'separate-left-right'
- 
-
+    def playStereo(self, prefs):
+        pathMovie = '"' + prefs['file1'] + '"'
+        _log.info('Generating informations of 3D movie: ' + pathMovie)
+        if self.isRightEye(pathMovie) or self.isLeftEye(pathMovie):
+            _log.info('Prepare to display movie from 2 files')
+            prefs['file2'] = self.getMovieName(pathMovie)
+            if self.isLeftEye(pathMovie):
+                prefs['input'] = self.getInputFormat(_(50080))
+            elif self.isRightEye(pathMovie):
+                prefs['input'] = self.getInputFormat(_(50081))
+        elif prefs['input'] == 'None':
+            menu = self.setInputTable()
+            dialog = xbmcgui.Dialog()
+            choice = dialog.select(_(55020), menu)
+            for i in range(len(menu)):
+                if choice == i:
+                    prefs['input'] = self.getInputFormat(menu[i])
+        else:
+            prefs['input'] = 'mono'
+        self.player3D(prefs)
   
-  def checkFile(self, appMediaInfo, pathMovie):
-    inputVideo = ''
-    pathMovie = '"' + pathMovie + '"'
-    #start script
-    _log.info('Prepare to play 3D movie')
-    
 
-    #load information of the movie
-    _log.info('Generating informations of 3D movie: ' + pathMovie)
-    
-    global mediaTab
-    mediaTab = self.mediaInfo(appMediaInfo, pathMovie)
-
-    #width & height for side by side & over/under
-    _log.info('Checking if movie is side-by-side or over/under')
-    
-    if float(self.getWidth(mediaTab)) > 0 and float(self.getHeight(mediaTab)) > 0:
-      dimension = float(self.getWidth(mediaTab))/float(self.getHeight(mediaTab))
-      if dimension >= 3:
-	inputVideo = 'left-right'
-      elif dimension < 1:
-	inputVideo = 'top-bottom'
-      
-
-    #2 files [left, right] for 1 3D film
-    if self.isRightEye(pathMovie) or self.isLeftEye(pathMovie):
-      _log.info('Prepare to display movie from 2 files')
-      
-      if self.isLeftEye(pathMovie):
-	#_log.info('Left eye')
-	left = pathMovie
-	right = self.getEyeName('right', pathMovie)
-	#_log.info('Right eye: ' + str(right))
-	inputVideo = 'separate-files;' + left + ';' + str(right)
-      elif self.isRightEye(pathMovie):
-	#_log.info('Right eye')
-	left = self.getEyeName('left', pathMovie)
-	right = pathMovie
-	inputVideo = 'separate-files;' + str(left) + ';' + right
-
-    #mkv dualstream
-    if self.isStereo(mediaTab):
-      inputVideo = 'internal-files;' + self.getEyeFirst(mediaTab)
-
-    return inputVideo
+    def getOutputFormat(self, key):
+        out = 'even-odd-rows'
+        for k,v in TAB_OUTPUTS.items():
+            if key == k:
+                out = v
+                break
+        return out
 
 
-
-  def playStereo(self, appMovie, formVideo, pathMovie, outputVideo, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D):
-    outputForm = self.getOutputFormat(outputVideo)
-    _log.info('Output video form is: ' + outputForm)
-    
-    #check connection and mount smb if exist
-    _log.info('Checking connection to media stream')
-    
-    IN = '"' + pathMovie + '"'
-    
-    if formVideo == 'left-right':
-      self.player3D(appMovie, 'left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-    elif formVideo == 'top-bottom':
-      self.player3D(appMovie, 'top-bottom', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-    elif 'separate-files;' in formVideo:
-      tab = formVideo.split(";")
-      left = tab[1]
-      right = tab[2]
-      self.player3D2files(appMovie, outputForm, left, right, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-    elif 'internal-files;' in formVideo:
-      tab = formVideo.split(";")
-      self.player3D(appMovie, tab[1], outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-
+    def getInputFormat(self, key):
+        out = 'mono'
+        for k,v in TAB_INPUTS.items():
+            if key == k:
+                out = v
+                break
+        return out
     
     
-  def playStereoUnknown(self, appMovie, pathMovie, inputVideo, outputVideo, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D):
-    #start script
-    _log.info('Prepare to play 3D movie')
+    def setInputTable(self):
+        tab = []
+        #return TAB_INPUTS
+        for k,v in TAB_INPUTS.items():
+            tab.append(k)
+        tab.sort()
+        return tab
     
-    outputForm = self.getOutputFormat(outputVideo)
-    _log.info('Output video form is: ' + outputForm)
-    
-    #check connection and mount smb if exist
-    _log.info('Checking connection to media stream')
-    
-    IN = '"' + pathMovie + '"'
-
-    if inputVideo == '2D mono':
-      self.player3D(appMovie, 'mono', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-      
-    if inputVideo == '3D rows':
-      self.player3D(appMovie, 'even-odd-rows', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-
-    #width & height for side by side & over/under
-    _log.info('if movie is sbs or over/under play unknown. Input: ' + inputVideo)
-    if inputVideo == '3D Side-By-Side':
-      self.player3D(appMovie, 'left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-    elif inputVideo == '3D Over/Under':
-      self.player3D(appMovie, 'top-bottom', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-      
-    #side by side & over/under halfsbs
-    _log.info('if movie is half sbs or half over/under play unknown. Input: ' + inputVideo)
-    
-    if inputVideo == '3D HALF Side-By-Side':
-      self.player3D(appMovie, 'left-right-half', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-    elif inputVideo == '3D HALF Over/Under':
-      self.player3D(appMovie, 'top-bottom-half', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
-
-    #mkv dualstream
-    _log.info('if movie is dual stream play unknown. Input: ' + inputVideo)
-    if inputVideo == '3D Dual Stream':
-      self.player3D(appMovie, 'separate-left-right', outputForm, IN, audio, subtitle, subSize, subCode, subColor, subParallax, optExp3D)
+  
