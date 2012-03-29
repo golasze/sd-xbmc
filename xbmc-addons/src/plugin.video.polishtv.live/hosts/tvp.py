@@ -19,7 +19,11 @@ TVP_MAIN_MENU_TABLE = [
     "Makłowicz w podróży|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=1364&with_subdirs=true&sort_desc=true&sort_by=RELEASE_DATE&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES),
     "Kraków - najczęściej oglądane|xml|http://www.tvp.pl/pub/stat/videolisting?src_id=1885&object_id=929711&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
     "Kronika|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=1277349&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
-    "Kabarety|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=883&with_subdirs=true&sort_desc=true&sort_by=RELEASE_DATE&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES)
+    "Kabarety|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=883&with_subdirs=true&sort_desc=true&sort_by=RELEASE_DATE&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES),
+    "Sport najnowsze|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=1775930&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
+    "Sport teraz oglądane|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=928060&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
+    "Sport najwyżej oceniane|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=928062&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
+    "Sport najczęściej oglądane|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=928059&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES)
 ]
 
 NEXT_PAGE_HTML = '?sort_by=POSITION&sort_desc=false&start_rec=6'
