@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import cookielib, os, string, cookielib, StringIO
-import os, time, base64, logging, calendar
-import urllib, urllib2, re, sys
-import xbmcgui, xbmcplugin, xbmcaddon, xbmc
-import elementtree.ElementTree as ET
-#from rtmpy.services import Application, NetConnection
+import urllib, urllib2, httplib
+import re, sys, os, cgi
+import xbmcplugin, xbmcgui, xbmcaddon, xbmc
+import threading
+import simplejson as json
+import datetime
+import time
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -19,241 +20,164 @@ import pLog, settings
 log = pLog.pLog()
 
 mainUrl = 'http://weeb.tv'
-playerUrl = mainUrl + '/setplayer'
-HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
+playerUrl = mainUrl + '/api/setplayer'
+apiUrl = mainUrl + '/api/getChannelList'
+iconUrl = 'http://static2.weeb.tv/ci/'
+HOST = 'XBMC'
 
-#IMAGE_TAB = {'TVP1': '1.png',
-#             'TVP2': '2.png',
-#             'TVN': 'tvn.png',
-#             'TVN24': '24.png',
-#             'TVN Turbo': 'tvnturbo.png',
-#             'Canal+ HD': 'canal.png',
-#             'Canal+ Film HD': 'cfilm.png',
-#             '4fun.tv': '4fun.png',
-#             'Cartoon Network': 'cn.png',
-#             'EskaTV': 'eska.png',
-#             'HBO HD': 'hbo.png',
-#             'HBO 2 HD': 'hbo2.png',
-#             'MTV': 'mtv.png',
-#             'nFilm HD': 'nfilm.png',
-#             'nSport HD': 'nsport.png',
-#             'Discovery Science': 'science.png',
-#             'VIVA POLSKA': 'viva.png'}
+login = ptv.getSetting('weebtv_login')
+password = ptv.getSetting('weebtv_password')
+multi = ptv.getSetting('weebtv_hq')
+record = ptv.getSetting('weebtv_rec')
+rtmppath = ptv.getSetting('weebtv_rtmp')
+dstpath = ptv.getSetting('weebtv_dstpath')
 
-EXTRA_CHANNELS = [	
-			['http://weeb.tv/channel/jedynka','TVP1','http://weeb.tv/static/ci/13.jpg', 'TVP1'],
-			['http://weeb.tv/channel/dwójka', 'TVP2', 'http://weeb.tv/static/ci/6.jpg', 'TVP2'],
-			['http://weeb.tv/channel/tvpolskahd', 'TVP HD', 'http://weeb.tv/static/ci/73.jpg', 'TVP HD'],
-			['http://weeb.tv/channel/hbo-HBO', 'HBO HD', 'http://weeb.tv/static/ci/53.jpg', 'HBO HD'],
-			['http://weeb.tv/channel/hbo-HBO2', 'HBO2 HD', 'http://weeb.tv/static/ci/56.jpg', 'HBO 2 HD'],
-			['http://weeb.tv/channel/hbo-HBOCOMEDY', 'HBO Comedy HD', 'http://weeb.tv/static/ci/71.jpg', 'HBO Comedy HD'],
-			['http://weeb.tv/channel/hbo-CINEMAX', 'Cinemax HD', 'http://weeb.tv/static/ci/58.jpg', 'Cinemax HD']
-]
+VIDEO_MENU = [ "Nagrywanie", "Odtwarzanie" ]
 
-class WeebTV:
-  def __init__(self):
-    log.info('Loading WeebTV')
-    self.settings = settings.TVSettings()
+SKINS = {
+        'confluence': { 'opt1': 500, 'opt2': 50 },
+        'transparency': { 'opt1': 53, 'opt2': 590 }
+}
 
 
-  def getImage(self, tvname):
-      image = ''
-      for name, img in IMAGE_TAB.items():
-          if name.lower() == tvname.lower():
-              image = os.path.join( ptv.getAddonInfo('path'), "images/" ) + img
-      return image
-  
+class Settings:
+    def __init__(self):
+        pass
 
-  def getChannels(self):
-      #outTab = EXTRA_CHANNELS
-      outTab = []
-      strTab = []
-      urlChans = mainUrl + '/channels'
-      if self.settings.WeebTVEnable == 'true':
-  	  	  username = self.settings.WeebTVLogin
-  	  	  password = self.settings.WeebTVPassword
-  	  	  urlChans = mainUrl + '/channels&username=' + urllib.quote_plus(username) + '&userpassword=' + urllib.quote_plus(password) + '&option=andback'      	
-      openURL = urllib.urlopen(urlChans)
-      readURL = openURL.read()
-      openURL.close()
-      match_opt = re.compile('<p style="font-size:12px;.+>(.*?)</a></p>(.*\n){5}.*<a href="(.*?)" title="(.*?)"><img src="(.*)" alt=".*?" height="100" width="100" /></a>').findall(readURL)
-      if len(match_opt) > 0:
-          for i in range(len(match_opt)):
-              link = match_opt[i][2]
-              title = match_opt[i][0]
-              image = match_opt[i][4]
-              desc = match_opt[i][3]
-              #log.info(link + ', ' + image + ', ' + title)
-              strTab.append(link)
-              strTab.append(title)
-              strTab.append(image)
-              strTab.append(desc)
-              outTab.append(strTab)
-              strTab = []
-      return outTab
-      
+    def setApiUrl(self):
+        return apiUrl
 
-  def getChannelNames(self):
-    nameTab = []
-    origTab = self.getChannels()
-    for i in range(len(origTab)):
-      value = origTab[i]
-      name = value[1]
-      nameTab.append(name)
-    nameTab.sort()
-    return nameTab
-
-
-  def getChannelNamesAddLink(self):
-      origTab = self.getChannels()
-      origTab.sort(key=lambda x: x[1])
-      for i in range(len(origTab)):
-          value = origTab[i]
-          url = value[0]
-          name = value[1]
-          iconimage = value[2]
-          desc = value[3]
-          self.addLink('weebtv', name, iconimage, url, desc, 'playSelectedMovie')
-      xbmcplugin.endOfDirectory(int(sys.argv[1]))
+    def setIconUrl(self):
+        return iconUrl
     
+    def setViewMode(self, view):
+        if view != 'orig':
+            for k,v in SKINS.items():
+                if k in xbmc.getSkinDir():
+                    if view == 'general':
+                        xbmc.executebuiltin("Container.SetViewMode(" + str(v['opt2']) + ")")
+                    elif view == 'other':
+                        xbmc.executebuiltin("Container.SetViewMode(" + str(v['opt1']) + ")")
+                        
+
+class Channels:
+	def __init__(self):
+		pass
+
+	def dec(self, string):
+		json_ustr = json.dumps(string, ensure_ascii=False)
+		return json_ustr.encode('utf-8')
+
+	def SortedTab(self, json):
+		strTab = []
+		outTab = []
+		for v,k in json.iteritems():
+			strTab.append(int(v))
+			strTab.append(k)
+			outTab.append(strTab)
+			strTab = []
+		outTab.sort(key=lambda x: x[0])
+		return outTab
+	
+	def API(self, url):
+		res = { "0": "Null" }
+		try:
+			headers = { 'User-Agent' : HOST, 'ContentType' : 'application/x-www-form-urlencoded' }
+			post = { 'username': login, 'userpassword': password }
+			data = urllib.urlencode(post)
+			req = urllib2.Request(url, data, headers)
+			raw = urllib2.urlopen(req)
+			res = json.loads(raw.read())
+		except err:
+			res = { "0": "Error" }
+		return res
+
+	def ChannelsList(self, url):
+		action = 0
+		channelsArray = self.SortedTab(self.API(url))
+		if len(channelsArray) > 0:
+			try:
+				if channelsArray[0][1] == 'Null':
+					msg = xbmcgui.Dialog()
+					msg.ok("Błąd API", "Brak kanałów pobranych z API.")
+				elif channelsArray[0][1] != 'Error' and channelsArray[0][1] != 'Null':
+					for i in range(len(channelsArray)):
+						row = channelsArray[i][1]
+						cid = row['cid']
+						name = self.dec(row['channel_name']).replace("\"", "")
+						title = self.dec(row['channel_title']).replace("\"", "")
+						desc = self.dec(row['channel_description']).replace("\"", "")
+						tags = self.dec(row['channel_tags']).replace("\"", "")
+						img = row['channel_image']
+						online = row['channel_online']
+						rank = row['rank']
+						bitrate = row['multibitrate']
+						user = self.dec(row['user_name']).replace("\"", "")
+						image = iconUrl + "no_video.png"
+						if img == '1':
+							image = iconUrl + cid + ".jpg"
+						if online == '2':
+							action = 1
+						else:
+							action = 0
+						self.addChannel('weebtv', str(action), cid, title, image, desc, tags, user, name)
+					s = Settings()
+					s.setViewMode('other')
+					xbmcplugin.endOfDirectory(int(sys.argv[1]))
+			except KeyError, keyerr:
+				msg = xbmcgui.Dialog()
+				print keyerr
+				msg.ok("Błąd API", "Błędny klucz odczytany z API.")				
+		else:
+			msg = xbmcgui.Dialog()
+			msg.ok("Błąd API", "Brak kanałów pobranych z API.")
+
+	def addChannel(self, service, action, cid, title, img, desc, tags, user, name):
+		label = title
+		liz = xbmcgui.ListItem(label, iconImage = "DefaultFolder.png", thumbnailImage = img)
+		liz.setProperty("IsPlayable", "false")
+		liz.setInfo(type = "Video", infoLabels={ "Title": title,
+										   "Plot": desc,
+										   "Studio": "WEEB.TV",
+										   "Tagline": tags,
+										   "Aired": user } )
+		u = '%s?service=%s&action=%d&cid=%d&title=%s' % (sys.argv[0], str(service), int(action), int(cid), urllib.quote_plus(title))
+		xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = False)
+		FILE = open(os.path.join(ptv.getAddonInfo('path'), "strm", "%s.strm" % ''.join(c for c in title if c in '-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')),"w+")
+		FILE.write("plugin://plugin.video.polishtv.live/?service=%s&action=%d&cid=%s&title=%s" % (service, int(action), cid, urllib.quote_plus(title)))
+
+
+class Parser:
+    def __init__(self):
+        pass
     
-  def getChannelURL(self, key):
-      link = ''
-      origTab = self.getChannels()
-      for i in range(len(origTab)):
-          value = origTab[i]
-          name = value[1]
-          if name == key:
-              link = value[0]
-              break
-      return link
-    
-
-  def getChannelIcon(self, key):
-    icon = ''
-    origTab = self.getChannels()
-    for i in range(len(origTab)):
-      value = origTab[i]
-      name = value[1]
-      if key in name:
-	icon = value[2]
-	break
-    return icon
-
-  def getChannelByURL(self, url):
-    icon = ''
-    origTab = self.getChannels()
-    for chan in origTab:
-      if chan[0] in url:
-        return chan
-    return []
-
-
-  def playConnection(self, url):
-  	  username = 'username'
-  	  password = 'password'
-  	  if self.settings.WeebTVEnable == 'true':
-  	  	  username = self.settings.WeebTVLogin
-  	  	  password = self.settings.WeebTVPassword
-  	  	  url = url + '&username=' + urllib.quote_plus(username) + '&userpassword=' + urllib.quote_plus(password)
-  	  req = urllib2.Request(url)
-  	  req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-  	  response = urllib2.urlopen(req)
-  	  link = response.read()
-  	  response.close()
-  	  match_src = re.compile('<param name="movie" value="(.+?)" />').findall(link)
-  	  match_chn = re.compile('<param name="flashvars" value="(.+?)" />').findall(link)
-  	  bitrate = re.search('selected(.*\n){5}.*"programmeListTextRightQuality"[^<]+>([^<]+)<',link).groups()[1]
-  	  if len(match_src) == 1 and len(match_chn) == 1:
-  	  	  channel = str(match_chn[0]).split('=')
-          tab = self.tableConnParams(playerUrl, '1', channel[1], username, password)
-          rtmpLink = tab['rtmp']
-          ticket = tab['ticket']
-          time = tab['time']
-          play = tab['play']
-          if ticket == None:
-              tabb = self.tableConnParams(playerUrl, '0', channel[1], username, password)
-              ticket = tabb['ticket']
-          if bitrate == 'MULTI' and self.settings.WeebHQ == 'true':
-              playpath = play + 'HI'
-          else:
-              playpath = play
-          rtmp = str(rtmpLink) + '/' + playpath
-          rtmp += ' swfUrl='  + urllib.unquote_plus(str(match_src[0]))
-          rtmp += ' weeb=' + str(ticket) + ';' + username + ';' + password
-          rtmp += ' live=true'
-          log.info(rtmp)
-          self.LOAD_AND_PLAY_VIDEO(rtmp, self.getChannelByURL(url))                   
-                
-
-  def tableConnParams(self, playerUrl, numConn, channel, username, password):
-      if username == '' and password == '':
-          values = {'firstConnect': numConn, 'watchTime': '0', 'cid': channel, 'ip': 'Nan'}
-      else:
-          values = {'firstConnect': numConn, 'watchTime': '0', 'cid': channel, 'ip': 'Nan', 'username': username, 'password': password}
-          playerUrl = playerUrl + '&username=' + urllib.quote_plus(username) + '&userpassword=' + urllib.quote_plus(password)
-      headers = { 'User-Agent' : HOST }
-      dataConn = urllib.urlencode(values)
-      reqUrl = urllib2.Request(playerUrl, dataConn, headers)
-      response = urllib2.urlopen(reqUrl)
-      link = response.read()
-      params = self.getParams(link)
-      ticket = self.getParam(params, "73")
-      time = self.getParam(params, "16")
-      rtmpLink = self.getParam(params, "10")
-      playPath = self.getParam(params, "11")
-      data = {'rtmp': rtmpLink, 'ticket': ticket, 'time': time, 'play': playPath}
-      return data     
-
-
-  def addLink(self, service, name, iconimage, url, desc, play):
-    #u=self.videoLink(url)
-    params = self.settings.getParams()
-    mode = self.settings.getParam(params, "mode")
-    u=sys.argv[0] + "?service=" + service + "&url=" + url + '&page=' + play + '&mode=' + mode
-    liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    liz.setProperty("IsPlayable", "false")
-    liz.setInfo( type="Video", infoLabels={ "Title": name,
-                                           "Plot": desc,
-                                           "Genre": "Telewizja online",
-                                           "PlotOutline": desc } )
-    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
-
-
-  def listsMenu(self, table, title):
-    value = ''
-    if len(table) > 0:
-      d = xbmcgui.Dialog()
-      choice = d.select(title, table)
-      for i in range(len(table)):
-        #log.info(table[i])
-        if choice == i:
-            value = table[i]
-    return value
-
-
-  def listsTable(self, table):
-    nTab = []
-    for num, val in table.items():
-      nTab.append(val)
-    return nTab
-
-
-  def getParam(self, params, name):
+    def getParam(self, params, name):
         try:
             result = params[name]
             result = urllib.unquote_plus(result)
             return result
         except:
-            return None 
+            return None
+
+    def getIntParam (self, params, name):
+        try:
+            param = self.getParam(params, name)
+            return int(param)
+        except:
+            return None
+    
+    def getBoolParam (self, params, name):
+        try:
+            param = self.getParam(params,name)
+            return 'True' == param
+        except:
+            return None
         
-        
-  def getParams(self, paramstring):
+    def getParams(self, paramstring = sys.argv[2]):
         param=[]
-        #xbmc.log('raw param string: ' + paramstring)
         if len(paramstring) >= 2:
             params = paramstring
-            cleanedparams = params.replace('?','')
+            cleanedparams = params.replace('?', '')
             if (params[len(params)-1] == '/'):
                 params = params[0:len(params)-2]
             pairsofparams = cleanedparams.split('&')
@@ -266,37 +190,233 @@ class WeebTV:
         return param
 
 
-  def LOAD_AND_PLAY_VIDEO(self, videoUrl, chanInfo):
-      ok=True
-      if videoUrl == '':
-          d = xbmcgui.Dialog()
-          d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
-          return False
-      name = chanInfo[1]
-      icon = chanInfo[2]
-      liz=xbmcgui.ListItem(name, iconImage=icon, thumbnailImage=icon)
-      liz.setInfo( type="Video", infoLabels={ "Title": name, } )
-      try:
-          xbmcPlayer = xbmc.Player()
-          xbmcPlayer.play(videoUrl, liz)
-      except:
-          d = xbmcgui.Dialog()
-          d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
-      return ok
-    
+class Player(xbmc.Player):
+    def __init__(self, *args, **kwargs):
+        self.is_active = True
+        print "#Starting control WeebPlayer events#"
 
-  def handleService(self):
-    log.info('Wejście do TV komercyjnej')
-    name = str(self.settings.paramName)
-    play = str(self.settings.paramPage)
-    url = str(self.settings.paramURL)
-    chn = name.replace("+", " ")
-    #log.info('b: '+chn + ', play: ' + play + ', url: ' + url + ', name: ' + name)
-    if chn == 'None':
+    def setPremium(self, premium):
+        self.premium = premium
+        
+    def getPremium(self):
+        return self.premium
+    
+    def onPlayBackPaused(self):
+        print "#Im paused#"
+        ThreadPlayerControl("Stop").start()
+        self.is_active = False
+        
+    def onPlayBackResumed(self):
+        print "#Im Resumed #"
+        
+    def onPlayBackStarted(self):
+        print "#Playback Started#"
         try:
-            self.getChannelNamesAddLink()
+            print "#Im playing :: " + self.getPlayingFile()
         except:
+            print "#I failed get what Im playing#"
+            
+    def onPlayBackEnded(self):
+        msg = xbmcgui.Dialog()
+        print "#Playback Ended#"
+        self.is_active = False
+        if self.getPremium() == 0:
+            msg.ok("Błąd odtwarzania.", "Przekroczony limit lub zbyt duża liczba użytkowników.", "Wykup konto premium aby oglądać bez przeszkód.")
+        else:
+            msg.Warning("Błąd odtwarzania.", "Serwer odrzucił połączenie z nieznanych przyczyn.")
+        
+    def onPlayBackStopped(self):
+        print "## Playback Stopped ##"
+        self.is_active = False
+    
+    def sleep(self, s):
+        xbmc.sleep(s)
+        
+		
+
+class Video:
+    def InputTime(self):
+        text = None
+        k = xbmc.Keyboard()
+        k.doModal()
+        if (k.isConfirmed()):
+            text = k.getText()
+        return text
+
+    def LinkParams(self, channel):
+        data = None
+        if login == '' and password == '':
+            values = { 'cid': channel }
+        else:
+            values = { 'cid': channel, 'username': login, 'userpassword': password }
+        try:
+            parser = Parser()
+            headers = { 'User-Agent' : HOST }
+            data = urllib.urlencode(values)
+            reqUrl = urllib2.Request(playerUrl, data, headers)
+            response = urllib2.urlopen(reqUrl)
+            resLink = response.read()
+            params = parser.getParams(resLink)
+            ticket = parser.getParam(params, "73")
+            rtmpLink = parser.getParam(params, "10")
+            playPath = parser.getParam(params, "11")
+            premium = parser.getIntParam(params, "5")
+            status = parser.getParam(params, "0")
+            data = { 'rtmp': rtmpLink, 'ticket': ticket, 'playpath': playPath, 'premium': premium, 'status': status }
+        except urllib2.URLError, urlerr:
+            msg = xbmcgui.Dialog()
+            data = { 'rtmp': None, 'ticket': None, 'playpath': None, 'premium': premium, 'status': status }
+            print urlerr
+            msg.ok("Błąd setPlayer.", "Nie uzyskano danych do autoryzacji.", "Sprawdź połączenie sieciowe.")
+        return data
+
+    def LinkPlayable(self, channel, bitrate):
+        dataLink = {}
+        vals = self.LinkParams(channel)
+        rtmpLink = vals['rtmp']
+        ticket = vals['ticket']
+        playpath = vals['playpath']
+        premium = vals['premium']
+        status = vals['status']
+        if bitrate == '1' and multi == 'true':
+            playpath = playpath + 'HI'
+        rtmp = str(rtmpLink) + '/' + str(playpath)
+        rtmp += ' swfUrl='  + str(ticket)
+        rtmp += ' pageUrl=token'
+        rtmp += ' live=true'
+        print 'Output rtmp link: %s' % (rtmp)
+        return { 'rtmp': rtmp, 'premium': premium, 'status': status, 'ticket': '' }
+
+    def LinkRecord(self, channel, bitrate):
+        dataLink = {}
+        vals = self.LinkParams(channel)
+        rtmpLink = vals['rtmp']
+        ticket = vals['ticket']
+        playpath = vals['playpath']
+        premium = vals['premium']
+        status = vals['status']
+        if bitrate == '1' and multi == 'true':
+            playpath = playpath + 'HI'
+        rtmp = str(rtmpLink) + '/' + str(playpath)
+        return { 'rtmp': rtmp, 'premium': premium, 'status': status, 'ticket': ticket }
+
+    def ChannelInfo(self, channel):
+        chan = Channels()
+        dataInfo = { 'title': '', 'image': '', 'bitrate': '' }
+        try:
+            channelsArray = chan.API(apiUrl)
+            for v,k in channelsArray.items():
+                if channel == int(k['cid']):
+                    cid = k['cid']
+                    title = chan.dec(k['channel_title']).replace("\"", "")
+                    bitrate = k['multibitrate'] 
+                    img = k['channel_image']
+                    image = iconUrl + "no_video.png"
+                    if img == '1':
+                        image = iconUrl + cid + ".jpg"
+                    dataInfo = { 'title': title, 'image': image, 'bitrate': bitrate }
+                    break
+        except TypeError, typerr:
+            print typerr
+        return dataInfo        
+
+    def RunVideoLink(self, channel):
+        rectime = 0
+        item = 1
+        videoLink = { 'status': '0' }
+        val = self.ChannelInfo(channel)
+        if record == 'true':
             d = xbmcgui.Dialog()
-            d.ok('Nie można pobrać kanałów.', 'Przyczyną może być tymczasowa awaria serwisu.', 'Spróbuj ponownie za jakiś czas')
-    if play == 'playSelectedMovie':
-        self.playConnection(url)
+            item = d.select("Wybór", VIDEO_MENU)
+            print 'item: ' + str(item)
+            if item != '':
+                if item == 1:
+                    videoLink =  self.LinkPlayable(channel, val['bitrate'])
+                elif item == 0:
+                    dwnl = RTMPDownloader()
+                    if dwnl.isRTMP(rtmppath):
+                        msg = xbmcgui.Dialog()
+                        msg.ok("Podaj czas nagrania", "Podaj wartość po jakim czasie", "ma się skończyć nagrywanie.", "Dla 1h 30m podaj 90m")
+                        rectime = self.InputTime()
+                        videoLink =  self.LinkRecord(channel, val['bitrate'])
+                    else:
+                        msg = xbmcgui.Dialog()
+                        msg.ok("Informacja", "Nie masz zainstalowanego rtmpdump")
+        else:
+            videoLink =  self.LinkPlayable(channel, val['bitrate'])               
+        if videoLink['status'] == '1':
+            if videoLink['rtmp'].startswith('rtmp://') and item == 1:
+                liz = xbmcgui.ListItem(val['title'], iconImage = val['image'], thumbnailImage = val['image'])
+                liz.setInfo( type="Video", infoLabels={ "Title": val['title'], } )
+                try:
+                    player = Player()
+                    player.setPremium(int(videoLink['premium']))
+                    player.play(videoLink['rtmp'], liz)
+                    while player.is_active:
+                        player.sleep(100)
+                except:
+                    msg = xbmcgui.Dialog()
+                    msg.ok("Błąd odtwarzania", "Wystąpił nieznany błąd.", "Odtwarzanie wstrzymano.")
+            elif videoLink['rtmp'].startswith('rtmp://') and item == 0:
+                if os.path.isdir(dstpath):
+                    if int(rectime) > 0:
+                        dwnl = RTMPDownloader()
+                        params = { "url": videoLink['rtmp'], "download_path": dstpath, "title": val['title'], "live": "true", "swfUrl": videoLink['ticket'], "pageUrl": "token", "duration": int(rectime) }
+                        dwnl.download(rtmppath, params)
+            else:
+                msg = xbmcgui.Dialog()
+                msg.ok("Błąd", "Odtwarzanie wstrzymane", "z powodu błędnego linku rtmp")
+        else:
+            msg = xbmcgui.Dialog()
+            msg.ok("Informacja", "Wystąpił problem po stronie serwera weeb.tv")
+
+
+
+class ThreadPlayerControl(threading.Thread):
+	def __init__(self, command):
+		self.command = command
+		threading.Thread.__init__ (self)
+	
+	def run(self):
+		xbmc.executebuiltin('PlayerControl(' + self.command + ')')
+
+
+class RTMPDownloader: 
+    def isRTMP(self, fpath):
+        res = False
+        if os.path.isfile(fpath) and os.access(fpath, os.X_OK):
+            res = True
+        return res
+
+    def download(self, app, params = {}):
+        td = datetime.datetime.now()
+        nt = time.mktime(td.timetuple())
+        today = datetime.datetime.fromtimestamp(nt)
+        file = os.path.join(str(params['download_path']), str(params['title']).replace(" ", "_") + "-" + str(today).replace(" ", "_").replace(":", ".") + ".mp4")
+        rectime = int(60 * int(params['duration']))
+        os.system(str(app) + " -B " + str(rectime) + " -r " + str(params['url']) + " -s " + str(params['swfUrl']) + " -p token -v live -o " + file)
+        
+
+class WeebTV:
+	def handleService(self):
+		s = Settings()
+		parser = Parser()
+		params = parser.getParams()
+		cid = parser.getIntParam(params, "cid")
+		title = parser.getParam(params, "title")
+		action = parser.getIntParam(params, "action")
+		print "action: " + str(action) + ", title: " + str(title)
+		if not os.path.isdir(os.path.join(ptv.getAddonInfo('path'), "strm")):
+			os.mkdir(os.path.join(ptv.getAddonInfo('path'), "strm"))
+		if action == None:
+			show = Channels()
+			show.ChannelsList(apiUrl + "&option=online-alphabetical")
+		elif action == 1:
+			s.setViewMode('other')
+			if cid > 0 and title != "":
+				init = Video()
+				init.RunVideoLink(cid)
+		elif action == 0:
+			s.setViewMode('other')
+			msg = xbmcgui.Dialog()
+			msg.Warning(t(57005).encode('utf-8'), t(57006).encode('utf-8'), t(57007).encode('utf-8'), t(57008).encode('utf-8'))
