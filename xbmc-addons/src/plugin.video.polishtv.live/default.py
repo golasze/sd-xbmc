@@ -45,7 +45,7 @@ class PolishLiveTV:
   	name = str(self.settings.paramName)
   	service = str(self.settings.paramService)
   	#log.info( 'mode: ' + str(mode))
-  	if mode == 'None' and name == 'None':
+  	if mode == 'None' and name == 'None' and service == 'None':
   		log.info('Wyświetlam kategorie')
   		self.CATEGORIES()
   	elif mode == '1':
