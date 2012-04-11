@@ -8,9 +8,11 @@
     <!--<string id="55005">Ustawienie IP streamingu</string>-->
     <string id="55005">Ustawienie jakości streamingu</string>
     <string id="55006">Wybierz IP</string>
-    <string id="55007">Więcej informacji i pomocy można znaleźć na stronie</string>
-    <string id="55008">usługodawcy ([B]http://weeb.tv[/B]).</string>
+    <string id="55007">Ścieżka do rtmp</string>
+    <string id="55008">Katalog nagrywanych programów</string>
     <string id="55009">Wysoka jakość (jeśli dostępna)</string>
+    <string id="55010">Nagrywanie</string>
+    <string id="55011">Włącz pytanie o nagranie</string>
     
     <!-- Megavideo settings -->
     <string id="55100">MegaVideo</string>
