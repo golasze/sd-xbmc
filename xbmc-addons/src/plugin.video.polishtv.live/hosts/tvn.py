@@ -24,10 +24,10 @@ HANDLE = int(sys.argv[1])
 
 __settings__ = xbmcaddon.Addon(sys.modules[ "__main__" ].scriptID)
 PAGE_LIMIT = __settings__.getSetting('tvn_perpage')
-platform_mobile = __settings__.getSetting('tvn_platform_mobile')
-mobile_quality = __settings__.getSetting('tvn_mobile_quality')
-platform_samsung = __settings__.getSetting('tvn_platform_samsung')
-samsung_quality = __settings__.getSetting('tvn_samsung_quality')
+platform = __settings__.getSetting('tvn_platform')
+quality = __settings__.getSetting('tvn_quality')
+#platform_samsung = __settings__.getSetting('tvn_platform_samsung')
+#samsung_quality = __settings__.getSetting('tvn_samsung_quality')
 
 
 class tvn:
@@ -36,7 +36,7 @@ class tvn:
     contentHost = 'http://tvnplayer.pl'
     mediaHost = 'http://redir.atmcdn.pl'
     startUrl = '/api/?platform=Mobile&terminal=Android&format=xml'
-    if platform_samsung == 'true':
+    if platform == 'Samsung TV':
         startUrl = '/api/?platform=ConnectedTV&terminal=Samsung&format=xml'
     mediaMainUrl = '/scale/o2/tvn/web-content/m/'
     contentUserAgent = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
@@ -45,12 +45,7 @@ class tvn:
     contentPass='atm_json'
 
     def __init__(self):
-        log.info("Starting TVN Player")
-        if platform_mobile == 'true' and platform_samsung == 'true':
-            msg = xbmcgui.Dialog()
-            msg.ok("Błąd", "Wróć do ustawień i wybierz jedną platformę!")
-            exit()
-        
+        log.info("Starting TVN Player")     
 
     def addDir(self,name,id,mode,category,iconimage,videoUrl='',listsize=0,season=0):
         u = sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&category="+urllib.quote_plus(category)+"&id="+urllib.quote_plus(id)
@@ -277,10 +272,11 @@ class tvn:
         rankSorted = sorted(videoUrls)
         videoUrl = ''
         if len(rankSorted) > 0:
-            if platform_mobile == 'true':
-                videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, mobile_quality))
-            elif platform_samsung == 'true':
-                videoUrl = self.getUrlFromTab(rankSorted, samsung_quality)
+            quality = __settings__.getSetting('tvn_quality')
+            if platform == 'Mobile (Android)':
+                videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, quality))
+            elif platform == 'Samsung TV':
+                videoUrl = self.getUrlFromTab(rankSorted, quality)
         return [videoUrl, videoTime, videoPlot]
 
     def generateToken(self, url):
@@ -352,4 +348,23 @@ class tvn:
             if key == k:
                out = v
                break
+        if out == '':
+            tabmenu = []
+            for i in range(len(tab)):
+                tabmenu.append(tab[i][0])
+            menu = xbmcgui.Dialog()
+            item = menu.select("Wybór jakości", tabmenu)
+            print 'item: ' + str(tabmenu[item])
+            nkey = ''
+            for i in range(len(tabmenu)):
+                if i == item:
+                    nkey = tabmenu[i]
+                    __settings__.setSetting('tvn_quality', str(tabmenu[i]))
+                    break
+            for i in range(len(tab)):
+                k = tab[i][0]
+                v = tab[i][1]
+                if nkey == k:
+                    out = v
+                    break
         return out 
