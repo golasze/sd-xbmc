@@ -21,15 +21,23 @@ import pLog, settings
 
 log = pLog.pLog()
 HANDLE = int(sys.argv[1])
-PAGE_LIMIT = 50
+
+__settings__ = xbmcaddon.Addon(sys.modules[ "__main__" ].scriptID)
+PAGE_LIMIT = __settings__.getSetting('tvn_perpage')
+platform_mobile = __settings__.getSetting('tvn_platform_mobile')
+mobile_quality = __settings__.getSetting('tvn_mobile_quality')
+platform_samsung = __settings__.getSetting('tvn_platform_samsung')
+samsung_quality = __settings__.getSetting('tvn_samsung_quality')
+
 
 class tvn:
     mode = 0
-    __settings__ = xbmcaddon.Addon(sys.modules[ "__main__" ].scriptID)
     __moduleSettings__ =  settings.TVSettings()
     contentHost = 'http://tvnplayer.pl'
     mediaHost = 'http://redir.atmcdn.pl'
     startUrl = '/api/?platform=Mobile&terminal=Android&format=xml'
+    if platform_samsung == 'true':
+        startUrl = '/api/?platform=ConnectedTV&terminal=Samsung&format=xml'
     mediaMainUrl = '/scale/o2/tvn/web-content/m/'
     contentUserAgent = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
     mediaUserAgent = 'Dalvik/1.2.0 (Linux; U; Android 2.2.1; GT-I5700 Build/FRG83)'
@@ -38,6 +46,11 @@ class tvn:
 
     def __init__(self):
         log.info("Starting TVN Player")
+        if platform_mobile == 'true' and platform_samsung == 'true':
+            msg = xbmcgui.Dialog()
+            msg.ok("Błąd", "Wróć do ustawień i wybierz jedną platformę!")
+            exit()
+        
 
     def addDir(self,name,id,mode,category,iconimage,videoUrl='',listsize=0,season=0):
         u = sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&category="+urllib.quote_plus(category)+"&id="+urllib.quote_plus(id)
@@ -252,30 +265,22 @@ class tvn:
                 videoPlot = plot.text.encode('utf-8')
 
         videos = xmlDoc.findall(method + "/" + groupName + "/videos/main/video_content/row")
-        videoUrls={}
+        videoUrls = []
+        strTab = []
         for video in videos:
-            qualityName = video.find('profile_name').text
+            qualityName = video.find('profile_name').text.encode('utf-8')
             url = video.find('url').text
-            rank = 'z'
-            if qualityName == 'Bardzo wysoka':
-                rank = 'a'
-            elif qualityName == 'Wysoka':
-                rank = 'b'
-            elif qualityName == 'Standard':
-                rank = 'c'
-            elif qualityName == 'Niska':
-                rank = 'd'
-            if rank != 'z':
-                videoUrls[rank] = url
-            else:
-                print qualityName
-        rankSorted =sorted(videoUrls)
+            strTab.append(qualityName)
+            strTab.append(url)
+            videoUrls.append(strTab)
+            strTab = []
+        rankSorted = sorted(videoUrls)
+        videoUrl = ''
         if len(rankSorted) > 0:
-            videoUrl = videoUrls.get(rankSorted[0])
-            videoUrl = self.generateToken(videoUrl)
-            #print videoUrl
-        else:
-            videoUrl = ''
+            if platform_mobile == 'true':
+                videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, mobile_quality))
+            elif platform_samsung == 'true':
+                videoUrl = self.getUrlFromTab(rankSorted, samsung_quality)
         return [videoUrl, videoTime, videoPlot]
 
     def generateToken(self, url):
@@ -338,3 +343,13 @@ class tvn:
             iconUrl = self.mediaHost + self.mediaMainUrl + icon + '?quality=70&dstw=290&dsth=187&type=1'
 
         return iconUrl
+    
+    def getUrlFromTab(self, tab, key):
+        out = ''
+        for i in range(len(tab)):
+            k = tab[i][0]
+            v = tab[i][1]
+            if key == k:
+               out = v
+               break
+        return out 
