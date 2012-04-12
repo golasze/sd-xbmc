@@ -26,7 +26,11 @@
 
     <!-- TVN settings -->
     <string id="55200">TVN</string>
-    <string id="55201">Plików Video na stronie</string>
+    <string id="55201">Ilość video na stronie</string>
+    <string id="55202">Platforma mobilna (Android)</string>
+    <string id="55203">Jakość platformy mobilnej</string>
+    <string id="55204">Platforma Samsung TV</string>
+    <string id="55205">Jakość Samsung TV</string>
 
     <!-- TVP settings -->
     <string id="55300">TVP</string>
