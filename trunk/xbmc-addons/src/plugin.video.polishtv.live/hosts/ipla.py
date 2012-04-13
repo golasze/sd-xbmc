@@ -13,7 +13,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings
+import pLog, settings, Parser
 
 log = pLog.pLog()
 
@@ -40,7 +40,8 @@ MENU_TAB = { 1: "Na żywo;" + URL_LIVE,
 class IPLA:
     def __init__(self):
         self.settings = settings.TVSettings()              
-
+        self.parser = Parser.Parser()
+        
     
     def listsMovieLive(self, url):
         elems = ET.parse(urllib.urlopen(url)).getroot()
@@ -289,10 +290,11 @@ class IPLA:
         
                
     def handleService(self):
-        name = str(self.settings.paramName)
-        title = str(self.settings.paramTitle)
-        category = str(self.settings.paramCategory)
-        url = str(self.settings.paramURL)
+        params = self.parser.getParams()
+        name = str(self.parser.getParam(params, "name"))
+        title = str(self.parser.getParam(params, "title"))
+        category = str(self.parser.getParam(params, "category"))
+        url = str(self.parser.getParam(params, "url"))
         name = name.replace("+", " ")
         title = title.replace("+", " ")
         category = category.replace("+", " ")
@@ -321,6 +323,8 @@ class IPLA:
         
         #if name == 'Filmy' and url != 'None':
         #    self.listsMovieVOD(url)
+        
+
     def watched(self, videoUrl):
         videoFile = videoUrl[1+videoUrl.rfind('/'):]
         sql_data = "SELECT count(*) FROM files WHERE strFilename = '" + videoFile + "' AND files.playCount > 0"

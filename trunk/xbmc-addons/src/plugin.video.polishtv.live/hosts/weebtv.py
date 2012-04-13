@@ -15,7 +15,7 @@ BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 #sys.path.append( os.path.join( os.getcwd(), "../" ) )
 
-import pLog, settings
+import pLog, settings, Parser
 
 log = pLog.pLog()
 
@@ -147,49 +147,6 @@ class Channels:
 		FILE.write("plugin://plugin.video.polishtv.live/?service=%s&action=%d&cid=%s&title=%s" % (service, int(action), cid, urllib.quote_plus(title)))
 
 
-class Parser:
-    def __init__(self):
-        pass
-    
-    def getParam(self, params, name):
-        try:
-            result = params[name]
-            result = urllib.unquote_plus(result)
-            return result
-        except:
-            return None
-
-    def getIntParam (self, params, name):
-        try:
-            param = self.getParam(params, name)
-            return int(param)
-        except:
-            return None
-    
-    def getBoolParam (self, params, name):
-        try:
-            param = self.getParam(params,name)
-            return 'True' == param
-        except:
-            return None
-        
-    def getParams(self, paramstring = sys.argv[2]):
-        param=[]
-        if len(paramstring) >= 2:
-            params = paramstring
-            cleanedparams = params.replace('?', '')
-            if (params[len(params)-1] == '/'):
-                params = params[0:len(params)-2]
-            pairsofparams = cleanedparams.split('&')
-            param = {}
-            for i in range(len(pairsofparams)):
-                splitparams = {}
-                splitparams = pairsofparams[i].split('=')
-                if (len(splitparams)) == 2:
-                    param[splitparams[0]] = splitparams[1]
-        return param
-
-
 class Player(xbmc.Player):
     def __init__(self, *args, **kwargs):
         self.is_active = True
@@ -250,7 +207,7 @@ class Video:
         else:
             values = { 'cid': channel, 'username': login, 'userpassword': password }
         try:
-            parser = Parser()
+            parser = Parser.Parser()
             headers = { 'User-Agent' : HOST }
             data = urllib.urlencode(values)
             reqUrl = urllib2.Request(playerUrl, data, headers)
@@ -400,7 +357,7 @@ class RTMPDownloader:
 class WeebTV:
 	def handleService(self):
 		s = Settings()
-		parser = Parser()
+		parser = Parser.Parser()
 		params = parser.getParams()
 		cid = parser.getIntParam(params, "cid")
 		title = parser.getParam(params, "title")
