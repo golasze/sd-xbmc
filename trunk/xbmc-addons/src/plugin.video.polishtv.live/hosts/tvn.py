@@ -22,16 +22,21 @@ import pLog, settings
 log = pLog.pLog()
 HANDLE = int(sys.argv[1])
 
-__settings__ = xbmcaddon.Addon(sys.modules[ "__main__" ].scriptID)
-PAGE_LIMIT = __settings__.getSetting('tvn_perpage')
-platform = __settings__.getSetting('tvn_platform')
-quality = __settings__.getSetting('tvn_quality')
-#platform_samsung = __settings__.getSetting('tvn_platform_samsung')
+scriptID = 'plugin.video.polishtv.live'
+scriptname = "Polish Live TV"
+ptv = xbmcaddon.Addon(scriptID)
+
+#PAGE_LIMIT = __settings__.getSetting('tvn_perpage')
+PAGE_LIMIT = 50
+platform = ptv.getSetting('tvn_platform')
+quality = ptv.getSetting('tvn_quality')
+quality_manual = ptv.getSetting('tvn_quality_manual')
 #samsung_quality = __settings__.getSetting('tvn_samsung_quality')
 
 
 class tvn:
     mode = 0
+    __settings__ = xbmcaddon.Addon(sys.modules[ "__main__" ].scriptID)
     __moduleSettings__ =  settings.TVSettings()
     contentHost = 'http://tvnplayer.pl'
     mediaHost = 'http://redir.atmcdn.pl'
@@ -45,7 +50,12 @@ class tvn:
     contentPass='atm_json'
 
     def __init__(self):
-        log.info("Starting TVN Player")     
+        log.info("Starting TVN Player")
+        if quality_manual == 'true':
+            ptv.setSetting('tvn_quality_temp', '')
+        elif quality_manual == 'false':
+            ptv.setSetting('tvn_quality_temp', quality)
+               
 
     def addDir(self,name,id,mode,category,iconimage,videoUrl='',listsize=0,season=0):
         u = sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&category="+urllib.quote_plus(category)+"&id="+urllib.quote_plus(id)
@@ -92,7 +102,10 @@ class tvn:
         return ok
 
     def listsCategories(self):
-
+        if quality_manual == 'true':
+            ptv.setSetting('tvn_quality_temp', '')
+        elif quality_manual == 'false':
+            ptv.setSetting('tvn_quality_temp', quality)
         if self.category != 'None' and self.id != 'None':
             method = 'getItems'
             groupName = 'items'
@@ -100,7 +113,6 @@ class tvn:
             urlQuery = '&type=%s&id=%s&limit=%s&page=%s&sort=newest&m=%s' % (self.category, self.id, str(PAGE_LIMIT), str(page), method)
             if self.season > 0:
                 urlQuery = urlQuery + "&season=" + str(self.season)
-
         else:
             method = 'mainInfo'
             groupName = 'categories'
@@ -237,7 +249,7 @@ class tvn:
     def getVideoUrl(self, category, id):
         method = 'getItem'
         groupName = 'item'
-        urlQuery = '&type=%s&id=%s&limit=30&page=1&sort=newest&m=%s' % (category, id,method)
+        urlQuery = '&type=%s&id=%s&limit=%s&page=1&sort=newest&m=%s' % (category, id, str(PAGE_LIMIT), method)
         urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
         #print self.contentHost+self.startUrl + urlQuery
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
@@ -272,11 +284,11 @@ class tvn:
         rankSorted = sorted(videoUrls)
         videoUrl = ''
         if len(rankSorted) > 0:
-            quality = __settings__.getSetting('tvn_quality')
+            quality_temp = ptv.getSetting('tvn_quality_temp')
             if platform == 'Mobile (Android)':
-                videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, quality))
+                videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, quality_temp))
             elif platform == 'Samsung TV':
-                videoUrl = self.getUrlFromTab(rankSorted, quality)
+                videoUrl = self.getUrlFromTab(rankSorted, quality_temp)
         return [videoUrl, videoTime, videoPlot]
 
     def generateToken(self, url):
@@ -354,12 +366,12 @@ class tvn:
                 tabmenu.append(tab[i][0])
             menu = xbmcgui.Dialog()
             item = menu.select("Wybór jakości", tabmenu)
-            print 'item: ' + str(tabmenu[item])
+            #print 'item: ' + str(tabmenu[item])
             nkey = ''
             for i in range(len(tabmenu)):
                 if i == item:
                     nkey = tabmenu[i]
-                    __settings__.setSetting('tvn_quality', str(tabmenu[i]))
+                    ptv.setSetting('tvn_quality_temp', str(tabmenu[i]))
                     break
             for i in range(len(tab)):
                 k = tab[i][0]
