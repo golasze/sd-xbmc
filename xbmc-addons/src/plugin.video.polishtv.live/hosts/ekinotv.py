@@ -11,7 +11,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, megavideo, cacaoweb, settings
+import pLog, megavideo, cacaoweb, settings, Parser
 
 log = pLog.pLog()
 
@@ -38,6 +38,7 @@ class EkinoTV:
   def __init__(self):
     log.info('Loading EkinoTV')
     self.settings = settings.TVSettings()
+    self.parser = Parser.Parser()
     
     
   def setTable(self):
@@ -696,10 +697,11 @@ class EkinoTV:
 
 
   def handleService(self):
-  	name = str(self.settings.paramName)
-  	title = str(self.settings.paramTitle)
-  	category = str(self.settings.paramCategory)
-  	page = str(self.settings.paramPage)
+	params = self.parser.getParams()
+	name = str(self.parser.getParam(params, "name"))
+	title = str(self.parser.getParam(params, "title"))
+	category = str(self.parser.getParam(params, "category"))
+  	page = str(self.parser.getParam(params, "page"))
   	name = name.replace("+", " ")
   	title = title.replace("+", " ")
   	category = category.replace("+", " ")

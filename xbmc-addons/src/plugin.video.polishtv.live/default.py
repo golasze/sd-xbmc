@@ -13,8 +13,8 @@ BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
-import pLog, settings
-import weebtv, ekinotv, ipla, iitvinfo, stations, tvp, tvn, iplex
+import pLog, settings, Parser
+import weebtv, ipla, stations, tvp, tvn, iplex
 
 log = pLog.pLog()
 
@@ -22,12 +22,12 @@ log = pLog.pLog()
 TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
 					101: "Stacje TV [strumienie]" }
 
-VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
+VOD_ONLINE_TABLE = { #200: "Ekino TV [filmy, seriale]",
 		     #201: "iTVP [filmy, seriale, vod]",
 		     #202: "AnyFiles [różne filmy]",
 		     203: "IPLEX",
 		     #201: "IPLA",
-		     202: "iiTV info [seriale]",
+		     #202: "iiTV info [seriale]",
 		     204: "TVP [info]",
              205: "TVN Player"
 }
@@ -38,52 +38,52 @@ class PolishLiveTV:
   def __init__(self):
     log.info('Starting Polish Live TV')
     self.settings = settings.TVSettings()
-
+    self.parser = Parser.Parser()
 
   def showListOptions(self):
-  	mode = str(self.settings.paramMode)
-  	name = str(self.settings.paramName)
-  	service = str(self.settings.paramService)
-  	#log.info( 'mode: ' + str(mode))
-  	if mode == 'None' and name == 'None' and service == 'None':
+  	params = self.parser.getParams()
+  	mode = self.parser.getIntParam(params, "mode")
+  	name = self.parser.getParam(params, "name")
+  	service = self.parser.getParam(params, 'service')
+  	if mode == None and name == None and service == None:
   		log.info('Wyświetlam kategorie')
   		self.CATEGORIES()
-  	elif mode == '1':
+  	elif mode == 1:
 		self.LIST(TV_ONLINE_TABLE)
-	elif mode == '100' or service == 'weebtv':
+	elif mode == 100 or service == 'weebtv':
 		tv = weebtv.WeebTV()
 		tv.handleService()
-	elif mode == '101':
+	elif mode == 101:
 		tv = stations.StreamStations()
 		tv.handleService()
-	elif mode == '2':
+	elif mode == 2:
 		#log.info('Wejście do TV internetowej')
 		self.LIST(VOD_ONLINE_TABLE)
-	elif mode == '200' or service == 'ekinotv':
-		vod = ekinotv.EkinoTV()
-		vod.handleService()
-	#elif mode == '201':
+	#elif mode == 200 or service == 'ekinotv':
+	#	vod = ekinotv.EkinoTV()
+	#	vod.handleService()
+	#elif mode == 201:
 	#	vod = itvp.iTVP()
 	#	vod.handleService()
-	#elif mode == '202':
+	#elif mode == 202:
 	#	vod = anyfiles.AnyFiles()
 	#	vod.handleService()
-	elif mode == '203' or service == 'iplex':
+	elif mode == 203 or service == 'iplex':
 		vod = iplex.IPLEX()
 		vod.handleService()
-	#elif mode == '201' or service == 'ipla':
+	#elif mode == 201 or service == 'ipla':
 	#	vod = ipla.IPLA()
 	#	vod.handleService()
-	elif mode == '202' or service == 'iitvinfo':
-		vod = iitvinfo.iiTVInfo()
-		vod.handleService()
-	elif mode == '204' or service == 'tvp':
+	#elif mode == 202 or service == 'iitvinfo':
+	#	vod = iitvinfo.iiTVInfo()
+	#	vod.handleService()
+	elif mode == 204 or service == 'tvp':
 		vod = tvp.tvp()
 		vod.handleService()
-	elif mode == '205' or service == 'tvn':
+	elif mode == 205 or service == 'tvn':
 		vod = tvn.tvn()
 		vod.handleService()
-	elif mode == '20':
+	elif mode == 20:
 		log.info('Wyświetlam ustawienia')
 		self.settings.showSettings()
 

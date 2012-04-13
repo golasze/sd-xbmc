@@ -11,7 +11,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, megavideo, cacaoweb, settings
+import pLog, megavideo, cacaoweb, settings, Parser
 
 log = pLog.pLog()
 
@@ -27,6 +27,7 @@ STREAM_OBBLINK = 'http://127.0.0.1:4001/videobb/videobb.caml?videoid='
 class iiTVInfo:
     def __init__(self):
         self.settings = settings.TVSettings()
+        self.parser = Parser.Parser()
         
         
     def getSerialsTable(self):
@@ -228,16 +229,17 @@ class iiTVInfo:
 
     
     def handleService(self):
-        name = str(self.settings.paramName)
-        title = str(self.settings.paramTitle)
-        category = str(self.settings.paramCategory)
-        page = str(self.settings.paramPage)
+        params = self.parser.getParams()
+        name = self.parser.getParam(params, "name")
+        title = self.parser.getParam(params, "title")
+        category = self.parser.getParam(params, "category")
+        page = self.parser.getParam(params, "page")
         
-        if name == 'None':
+        if name == None:
             self.showSerialTitles()
         elif name == 'serial-title':
             self.showSeason(page)
-        elif name == 'serial-season' and title != 'None' and page != 'None':
+        elif name == 'serial-season' and title != None and page != None:
             self.showSerialParts(page, title)
         
         if name == 'playSelectedMovie':

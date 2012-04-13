@@ -14,7 +14,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings
+import pLog, settings, Parser
 
 log = pLog.pLog()
 
@@ -34,6 +34,7 @@ class IPLEX:
     def __init__(self):
         log.info('Starting IPLEX')
         self.settings = settings.TVSettings()
+        self.parser = Parser.Parser()
 
 
     def listsMainMenu(self, table):
@@ -244,13 +245,14 @@ class IPLEX:
 
 
     def handleService(self):
-        name = str(self.settings.paramName)
-        category = str(self.settings.paramCategory)
-        url = self.settings.paramURL
-        title = str(self.settings.paramTitle)
-        icon = self.settings.paramIcon
+    	params = self.parser.getParams()
+        name = self.parser.getParam(params, "name")
+        category = self.parser.getParam(params, "category")
+        url = self.parser.getParam(params, "url")
+        title = self.parser.getParam(params, "title")
+        icon = self.parser.getParam(params, "icon")
         #log.info('url: ' + str(url) + ', name: ' + name + ', category: ' + category)
-        if name == 'None':
+        if name == None:
             self.listsMainMenu(MENU_TAB)
         elif name == 'main-menu' and category == 'Kategorie':
             self.listsCategoriesMenu()
