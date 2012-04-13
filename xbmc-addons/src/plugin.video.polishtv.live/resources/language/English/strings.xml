@@ -29,8 +29,8 @@
     <string id="55201">Videos per page</string>
     <string id="55202">Platform</string>
     <string id="55203">Quality</string>
-    <!--<string id="55204">Samsung TV platform</string>
-    <string id="55205">Samsung TV quality</string>-->
+    <string id="55204">Choose custom quality</string>
+    <!--<string id="55205">Samsung TV quality</string>-->
 
     <!-- TVP settings -->
     <string id="55300">TVP</string>
