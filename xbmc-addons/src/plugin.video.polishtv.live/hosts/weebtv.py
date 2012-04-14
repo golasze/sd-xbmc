@@ -203,9 +203,9 @@ class Video:
     def LinkParams(self, channel):
         data = None
         if login == '' and password == '':
-            values = { 'cid': channel }
+            values = { 'cid': channel, 'platform': 'XBMC' }
         else:
-            values = { 'cid': channel, 'username': login, 'userpassword': password }
+            values = { 'cid': channel, 'username': login, 'userpassword': password, 'platform': 'XBMC' }
         try:
             parser = Parser.Parser()
             headers = { 'User-Agent' : HOST }
