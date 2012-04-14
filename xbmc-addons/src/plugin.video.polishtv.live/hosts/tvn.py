@@ -17,7 +17,7 @@ except ImportError:
     import sha
     sha1 = sha.new
 
-import pLog, settings
+import pLog, settings, Parser
 
 log = pLog.pLog()
 HANDLE = int(sys.argv[1])
@@ -51,6 +51,7 @@ class tvn:
 
     def __init__(self):
         log.info("Starting TVN Player")
+        self.parser = Parser.Parser()
         if quality_manual == 'true':
             ptv.setSetting('tvn_quality_temp', '')
         elif quality_manual == 'false':
@@ -220,15 +221,15 @@ class tvn:
 
 
     def handleService(self):
-
-        self.name = str(self.__moduleSettings__.paramName)
-        self.title = str(self.__moduleSettings__.paramTitle)
-        self.category = str(self.__moduleSettings__.paramCategory)
-        self.mode = str(self.__moduleSettings__.paramMode)
-        self.url = str(self.__moduleSettings__.paramURL)
-        self.id = str(self.__moduleSettings__.getParam(self.__moduleSettings__.getParams(), 'id'))
-        self.page = self.__moduleSettings__.getParam(self.__moduleSettings__.getParams(), 'page')
-        self.season = self.__moduleSettings__.getParam(self.__moduleSettings__.getParams(), 'season')
+        params = self.parser.getParams()
+        self.name = str(self.parser.getParam(params, "name"))
+        self.title = str(self.parser.getParam(params, "title"))
+        self.category = str(self.parser.getParam(params, "category"))
+        self.url = str(self.parser.getParam(params, "url"))
+        self.id = str(self.parser.getParam(params, "id"))
+        self.mode = str(self.parser.getParam(params, "mode"))
+        self.page = self.parser.getParam(params, "page")
+        self.season = self.parser.getParam(params, "season")
         if not self.page:
             self.page = 0
         else:
