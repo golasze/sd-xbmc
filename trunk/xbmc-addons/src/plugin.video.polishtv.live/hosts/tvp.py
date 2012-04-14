@@ -5,7 +5,7 @@ import xbmcgui, xbmc, xbmcplugin, xbmcaddon
 import elementtree.ElementTree as ET
 from xml.dom.minidom import parseString
 
-import pLog, settings
+import pLog, settings, Parser
 
 log = pLog.pLog()
 
@@ -39,6 +39,7 @@ class tvp:
     def __init__(self):
         log.info("Starting TVP.INFO")
         socket.setdefaulttimeout(15)
+        self.parser = Parser.Parser()
 
     def addDir(self,name,url,mode,category,iconimage):
         u = sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&category="+urllib.quote_plus(category)+"&url="+urllib.quote_plus(url)
@@ -269,12 +270,13 @@ class tvp:
 
 
     def handleService(self):
-        self.name = str(self.__moduleSettings__.paramName)
-        self.title = str(self.__moduleSettings__.paramTitle)
-        self.category = str(self.__moduleSettings__.paramCategory)
-        self.mode = str(self.__moduleSettings__.paramMode)
-        self.url = str(self.__moduleSettings__.paramURL)
-        self.page = self.__moduleSettings__.getParam(self.__moduleSettings__.getParams(), 'page')
+        params = self.parser.getParams()
+        self.name = str(self.parser.getParam(params, "name"))
+        self.title = str(self.parser.getParam(params, "title"))
+        self.category = str(self.parser.getParam(params, "category"))
+        self.url = str(self.parser.getParam(params, "url"))
+        self.mode = str(self.parser.getParam(params, "mode"))
+        self.page = self.parser.getParam(params, "page")
         if not self.page:
             self.page = 0
         else:
