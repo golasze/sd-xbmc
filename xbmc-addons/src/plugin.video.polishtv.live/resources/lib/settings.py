@@ -9,9 +9,10 @@ log = pLog.pLog()
 
 
 class TVSettings:
-  def __init__(self):
-    addon = xbmcaddon.Addon(scriptID)
+    def __init__(self):
+        addon = xbmcaddon.Addon(scriptID)
 
-
-  def showSettings(self):
-    xbmcaddon.Addon(scriptID).openSettings(sys.argv[0])
+    def showSettings(self):
+        xbmcaddon.Addon(scriptID).openSettings(sys.argv[0])
+        
+    #def recStart(self):

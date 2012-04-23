@@ -14,6 +14,8 @@
 	<setting id="weebtv_rec" type="bool" label="55011" default="false" />
 	<setting id="weebtv_rtmp" type="file" label="55007" default="" />
 	<setting id="weebtv_dstpath" type="folder" label="55008" default="" />
+	<setting id="weebtv_timedelta_hours" type="text" label="55012" default="0" />
+	<setting id="weebtv_timedelta_minutes" type="text" label="55013" default="0" />
     </category>
     <!--<category label="55100">
 	<setting type="sep"/>
