@@ -31,8 +31,10 @@ multi = ptv.getSetting('weebtv_hq')
 record = ptv.getSetting('weebtv_rec')
 rtmppath = ptv.getSetting('weebtv_rtmp')
 dstpath = ptv.getSetting('weebtv_dstpath')
+timedelta_h = ptv.getSetting('weebtv_timedelta_hours')
+timedelta_m = ptv.getSetting('weebtv_timedelta_minutes')
 
-VIDEO_MENU = [ "Nagrywanie", "Odtwarzanie" ]
+VIDEO_MENU = [ "Nagrywanie", "Odtwarzanie", "Zaprogramowanie nagrania" ]
 
 SKINS = {
         'confluence': { 'opt1': 500, 'opt2': 50 },
@@ -88,7 +90,7 @@ class Channels:
 			req = urllib2.Request(url, data, headers)
 			raw = urllib2.urlopen(req)
 			res = json.loads(raw.read())
-		except err:
+		except:
 			res = { "0": "Error" }
 		return res
 
@@ -180,7 +182,7 @@ class Player(xbmc.Player):
         if self.getPremium() == 0:
             msg.ok("Błąd odtwarzania.", "Przekroczony limit lub zbyt duża liczba użytkowników.", "Wykup konto premium aby oglądać bez przeszkód.")
         else:
-            msg.Warning("Błąd odtwarzania.", "Serwer odrzucił połączenie z nieznanych przyczyn.")
+            msg.ok("Błąd odtwarzania.", "Serwer odrzucił połączenie z nieznanych przyczyn.")
         
     def onPlayBackStopped(self):
         print "## Playback Stopped ##"
@@ -193,12 +195,33 @@ class Player(xbmc.Player):
 
 class Video:
     def InputTime(self):
+        nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
         text = None
-        k = xbmc.Keyboard()
+        k = xbmc.Keyboard(str(nowTime.strftime("%H:%M")), "Początek nagrania: " + str(nowTime.strftime("%H:%M")) + ". Czas zakończenia [HH:MM]:")
         k.doModal()
         if (k.isConfirmed()):
             text = k.getText()
-        return text
+        return self.GetTime(text)
+    
+    def GetTime(self, end):
+        rectime = 0
+        if ":" in end:
+            nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
+            st = time.mktime(nowTime.timetuple())
+            nowDate = str(nowTime.strftime("%Y-%m-%d"))
+            t = end.split(":")
+            tH = t[0]
+            tM = t[1]
+            tS = "00"
+            endTime = nowDate + " " + str(tH) + ":" + str(tM) + ":" + str(tS) + ".0"
+            endFormat = "%Y-%m-%d %H:%M:%S.%f"
+            endTuple = time.strptime(endTime, endFormat)
+            et = time.mktime(datetime.datetime(*endTuple[:7]).timetuple())
+            rectime = int(et - st)
+            if rectime < 0:
+                rectime = 0
+        return rectime
+        
 
     def LinkParams(self, channel):
         data = None
@@ -292,13 +315,15 @@ class Video:
                 elif item == 0:
                     dwnl = RTMPDownloader()
                     if dwnl.isRTMP(rtmppath):
-                        msg = xbmcgui.Dialog()
-                        msg.ok("Podaj czas nagrania", "Podaj wartość po jakim czasie", "ma się skończyć nagrywanie.", "Dla 1h 30m podaj 90m")
                         rectime = self.InputTime()
                         videoLink =  self.LinkRecord(channel, val['bitrate'])
                     else:
                         msg = xbmcgui.Dialog()
                         msg.ok("Informacja", "Nie masz zainstalowanego rtmpdump")
+                elif item == 2:
+                    rec = Record()
+                    rec.Init(channel, val['title'])
+                    exit()
         else:
             videoLink =  self.LinkPlayable(channel, val['bitrate'])               
         if videoLink['status'] == '1':
@@ -316,7 +341,7 @@ class Video:
                     msg.ok("Błąd odtwarzania", "Wystąpił nieznany błąd.", "Odtwarzanie wstrzymano.")
             elif videoLink['rtmp'].startswith('rtmp://') and item == 0:
                 if os.path.isdir(dstpath):
-                    if int(rectime) > 0:
+                    if rectime > 0:
                         dwnl = RTMPDownloader()
                         params = { "url": videoLink['rtmp'], "download_path": dstpath, "title": val['title'], "live": "true", "swfUrl": videoLink['ticket'], "pageUrl": "token", "duration": int(rectime) }
                         dwnl.download(rtmppath, params)
@@ -346,34 +371,114 @@ class RTMPDownloader:
         return res
 
     def download(self, app, params = {}):
-        td = datetime.datetime.now()
+        td = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
         nt = time.mktime(td.timetuple())
         today = datetime.datetime.fromtimestamp(nt)
-        file = os.path.join(str(params['download_path']), str(params['title']).replace(" ", "_") + "-" + str(today).replace(" ", "_").replace(":", ".") + ".mp4")
-        rectime = int(60 * int(params['duration']))
-        os.system(str(app) + " -B " + str(rectime) + " -r " + str(params['url']) + " -s " + str(params['swfUrl']) + " -p token -v live -o " + file)
+        file = os.path.join(str(params['download_path']), str(params['title']).replace(" ", "_") + "-" + str(today).replace(" ", "_").replace(":", ".") + ".flv")
+        #rectime = int(60 * int(params['duration']))
+        os.system(str(app) + " -B " + str(params['duration']) + " -r " + str(params['url']) + " -s " + str(params['swfUrl']) + " -p token -v live -o " + file)
+
+
+class Record:
+    def __init__(self):
+        self.recdir = os.path.join(ptv.getAddonInfo('path'), "recs")
+        self.cmddir = os.path.join(ptv.getAddonInfo('path'), "cmd")
+
+    def input(self, text, header):
+        k = xbmc.Keyboard(text, header)
+        k.doModal()
+        if (k.isConfirmed()):
+            text = k.getText()
+        return text
+    
+    def GetTime(self, end):
+        rectime = 0
+        if ":" in end:
+            nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
+            st = time.mktime(nowTime.timetuple())
+            nowDate = str(nowTime.strftime("%Y-%m-%d"))
+            t = end.split(":")
+            tH = t[0]
+            tM = t[1]
+            tS = "00"
+            endTime = nowDate + " " + str(tH) + ":" + str(tM) + ":" + str(tS) + ".0"
+            endFormat = "%Y-%m-%d %H:%M:%S.%f"
+            endTuple = time.strptime(endTime, endFormat)
+            et = time.mktime(datetime.datetime(*endTuple[:7]).timetuple())
+            rectime = int(et - st)
+            if rectime < 0:
+                rectime = 0
+        return rectime
+    
+    def Init(self, channel, title):
+        nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
+        nowDate = str(nowTime.strftime("%Y-%m-%d"))
+        nTime = str(nowTime.strftime("%H:%M"))
+        s_Date = self.input(nowDate, "Wprowadź datę początku nagrania")
+        s_Start = self.input(nTime, "Początek nagrania")
+        e_Date = self.input(nowDate, "Wprowadź datę końca nagrania")
+        e_End = self.input(nTime, "Koniec nagrania")
+        setTime = self.SetTime(s_Date, s_Start, e_Date, e_End)
+        nameRec = title.replace(" ", "_") + "_" + s_Date + "." + s_Start.replace(":", ".")
+        opts = { 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'channel': channel, 'login': login, 'password': password, 'hq': multi, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m, 'urlPlayer': playerUrl }
+        self.saveFile(opts)
+        #print 'xbmc.executebuiltin(\'XBMC.AlarmClock(%s, %s, %s))\')' % (str(nameRec), 'RunScript(' + self.libdir + os.sep + 'record.py, ' + self.recdir + os.sep + str(nameRec) + '.json)', str(setTime[0]))
+        print 'xbmc.executebuiltin(\'XBMC.AlarmClock(' + str(nameRec) + ', ' + 'RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(nameRec) + '.json)' + ', ' + str(setTime[0]) + '))\')'
+        #xbmc.executebuiltin('AlarmClock(%s, %s, %s))') % (str(nameRec), '"Minimize"', str(setTime[0])) 
+        xbmc.executebuiltin('AlarmClock(' + str(nameRec) + ', "RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(nameRec) + '.json)", ' + str(setTime[0]) + '))')
         
+    def saveFile(self, opts = {}):
+        out = json.dumps(opts)
+        file = self.recdir + os.sep + opts['name'] + '.json'
+        wfile = open(file, "w")
+        wfile.write(out)
+        wfile.close()
+
+    def SetTime(self, startDate, startTime, endDate, endTime):
+        nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
+        start = startDate + " " + startTime + ":00.0"
+        end = endDate + " " + endTime + ":00.0"
+        format = "%Y-%m-%d %H:%M:%S.%f"
+        startTuple = time.strptime(start, format)
+        endTuple = time.strptime(end, format)
+        nt = time.mktime(nowTime.timetuple())
+        st = time.mktime(datetime.datetime(*startTuple[:7]).timetuple())
+        et = time.mktime(datetime.datetime(*endTuple[:7]).timetuple())
+        alarmtime = int(float(st - nt) / 60)
+        #print 'alarmtime: ' + str(alarmtime)
+        rectime = int(et - st)
+        return [ alarmtime, rectime ]
+    
+    def message(self):
+        msg = xbmcgui.Dialog()
+        msg.ok("test", "test")
 
 class WeebTV:
-	def handleService(self):
-		s = Settings()
-		parser = Parser.Parser()
-		params = parser.getParams()
-		cid = parser.getIntParam(params, "cid")
-		title = parser.getParam(params, "title")
-		action = parser.getIntParam(params, "action")
-		print "action: " + str(action) + ", title: " + str(title)
-		if not os.path.isdir(os.path.join(ptv.getAddonInfo('path'), "strm")):
-			os.mkdir(os.path.join(ptv.getAddonInfo('path'), "strm"))
-		if action == None:
+    def __init__(self):
+        self.recdir = os.path.join(ptv.getAddonInfo('path'), "recs")
+        self.strmdir = os.path.join(ptv.getAddonInfo('path'), "strm")
+        
+    def handleService(self):
+        s = Settings()
+        parser = Parser.Parser()
+        params = parser.getParams()
+        cid = parser.getIntParam(params, "cid")
+        title = parser.getParam(params, "title")
+        action = parser.getIntParam(params, "action")
+        print "action: " + str(action) + ", title: " + str(title)
+        if not os.path.isdir(self.strmdir):
+            os.mkdir(self.strmdir)
+        if not os.path.isdir(self.recdir):
+            os.mkdir(self.recdir)
+        if action == None:
 			show = Channels()
 			show.ChannelsList(apiUrl + "&option=online-alphabetical")
-		elif action == 1:
+        elif action == 1:
 			s.setViewMode('other')
 			if cid > 0 and title != "":
 				init = Video()
 				init.RunVideoLink(cid)
-		elif action == 0:
+        elif action == 0:
 			s.setViewMode('other')
 			msg = xbmcgui.Dialog()
 			msg.Warning(t(57005).encode('utf-8'), t(57006).encode('utf-8'), t(57007).encode('utf-8'), t(57008).encode('utf-8'))

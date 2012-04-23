@@ -13,6 +13,8 @@
     <string id="55009">High quality (if available)</string>
     <string id="55010">Record</string>
     <string id="55011">Enable record question</string>
+    <string id="55012">Time offset (in hours)</string>
+    <string id="55013">Time offset (in minutes)</string>
     
     <!-- Megavideo settings -->
     <string id="55100">MegaVideo</string>

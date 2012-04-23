@@ -86,7 +86,7 @@ class PolishLiveTV:
 	elif mode == 20:
 		log.info('Wyświetlam ustawienia')
 		self.settings.showSettings()
-
+		
 
   def listsMenu(self, table, title):
     value = ''
