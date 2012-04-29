@@ -391,25 +391,6 @@ class Record:
             text = k.getText()
         return text
     
-    def GetTime(self, end):
-        rectime = 0
-        if ":" in end:
-            nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
-            st = time.mktime(nowTime.timetuple())
-            nowDate = str(nowTime.strftime("%Y-%m-%d"))
-            t = end.split(":")
-            tH = t[0]
-            tM = t[1]
-            tS = "00"
-            endTime = nowDate + " " + str(tH) + ":" + str(tM) + ":" + str(tS) + ".0"
-            endFormat = "%Y-%m-%d %H:%M:%S.%f"
-            endTuple = time.strptime(endTime, endFormat)
-            et = time.mktime(datetime.datetime(*endTuple[:7]).timetuple())
-            rectime = int(et - st)
-            if rectime < 0:
-                rectime = 0
-        return rectime
-    
     def Init(self, channel, title):
         nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
         nowDate = str(nowTime.strftime("%Y-%m-%d"))
@@ -422,9 +403,6 @@ class Record:
         nameRec = title.replace(" ", "_") + "_" + s_Date + "." + s_Start.replace(":", ".")
         opts = { 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'channel': channel, 'login': login, 'password': password, 'hq': multi, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m, 'urlPlayer': playerUrl }
         self.saveFile(opts)
-        #print 'xbmc.executebuiltin(\'XBMC.AlarmClock(%s, %s, %s))\')' % (str(nameRec), 'RunScript(' + self.libdir + os.sep + 'record.py, ' + self.recdir + os.sep + str(nameRec) + '.json)', str(setTime[0]))
-        print 'xbmc.executebuiltin(\'XBMC.AlarmClock(' + str(nameRec) + ', ' + 'RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(nameRec) + '.json)' + ', ' + str(setTime[0]) + '))\')'
-        #xbmc.executebuiltin('AlarmClock(%s, %s, %s))') % (str(nameRec), '"Minimize"', str(setTime[0])) 
         xbmc.executebuiltin('AlarmClock(' + str(nameRec) + ', "RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(nameRec) + '.json)", ' + str(setTime[0]) + '))')
         
     def saveFile(self, opts = {}):
@@ -445,13 +423,34 @@ class Record:
         st = time.mktime(datetime.datetime(*startTuple[:7]).timetuple())
         et = time.mktime(datetime.datetime(*endTuple[:7]).timetuple())
         alarmtime = int(float(st - nt) / 60)
-        #print 'alarmtime: ' + str(alarmtime)
         rectime = int(et - st)
         return [ alarmtime, rectime ]
+
+    def GetAlarmTime(self, startDate, startTime):
+        nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
+        start = startDate + " " + startTime + ":00.0"
+        format = "%Y-%m-%d %H:%M:%S.%f"
+        startTuple = time.strptime(start, format)
+        nt = time.mktime(nowTime.timetuple())
+        st = time.mktime(datetime.datetime(*startTuple[:7]).timetuple())
+        alarmtime = int(float(st - nt) / 60)
+        return alarmtime
+        
     
-    def message(self):
-        msg = xbmcgui.Dialog()
-        msg.ok("test", "test")
+    def loadFiles(self):
+        if os.path.isdir(self.recdir):
+            for fileName in os.listdir(self.recdir):
+                pathFile = self.recdir + os.sep + fileName
+                if pathFile.endswith('.json'):
+                    raw = open(pathFile, 'r').read()
+                    res = json.loads(raw)
+                    alarmtime = self.GetAlarmTime(res['date'], res['start'])
+                    if int(alarmtime) < 0:
+                        os.remove(recdir + os.sep + pathFile)
+                    else:
+                        xbmc.executebuiltin('CancelAlarm(' + str(res['name']) + ', silent)')
+                        xbmc.executebuiltin('AlarmClock(' + str(res['name']) + ', "RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(res['name']) + '.json)", ' + str(alarmtime) + '))')
+
 
 class WeebTV:
     def __init__(self):
@@ -482,3 +481,11 @@ class WeebTV:
 			s.setViewMode('other')
 			msg = xbmcgui.Dialog()
 			msg.Warning(t(57005).encode('utf-8'), t(57006).encode('utf-8'), t(57007).encode('utf-8'), t(57008).encode('utf-8'))
+            
+    def handleRecords(self):
+        d = xbmcgui.Dialog()
+        rec = Record()
+        qrec = d.yesno("Nagrywanie", "Czy odświeżyć nagrywanie wszystkich pozycji?")
+        if qrec == 1:
+            rec.loadFiles()
+        
