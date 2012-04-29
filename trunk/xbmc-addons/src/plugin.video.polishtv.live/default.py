@@ -32,6 +32,7 @@ VOD_ONLINE_TABLE = { #200: "Ekino TV [filmy, seriale]",
              205: "TVN Player"
 }
 
+REC_DOWN_TABLE = { 300: "Weeb TV" }
 
 
 class PolishLiveTV:
@@ -83,6 +84,12 @@ class PolishLiveTV:
 	elif mode == 205 or service == 'tvn':
 		vod = tvn.tvn()
 		vod.handleService()
+	elif mode == 300:
+		vod = weebtv.WeebTV()
+		vod.handleRecords()
+	elif mode == 19:
+		log.info('Zarządzanie nagrywaniem/ściąganiem')
+		self.LIST(REC_DOWN_TABLE)
 	elif mode == 20:
 		log.info('Wyświetlam ustawienia')
 		self.settings.showSettings()
@@ -109,6 +116,7 @@ class PolishLiveTV:
   def CATEGORIES(self):
 	self.addDir("Telewizja", 1, False, False)
 	self.addDir("Filmy, Seriale", 2, False, False)
+	self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False)
 	self.addDir('Ustawienia', 20, True, False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
