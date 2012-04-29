@@ -446,7 +446,7 @@ class Record:
                     res = json.loads(raw)
                     alarmtime = self.GetAlarmTime(res['date'], res['start'])
                     if int(alarmtime) < 0:
-                        os.remove(recdir + os.sep + pathFile)
+                        os.remove(pathFile)
                     else:
                         xbmc.executebuiltin('CancelAlarm(' + str(res['name']) + ', silent)')
                         xbmc.executebuiltin('AlarmClock(' + str(res['name']) + ', "RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(res['name']) + '.json)", ' + str(alarmtime) + '))')
