@@ -14,7 +14,7 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser
-import weebtv, ipla, stations, tvp, tvn, iplex
+import weebtv, ipla, stations, tvp, tvn, iplex, tvpvod
 
 log = pLog.pLog()
 
@@ -29,7 +29,8 @@ VOD_ONLINE_TABLE = { #200: "Ekino TV [filmy, seriale]",
 		     #201: "IPLA",
 		     #202: "iiTV info [seriale]",
 		     204: "TVP [info]",
-             205: "TVN Player"
+             205: "TVN Player",
+             206: "TVP VOD",
 }
 
 REC_DOWN_TABLE = { 300: "Weeb TV" }
@@ -84,6 +85,9 @@ class PolishLiveTV:
 	elif mode == 205 or service == 'tvn':
 		vod = tvn.tvn()
 		vod.handleService()
+	elif mode == 206 or service == 'tvpvod':
+		vod = tvpvod.tvpvod()
+		vod.handleService()
 	elif mode == 300:
 		vod = weebtv.WeebTV()
 		vod.handleRecords()
@@ -93,7 +97,7 @@ class PolishLiveTV:
 	elif mode == 20:
 		log.info('Wyświetlam ustawienia')
 		self.settings.showSettings()
-		
+
 
   def listsMenu(self, table, title):
     value = ''
