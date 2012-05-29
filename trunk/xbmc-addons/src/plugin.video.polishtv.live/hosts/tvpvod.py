@@ -6,7 +6,8 @@ import os, sys, urllib, urllib2, simplejson
 
 
 log = pLog.pLog()
-urlCategory = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json'
+urlCategoryList = 'https://itvp.one-2-one.pl/api/mp4.php'
+urlRecommended = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json'
 urlVideo = 'http://www.tvp.pl/pub/stat/videofileinfo?video_id=%d&mime_type=video/mp4'
 urlImage = 'http://s.v3.tvp.pl/images/%s/%s/%s/uid_%s_width_%d_gs_0.jpg'
 
@@ -34,6 +35,7 @@ class tvpvod:
         self.page = self.parser.getParam(params, "page")
         self.action = str(self.parser.getParam(params, "action"))
         self.videoid = str(self.parser.getParam(params, "videoid"))
+        self.actionid = str(self.parser.getParam(params, "actionid"))
 
         if not self.page:
             self.page = 1
@@ -41,14 +43,17 @@ class tvpvod:
             self.page = int(self.page)
 
         if self.action == 'None':
-            log.info("List VOD")
+            log.info("VOD Categories")
+            self.listCategories()
+        elif self.action == 'list_category' and self.actionid != '':
+            log.info("List VOD " + self.actionid)
             self.listsVOD()
         elif self.action == 'play_video' and self.videoid != '':
             log.info("Play video " + self.videoid)
             self.playVideo()
 
     def getListJson(self,id):
-        url = urlCategory % (id, PAGE_MOVIES, self.page)
+        url = urlRecommended % (id, PAGE_MOVIES, self.page)
         try:
             req = urllib2.Request(url)
             req.add_header('User-Agent', USER_AGENT)
@@ -82,6 +87,12 @@ class tvpvod:
             print "Request to TVP API failed"
             return []
 
+    def listCategories(self):
+        result = self.getCategoriesJson()
+        self.addDir("Polecane","list_category",VOD_ID,"")
+
+        xbmcplugin.endOfDirectory(HANDLE)
+
     def listsVOD(self):
         result = self.getListJson(VOD_ID)
         items = result['items']
@@ -89,7 +100,7 @@ class tvpvod:
         xbmcplugin.setContent(HANDLE, 'episodes')
         for item in items:
             prop = {
-                'title' : item['title_root'].encode('utf-8'),
+                'title' : '',
                 'TVShowTitle': self.name,
                 'episode': 0,
                 'description': '',
@@ -98,6 +109,11 @@ class tvpvod:
                 'overlay' : 0,
 
             }
+
+            if 'title_root' in item:
+                prop['title'] = item['title_root'].encode('utf-8')
+            else:
+                prop['title'] = item['website_title'].encode('utf-8') + " " + item['title'].encode('utf-8')
 
             if 'duration' in item and int(item['duration']):
                 prop['time'] = int(item['duration'])/60
@@ -118,6 +134,14 @@ class tvpvod:
             self.addNextPage()
 
         xbmcplugin.endOfDirectory(HANDLE)
+
+    def addDir(self,name,action,actionId,iconimage):
+        u = sys.argv[0]+"?mode="+self.mode+"&name="+urllib.quote_plus(name)+"&category="+urllib.quote_plus(self.category)+"&action="+urllib.quote_plus(action)+"&actionid="+urllib.quote_plus(str(actionId))
+        ok=True
+        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+        liz.setProperty( "Folder", "true" )
+        ok=xbmcplugin.addDirectoryItem(handle=HANDLE,url=u,listitem=liz,isFolder=True)
+        return ok
 
     def addVideoLink(self,prop,url,iconimage,listsize=0):
         ok=True
@@ -174,4 +198,21 @@ class tvpvod:
         liz = xbmcgui.ListItem(label=videoTitle, path=url)
         liz.setInfo(type='Video', infoLabels={ "Title": videoTitle })
         xbmcplugin.setResolvedUrl(handle=HANDLE, succeeded=True, listitem=liz)
+
+    def getCategoriesJson(self):
+        try:
+            req = urllib2.Request(urlCategoryList)
+            req.add_header('User-Agent', USER_AGENT)
+            response = urllib2.urlopen(req)
+            result = response.read()
+            result = simplejson.loads(result)
+            return result
+
+        except urllib2.HTTPError, e:
+            print "HTTP error " + e.code
+        except urllib2.URLError, e:
+            print "URL error " + e.reason
+        except:
+            print "Request to TVP API failed"
+            return []
 
