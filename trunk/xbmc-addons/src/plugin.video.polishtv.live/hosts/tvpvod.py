@@ -7,7 +7,8 @@ import os, sys, urllib, urllib2, simplejson
 
 log = pLog.pLog()
 urlCategoryList = 'https://itvp.one-2-one.pl/api/mp4.php'
-urlRecommended = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json'
+urlRecommended  = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json'
+urlEpisodesList = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json&type=video&order=release_date_long,-1'
 urlVideo = 'http://www.tvp.pl/pub/stat/videofileinfo?video_id=%d&mime_type=video/mp4'
 urlImage = 'http://s.v3.tvp.pl/images/%s/%s/%s/uid_%s_width_%d_gs_0.jpg'
 
@@ -89,47 +90,34 @@ class tvpvod:
 
     def listCategories(self):
         result = self.getCategoriesJson()
+        if "name" in result:
+            self.addDir(result["name"].encode('utf-8'),"list_category",result["id"],"")
+            if "collectionOfSubcategories" in result:
+                for subCategory in result["collectionOfSubcategories"]:
+                    if "name" in subCategory:
+                        self.addDir(subCategory["name"].encode('utf-8'),"list_category",subCategory["id"],"")
+
         self.addDir("Polecane","list_category",VOD_ID,"")
 
         xbmcplugin.endOfDirectory(HANDLE)
 
     def listsVOD(self):
-        result = self.getListJson(VOD_ID)
+        result = self.getListJson(int(self.actionid))
         items = result['items']
         totalCount = result['total_count']
         xbmcplugin.setContent(HANDLE, 'episodes')
+        itemsCount = len(items)
         for item in items:
-            prop = {
-                'title' : '',
-                'TVShowTitle': self.name,
-                'episode': 0,
-                'description': '',
-                'time': 0,
-                'aired': item['release_date_dt'].encode('utf-8'),
-                'overlay' : 0,
-
-            }
-
-            if 'title_root' in item:
-                prop['title'] = item['title_root'].encode('utf-8')
+            itemType = ""
+            for entry in item["types"]:
+                if entry != "any":
+                    itemType = entry
+                    
+            if itemType == "video":
+                self.parseVideo(item,itemsCount)
             else:
-                prop['title'] = item['website_title'].encode('utf-8') + " " + item['title'].encode('utf-8')
-
-            if 'duration' in item and int(item['duration']):
-                prop['time'] = int(item['duration'])/60
-            if 'duration_min' in item and int(item['duration_min']):
-                prop['time'] = int(item['duration_min'])
-            if 'description_root' in item:
-                prop['description'] = item['description_root'].encode('utf-8')
-
-            iconUrl = ''
-            if 'image' in item:
-                iconFile = item['image'][0]['file_name'].encode('utf-8')
-                iconWidth = item['image'][0]['width']
-                iconUrl = urlImage %(iconFile[0],iconFile[1],iconFile[2],iconFile[:-4],iconWidth)
-
-            self.addVideoLink(prop,str(item['_id']),iconUrl,len(items))
-
+                self.parseCategory(item,itemsCount)
+                
         if totalCount > self.page*PAGE_MOVIES:
             self.addNextPage()
 
@@ -171,7 +159,6 @@ class tvpvod:
         } )
 
         u = sys.argv[0]+"?mode="+self.mode+"&name="+urllib.quote_plus(prop['title'])+"&category="+urllib.quote_plus(self.category)+"&page="+str(self.page)+"&action=play_video&videoid="+urllib.quote_plus(url)
-        print u
         ok=xbmcplugin.addDirectoryItem(handle=HANDLE,url=u,listitem=liz,isFolder=False,totalItems=listsize)
         return ok
 
@@ -180,7 +167,7 @@ class tvpvod:
         if not page:
             page = 0
 
-        u = sys.argv[0]+"?mode="+self.mode+"&name="+urllib.quote_plus(self.name)+"&category="+urllib.quote_plus(self.category)+"&page="+str(page+1)+"&url="+urllib.quote_plus(self.url)
+        u = sys.argv[0]+"?mode="+self.mode+"&name="+urllib.quote_plus(self.name)+"&category="+urllib.quote_plus(self.category)+"&page="+str(page+1)+"&action="+urllib.quote_plus(self.action)+"&actionid="+urllib.quote_plus(str(self.actionid))
         ok=True
         image = os.path.join( self.__settings__.getAddonInfo('path'), "images/" ) + "next.png"
 
@@ -215,4 +202,75 @@ class tvpvod:
         except:
             print "Request to TVP API failed"
             return []
+
+    def parseVideo(self, item,itemsCount):
+        playMode = 0
+        if "play_mode" in item:
+            playMode = item["play_mode"]
+
+        if not playMode:
+            return
+
+        prop = {
+            'title' : '',
+            'TVShowTitle': self.name,
+            'episode': 0,
+            'description': '',
+            'time': 0,
+            'aired': item['release_date_dt'].encode('utf-8'),
+            'overlay' : 0,
+
+            }
+
+        if 'title_root' in item:
+            prop['title'] = item['title_root'].encode('utf-8')
+        else:
+            prop['title'] = item['website_title'].encode('utf-8') + " " + item['title'].encode('utf-8')
+
+        if 'duration' in item and int(item['duration']):
+            prop['time'] = int(item['duration'])/60
+        if 'duration_min' in item and int(item['duration_min']):
+            prop['time'] = int(item['duration_min'])
+        if 'description_root' in item:
+            prop['description'] = item['description_root'].encode('utf-8')
+
+        iconUrl = self.getImageUrl(item)
+
+        self.addVideoLink(prop,str(item['_id']),iconUrl,itemsCount)
+
+    def parseCategory(self, item, itemsCount):
+        iconUrl = self.getImageUrl(item)
+
+        self.addDir(item["title"].encode('utf-8'),"list_category",item["asset_id"],iconUrl)
+
+
+    def getImageUrl(self, item):
+        iconUrl = ""
+
+        if 'image' in item:
+            iconFile = item['image'][0]['file_name'].encode('utf-8')
+            iconWidth = item['image'][0]['width']
+            if iconWidth > 0:
+                iconUrl = urlImage %(iconFile[0],iconFile[1],iconFile[2],iconFile[:-4],iconWidth)
+
+        if iconUrl == '' and 'image_4x3' in item:
+            iconFile = item['image_4x3'][0]['file_name'].encode('utf-8')
+            iconWidth = item['image_4x3'][0]['width']
+            if iconWidth > 0:
+                iconUrl = urlImage %(iconFile[0],iconFile[1],iconFile[2],iconFile[:-4],iconWidth)
+
+        if iconUrl == '' and  'image_ns644' in item:
+            iconFile = item['image_ns644'][0]['file_name'].encode('utf-8')
+            iconWidth = item['image_ns644'][0]['width']
+            if iconWidth > 0:
+                iconUrl = urlImage %(iconFile[0],iconFile[1],iconFile[2],iconFile[:-4],iconWidth)
+
+        if iconUrl == '' and  'image_ns954' in item:
+            iconFile = item['image_ns954'][0]['file_name'].encode('utf-8')
+            iconWidth = item['image_ns954'][0]['width']
+            if iconWidth > 0:
+                iconUrl = urlImage %(iconFile[0],iconFile[1],iconFile[2],iconFile[:-4],iconWidth)
+
+        print iconUrl
+        return iconUrl
 
