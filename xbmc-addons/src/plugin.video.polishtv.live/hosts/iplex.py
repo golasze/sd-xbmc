@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, re, os, sys, math
+import urllib, urllib2, re, os, sys, math, json
 import xbmcgui, xbmc, xbmcaddon, xbmcplugin
 import elementtree.ElementTree as ET
 try:
@@ -118,42 +118,50 @@ class IPLEX:
         xbmcplugin.endOfDirectory(int(sys.argv[1])) 
 
 
-    def getMovieLinkFromXML(self, url):
+    def getMovieLinksFromXML(self, url, version = None):
+    	valTab = []
         urlLink = 'None'
-        log.info('url: ' + playerUrl + self.getMovieID(url) + '?sessionid=' + str(md5(url).hexdigest()) + '&chlck=hhi7ep&r=1321745471310')
+        #log.info('url: ' + playerUrl + self.getMovieID(url) + '?sessionid=' + str(md5(url).hexdigest()) + '&chlck=hhi7ep&r=1321745471310')
         urlXml = playerUrl + self.getMovieID(url) + '?sessionid=' + str(md5(url).hexdigest()) + '&chlck=hhi7ep&r=1321745471310'
+        if(version):
+        	urlXml +='&version='+version
+        log.info('url: ' + urlXml )
         elems = ET.parse(urllib.urlopen(urlXml)).getroot()
         mediaItems = elems.find("Media").findall("MediaItem")
         for mediaItem in mediaItems:
             media = mediaItem.attrib
             resID = media['id']
             if resID == 'M' + self.getMovieID(url):
+            	meta = json.loads(mediaItem.find("Text").text)
+            	if version == None:
+            		for v in set(meta['available_versions']):
+            			if v == meta['current_version']:
+            				continue
+            			valTab += self.getMovieLinksFromXML(url, v)
                 fileSets = mediaItem.findall("FileSet")
                 for fileSet in fileSets:
                     resFiles = fileSet.findall("File")
                     if len(resFiles) > 1:
-                        strTab = []
-                        valTab = []
-                        iid = 0
                         for resFile in resFiles:
-                            file = resFile.attrib
-                            bitrate = file['rate']
-                            link = file['src']
+							strTab = {}
+							file = resFile.attrib
+							bitrate = file['rate']
+							link = file['src']
                             #log.info('bitrate: ' + bitrate + ', link: ' + link)
-                            strTab.append(str(iid))
-                            strTab.append("Film z bitrate: " + bitrate + " kbps")
-                            strTab.append(link)
-                            valTab.append(strTab)
-                            strTab = []
-                            iid = iid + 1
-                        d = xbmcgui.Dialog()
-                        item = d.select("Wybierz jakość", self.getItemTitles(valTab))
-                        if item != '':
-                            urlLink = self.getItemURL(valTab, str(item))
-                    else:
-                        file = resFiles[0].attrib
-                        urlLink = file['src']              
-        return urlLink
+							strTab['title'] = "Film z bitrate: " + bitrate + " kbps - " + meta['current_version']
+							strTab['link']  = link
+							valTab.append(strTab)             
+        return valTab
+
+
+    def selectUrl(self, urls):
+        if len(urls) == 1:
+            return urls[0]['link'];
+        d = xbmcgui.Dialog()
+        item = d.select("Wybierz wersję", [e['title'] for e in urls] )
+        if item < 0:
+            return None
+        return urls[item]['link']
 
 
     def getSizeAllItems(self, url):
@@ -185,23 +193,6 @@ class IPLEX:
         if len(tabID) > 0:
             id = tabID[1]
         return id
-
-
-    def getItemTitles(self, table):
-        out = []
-        for i in range(len(table)):
-            value = table[i]
-            out.append(value[1])
-        return out
-
-    def getItemURL(self, table, key):
-        link = ''
-        for i in range(len(table)):
-            value = table[i]
-            if key in value[0]:
-                link = value[2]
-                break
-        return link
 
 
     def searchInputText(self):
@@ -269,7 +260,9 @@ class IPLEX:
             
         if name == 'playSelectedMovie':
             #self.getMovieLinkFromXML(url)
-            self.LOAD_AND_PLAY_VIDEO(self.getMovieLinkFromXML(url), title, icon)
+            url = self.selectUrl(self.getMovieLinksFromXML(url))
+            if url:
+                self.LOAD_AND_PLAY_VIDEO(url, title, icon)
         elif name == 'blockPlaySelectedMovie':
             dialog = xbmcgui.Dialog()
             dialog.ok("IPLEX PLUS", "Ten film nie będzie odtwarzany.", "Brak obsługi IPLEX-PLUS.")
