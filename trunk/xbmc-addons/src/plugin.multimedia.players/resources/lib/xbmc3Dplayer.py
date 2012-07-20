@@ -55,6 +55,34 @@ TAB_OUTPUTS = {_(50100): 'hdmi-frame-pack',
                _(50125): 'left-right',
                _(50126): 'left-right-half'}
 
+TAB_OUT_SET = {'HDMI': 'hdmi-frame-pack',
+               'Rows': 'even-odd-rows',
+               'Columns': 'even-odd-columns',
+               'Checkerboard': 'checkerboard',
+               _(50104): 'red-cyan-monochrome',
+               _(50105): 'red-cyan-half-color',
+               _(50106): 'red-cyan-full-color',
+               _(50107): 'red-cyan-dubois',
+               _(50108): 'green-magenta-monochrome',
+               _(50109): 'green-magenta-half-color',
+               _(50110): 'green-magenta-full-color',
+               _(50111): 'green-magenta-dubois',
+               _(50112): 'amber-blue-monochrome',
+               _(50113): 'amber-blue-half-color',
+               _(50114): 'amber-blue-full-color',
+               _(50115): 'amber-blue-dubois',
+               _(50116): 'red-green-monochrome',
+               _(50117): 'red-blue-monochrome',
+               _(50118): 'equalizer',
+               _(50119): 'equalizer-3d',
+               _(50120): 'stereo',
+               'Left': 'left',
+               'Right': 'right',
+               'Over/Under [Top/Bottom]': 'top-bottom',
+               'HALF Over/Under (HALF Top/Bottom)': 'top-bottom-half',
+               'Side-By-Side': 'left-right',
+               'HALF Side-By-Side': 'left-right-half'}
+
 
 class StereoscopicPlayer:
     def __init__(self):
@@ -67,6 +95,8 @@ class StereoscopicPlayer:
         try:
             if prefs['switcher'] == 'false' and prefs['switcherexp'] == 'true':
                 playerFile = open(os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/xbmc3Dplayer', 'w')
+            commandFile = os.getenv("HOME") + '/.xbmc/addons/plugin.multimedia.players/cmd.tmp'
+            #os.remove(commandFile)
             #numAudio = str(self.getAudioLanguage(mediaTab, prefs['audio']))
             numAudio = '1'
             #numSubtitle = str(self.getSubtitleLanguage(mediaTab, prefs['subtitle']))
@@ -80,12 +110,20 @@ class StereoscopicPlayer:
                 lircOpt = '--lirc-config=' + lircfile
             if prefs['input'] != 'None':
                 appRun = 'None'
+                cmdfile = open(commandFile, 'w')
+                cmdtext = ""
                 if prefs['file1'] != 'None' and prefs['file2'] == 'None':
                     appRun = prefs['prog'] + ' --input=' + prefs['input'] + ' ' + prefs['file1'] + ' --output=' + prefs['output'] + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + prefs['subsize'] + ' --subtitle-encoding=' + prefs['subenc'] + ' --subtitle-color=' + prefs['subcolor'] + ' --subtitle-parallax=' + prefs['subparallax'] + ' ' + lircOpt +  ' ' + opt + ' -f -n'
+                    cmdtext = 'toggle-fullscreen\nset-quality 1\nset-stereo-layout ' + prefs['input'] + '\nset-stereo-mode ' + prefs['output'] + '\nset-audio-stream ' + numAudio + '\nset-subtitle-stream ' + numSubtitle + '\nset-subtitle-size ' + prefs['subsize'] + '\nset-subtitle-encoding ' + prefs['subenc'] + '\nset-subtitle-color ' + prefs['subcolor'] + '\nopen ' + prefs['file1'].replace(' ', '%20').replace('"', '') + '\nplay'
                 elif prefs['input'] == 'separate-left-right' and prefs['file1'] != 'None' and prefs['file2'] != 'None':
                     appRun = prefs['prog'] + ' --input=' + prefs['input'] + ' ' + prefs['file1'] + ' ' + prefs['file2'] + ' --output=' + prefs['output'] + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + prefs['subsize'] + ' --subtitle-encoding=' + prefs['subenc'] + ' --subtitle-color=' + prefs['subcolor'] + ' --subtitle-parallax=' + prefs['subparallax'] + ' ' + lircOpt + ' -f  -n'
+                    cmdtext = 'toggle-fullscreen\nset-quality 1\nset-stereo-layout ' + prefs['input'] + '\nset-stereo-mode ' + prefs['output'] + '\nset-audio-stream ' + numAudio + '\nset-subtitle-stream ' + numSubtitle + '\nset-subtitle-size ' + prefs['subsize'] + '\nset-subtitle-encoding ' + prefs['subenc'] + '\nset-subtitle-color ' + prefs['subcolor'] + '\nopen ' + prefs['file1'].replace(' ', '%20').replace('"', '') + ' ' + prefs['file2'].replace(' ', '%20').replace('"', '') + '\nplay'
                 elif prefs['input'] == 'separate-right-left' and prefs['file1'] != 'None' and prefs['file2'] != 'None':
                     appRun = prefs['prog'] + ' --input=' + prefs['input'] + ' ' + prefs['file1'] + ' ' + prefs['file2'] + ' --output=' + prefs['output'] + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + prefs['subsize'] + ' --subtitle-encoding=' + prefs['subenc'] + ' --subtitle-color=' + prefs['subcolor'] + ' --subtitle-parallax=' + prefs['subparallax'] + ' ' + lircOpt + ' -f  -n'
+                    cmdtext = 'toggle-fullscreen\nset-quality 1\nset-stereo-layout ' + prefs['input'] + '\nset-stereo-mode ' + prefs['output'] + '\nset-audio-stream ' + numAudio + '\nset-subtitle-stream ' + numSubtitle + '\nset-subtitle-size ' + prefs['subsize'] + '\nset-subtitle-encoding ' + prefs['subenc'] + '\nset-subtitle-color ' + prefs['subcolor'] + '\nopen ' + prefs['file1'].replace(' ', '%20').replace('"', '') + ' ' + prefs['file2'].replace(' ', '%20').replace('"', '') + '\nplay'
+                cmdfile.write(cmdtext)
+                cmdfile.close()
+                #appRun = prefs['prog'] + ' --read-commands ' + cmdfile
                 #Jebie sie cos i bez "strace" nie dziala
                 #appRun = appMovie + ' --input=' + formStreamInput + ' ' + movie + ' --output=' + formStreamOutput + ' --audio=' + numAudio + ' --subtitle=' + numSubtitle + ' --subtitle-size=' + subSize + ' --subtitle-encoding=' + subCode + ' --subtitle-color=' + subColor + ' --subtitle-parallax=' + subParallax + ' ' + lircOpt + ' -f ' + opt + ' -n|/usr/bin/strace -o /dev/null -p `/bin/ps ax|/bin/grep -v "' + appMovie + '"|/bin/grep -v grep|/bin/awk \'{print $1}\'`'
                 #playerFile.write('#!/bin/sh\n')
@@ -287,7 +325,8 @@ class StereoscopicPlayer:
 
     def getOutputFormat(self, key):
         out = 'even-odd-rows'
-        for k,v in TAB_OUTPUTS.items():
+        #for k,v in TAB_OUTPUTS.items():
+        for k,v in TAB_OUT_SET.items():
             if key == k:
                 out = v
                 break
