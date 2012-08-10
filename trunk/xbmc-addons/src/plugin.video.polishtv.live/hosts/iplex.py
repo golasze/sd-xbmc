@@ -26,8 +26,11 @@ iplexplus = False
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
-MENU_TAB = { 1: "Kategorie", 
-            2: "Szukaj" }
+MENU_TAB = { 1: "Kategorie",
+	    2: "Kolekcje",
+	    3: "Kanaly",
+#	    4: "Bajki", 
+            5: "Szukaj" }
 
 
 class IPLEX:
@@ -39,21 +42,21 @@ class IPLEX:
 
     def listsMainMenu(self, table):
         for num, val in table.items():
-            self.add('iplex', 'main-menu', val, 'None', 'None', 'None', 'None', 'None', True, False)
+            self.add('iplex', 'main-menu', val, 'None', 'None', 'None', self.videoMetadata(), True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
-    def listsCategoriesMenu(self):
+    def listsCategoriesMenu(self,category):
         req = urllib2.Request(mainUrl)
         req.add_header('User-Agent', HOST)
         openURL = urllib2.urlopen(req)
         readURL = openURL.read()
         openURL.close()
-        match = re.compile('<li><a href="/kategorie(.+?)">(.+?)</a></li>').findall(readURL)
+        match = re.compile('<li><a href="/' + category + '(.+?)">(.+?)</a></li>').findall(readURL)
         if len(match) > 0:
             for i in range(len(match)):
-                url = mainUrl + '/kategorie' + match[i][0]
-                self.add('iplex', 'categories-menu', match[i][1], 'None', 'None', url, 'None', 'None', True, False)
+                url = mainUrl + '/' + category + match[i][0]
+                self.add('iplex', 'sub-menu', match[i][1], 'None', 'None', url, self.videoMetadata(), True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -67,55 +70,60 @@ class IPLEX:
         
 
     def listsItems(self, url):
+        if not url.startswith("http://"):
+            url = mainUrl + url
         req = urllib2.Request(url)
         req.add_header('User-Agent', HOST)
         openURL = urllib2.urlopen(req)
         readURL = openURL.read()
+	#sprawdz czy to ostatnia strona 
+	lastPage = True
+	match = re.compile('page=(.+?)">ostatnia strona</a>').findall(readURL)
+	if len(match) > 0:
+	    lastPage = False
         readURL = readURL.replace('\n', '').replace('     ', ' ').replace('    ', ' ').replace('   ', ' ').replace('  ', ' ').split('class="movie"')
         openURL.close()
         if len(readURL) > 0:
             for i in range(len(readURL)):
-                match = re.compile('<a class=".+?" href="(.+?)" title=".+?"> <img src="(.+?)" alt=".+?" /> <span class="hover sprite"></span> </a>.+?<h1><a class="title" href=".+?">(.+?)</a></h1>.+?<span class="title">(.+?)</span>.+?<span class="description"> <span class="label">Opis:</span><br /> <span class="value">(.+?)</span> </span> </div> </div>').findall(readURL[i])
+            	#match[a][3] to blok gdzie moze znajdowac sie duration i mpaa
+		match = re.compile('<a class=".+?" href="(.+?)" title=".+?"> <img src="(.+?)" alt=".+?" /> <span class="hover sprite"></span> </a>.+?<h1><a class="title" href=".+?">(.+?)</a></h1>(.+?)<span class="title">(.+?)</span>.+?<span class="year"> <span class="label">Rok produkcji:</span> <span class="value">(.+?)</span>.+?<span class="rating"> <span class="label">Ocena:</span> <span class="value rating-desc">(.+?)</span>.+?<span class="votes">.+?<span class="value">(.+?)</span>.+?<span class="description"> <span class="label">Opis:</span><br /> <span class="value">(.+?)</span> </span> </div> </div>').findall(readURL[i])
                 if len(match) > 0:
                     for a in range(len(match)):
+			time=""
                         if 'liczba odcinków:' in readURL[i]:
-                            sizeOfSerialParts = readURL[i].split('liczba odcinków: ')[1].split('</span>')[0]
-                            self.add('iplex', 'season-menu', sizeOfSerialParts, match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
-                        else:
-                            if 'iplexplus' in readURL[i]:
-                                if iplexplus:
-                                    self.add('iplex', 'playSelectedMovie', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
-                                else:
-                                    self.add('iplex', 'blockPlaySelectedMovie', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
-                            else:
-                                self.add('iplex', 'playSelectedMovie', 'None', match[a][3], match[a][1], match[a][0], match[a][4], 'None', True, False)
+			    category = match[a][4]
+			    name = "sub-menu"
+			else:
+			    category = "None"
+	    		    matchDuration = re.compile('<span class="duration">czas: (.+?)min</span>').findall(match[a][3])
+			    if len(matchDuration) > 0:
+				time = matchDuration[0]
+			    if 'iplexplus' in readURL[i] and not iplexplus:
+				name = 'blockPlaySelectedMovie'
+			    else:
+				name = 'playSelectedMovie'
+			#sprawdz czy jest podany mpaa
+			matchAge = re.compile('<span class="age">(.+?)<span class="plus">').findall(match[a][3])
+			if len(matchAge) > 0:
+			    mpaa = matchAge[0]
+			else:
+			    mpaa = ""		    
+			dict = self.videoMetadata(match[a][4], match[a][8], match[a][6], time, match[a][5], match[a][7], mpaa)			    
+                        self.add('iplex', name, category, match[a][4], match[a][1], match[a][0], dict, True, False)
+	#generuj linki ">> pokaz wiecej >>"
+	match = re.compile('f=tytul&page=(\d+)$').findall(url)
+	if lastPage==False:
+	    log.info(str(match[0]))
+	    nextpage = str(int(match[0])+1)
+	    if int(match[0])<10:
+		url = url[:-1] + nextpage
+	    else:
+		url = url[:-2] + nextpage
+    	    self.add('iplex', 'items-menu', 'None', '>> pokaz wiecej >>', 'None', url, self.videoMetadata(), True, False)
+	#zmien view na "Media Info 2"
+	xbmcplugin.setContent(int(sys.argv[1]),'movies')
+    	xbmc.executebuiltin("Container.SetViewMode(503)")
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
-
-
-    def listsItemsPage(self, url):
-        if not url.startswith("http://"):
-            url = mainUrl + url
-        if self.getSizeAllItems(url) > 0  and self.getSizeItemsPerPage(url) > 0:
-            a = math.ceil(float(self.getSizeAllItems(url)) / float(self.getSizeItemsPerPage(url)))
-            for i in range(int(a)):
-                num = i + 1
-                title = 'Lista ' + str(num)
-                destUrl = url + sort_asc + '&page=' + str(num)
-                self.add('iplex', 'items-menu', 'None', title, 'None', destUrl, 'None', 'None', True, False)
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))        
-
-
-    def listsItemsSerialPage(self, url, sizeOfSerialParts):
-        if not url.startswith("http://"):
-            url = mainUrl + url
-        if sizeOfSerialParts > 0  and self.getSizeItemsPerPage(url) > 0:
-            a = math.ceil(float(sizeOfSerialParts) / float(self.getSizeItemsPerPage(url)))
-            for i in range(int(a)):
-                num = i + 1
-                title = 'Lista ' + str(num)
-                destUrl = url + sort_asc + '&page=' + str(num)
-                self.add('iplex', 'items-menu', 'None', title, 'None', destUrl, 'None', 'None', True, False)
-        xbmcplugin.endOfDirectory(int(sys.argv[1])) 
 
 
     def getMovieLinksFromXML(self, url, version = None):
@@ -164,35 +172,20 @@ class IPLEX:
         return urls[item]['link']
 
 
-    def getSizeAllItems(self, url):
-        numItems = 0
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', HOST)
-        openURL = urllib2.urlopen(req)
-        readURL = openURL.read()
-        openURL.close()
-        match = re.compile('<h2>\((.+?) film.+?\)</h2>').findall(readURL)
-        if len(match) == 1:
-            numItems = match[0]
-        return numItems
-    
-    
-    def getSizeItemsPerPage(self, url):
-        numItemsPerPage = 0
-        openURL = urllib.urlopen(url)
-        readURL = openURL.read()
-        openURL.close()
-        match = re.compile('<div class="movie-(.+?)>').findall(readURL)
-        if len(match) > 0:
-            numItemsPerPage = len(match)
-        return numItemsPerPage        
-
     def getMovieID(self, url):
         id = 0
         tabID = url.split(',')
         if len(tabID) > 0:
             id = tabID[1]
         return id
+
+
+    def isNumeric(self,s):
+	try:
+	    float(s)
+	    return True
+	except ValueError:
+	    return False
 
 
     def searchInputText(self):
@@ -202,21 +195,38 @@ class IPLEX:
         if (k.isConfirmed()):
             text = k.getText()
         return text
-    
 
-    def add(self, service, name, category, title, iconimage, url, desc, rating, folder = True, isPlayable = True):
+
+    def videoMetadata(self, title = "", plot = "", rating = 0, duration = "", year = 0, votes = "", mpaa = ""):
+	#sprawdz czy year i rating sa numerycznymi wartosciami
+	if self.isNumeric(year):
+	    year = int(year)
+	if self.isNumeric(rating):
+	    rating = float(rating)
+	plot = plot.replace("<br />","").replace("<br/>","").replace("<br>","")    
+	details = {'title'    : title,
+		   'plot'     : plot,
+		   'rating'   : rating,
+		   'duration' : duration,
+		   'year'     : year,
+		   'votes'    : votes,
+		   'mpaa'     : mpaa}
+	return details    
+
+    
+    def add(self, service, name, category, title, iconimage, url, metadata, folder = True, isPlayable = True):
         u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&url=" + urllib.quote_plus(url) + "&icon=" + urllib.quote_plus(iconimage)
         #log.info(str(u))
-        if name == 'main-menu' or name == 'categories-menu':
+        if name == 'main-menu' or name == 'sub-menu':
             title = category 
         if iconimage == '':
             iconimage = "DefaultVideo.png"
         liz=xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         if isPlayable:
             liz.setProperty("IsPlayable", "true")
-        liz.setInfo( type="Video", infoLabels={ "Title": title } )
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
-            
+	liz.setInfo('video', metadata )
+	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
+
 
     def LOAD_AND_PLAY_VIDEO(self, videoUrl, title, icon):
         ok=True
@@ -231,7 +241,7 @@ class IPLEX:
             xbmcPlayer.play(videoUrl, liz)
         except:
             d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu.', 'Najprawdopodobniej brak wsparcia vividas w ffmpeg.')        
+            d.ok('Blad przy przetwarzaniu.', 'Najprawdopodobniej brak wsparcia vividas w ffmpeg.')        
         return ok
 
 
@@ -246,18 +256,20 @@ class IPLEX:
         if name == None:
             self.listsMainMenu(MENU_TAB)
         elif name == 'main-menu' and category == 'Kategorie':
-            self.listsCategoriesMenu()
+            self.listsCategoriesMenu('kategorie')
+        elif name == 'main-menu' and category == 'Kolekcje':
+            self.listsCategoriesMenu('kolekcje')
+        elif name == 'main-menu' and category == 'Kanaly':
+            self.listsCategoriesMenu('kanaly')
         elif name == 'main-menu' and category == "Szukaj":
             key = self.searchInputText()
             self.listsItems(self.getSearchURL(key))
-        elif name == 'categories-menu' and category != 'None':
-            self.listsItemsPage(url)
-        elif name == 'season-menu' and category != 'None':
-            self.listsItemsSerialPage(url, category)
+        elif name == 'sub-menu' and category != 'None':
+            destUrl = url + sort_asc + '&page=1'
+	    self.listsItems(destUrl)
         elif name == 'items-menu':
             self.listsItems(url)
-        #elif name == 'season-menu':
-            
+    
         if name == 'playSelectedMovie':
             #self.getMovieLinkFromXML(url)
             url = self.selectUrl(self.getMovieLinksFromXML(url))
