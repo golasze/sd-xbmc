@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import pLog, Parser
-import xbmcplugin, xbmcgui, xbmcaddon
-import os, sys, urllib, urllib2, simplejson
+import xbmcplugin, xbmcgui, xbmcaddon, xbmc
+import os, sys, urllib, urllib2, simplejson, re
 
 
 log = pLog.pLog()
@@ -146,6 +146,8 @@ class tvpvod:
         if not 'episode' in prop:
             prop['episode'] = 0
 
+        if self.watched(url):
+            prop['overlay'] = 7
         liz=xbmcgui.ListItem(prop['title'], iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setProperty("IsPlayable", "true")
         liz.setInfo( type="Video", infoLabels={
@@ -273,4 +275,16 @@ class tvpvod:
 
         #print iconUrl
         return iconUrl
+    def watched(self,videoId):
+        sql_data = "select count(*) from files WHERE strFilename LIKE 'plugin://plugin.video.polishtv.live/?mode=" + self.mode + "&name=%%&videoid=" + videoId + "' AND playCount > 0"
 
+        print sql_data
+
+        xml_data = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % urllib.quote_plus( sql_data ), )
+        print xml_data
+
+        wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
+        if int(wasWatched) > 0:
+            return True
+        else :
+            return False
