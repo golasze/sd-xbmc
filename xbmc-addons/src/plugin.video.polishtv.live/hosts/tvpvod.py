@@ -108,12 +108,12 @@ class tvpvod:
         xbmcplugin.setContent(HANDLE, 'episodes')
         itemsCount = len(items)
         for item in items:
-            itemType = ""
-            for entry in item["types"]:
-                if entry != "any":
-                    itemType = entry
-                    
-            if itemType == "video":
+            try:
+                videoTypeIndex = item["types"].index("video")
+            except:
+                videoTypeIndex = -1
+
+            if videoTypeIndex > 0:
                 self.parseVideo(item,itemsCount)
             else:
                 self.parseCategory(item,itemsCount)
@@ -271,6 +271,6 @@ class tvpvod:
             if iconWidth > 0:
                 iconUrl = urlImage %(iconFile[0],iconFile[1],iconFile[2],iconFile[:-4],iconWidth)
 
-        print iconUrl
+        #print iconUrl
         return iconUrl
 
