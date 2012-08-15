@@ -13,9 +13,9 @@ PAGE_MOVIES = 12
 TVP_MAIN_MENU_TABLE = [
     "Przegapiłes|xml|http://www.tvp.pl/pub/stat/missed?src_id=1885&object_id=-1&offset=-1&dayoffset=-1&rec_count=" + str(PAGE_MOVIES),
     "Najcześciej oglądane|xml|http://www.tvp.pl/pub/stat/videolisting?src_id=1885&object_id=929547&object_type=video&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES),
-    "Teleexpress|html|http://www.tvp.info/teleexpress/wideo/",
-    "Wiadomości|html|http://tvp.info/wiadomosci/wideo",
-    "Panorama|html|http://tvp.info/panorama/wideo",
+    "Teleexpress|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=1488&with_subdirs=true&sort_desc=true&sort_by=RELEASE_DATE&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES),
+    "Wiadomości|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=1494&with_subdirs=true&sort_desc=true&sort_by=RELEASE_DATE&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES),
+    "Panorama|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=5513139&with_subdirs=true&sort_desc=true&sort_by=RELEASE_DATE&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES),
     "Makłowicz w podróży|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=1364&with_subdirs=true&sort_desc=true&sort_by=RELEASE_DATE&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES),
     "Kraków - najczęściej oglądane|xml|http://www.tvp.pl/pub/stat/videolisting?src_id=1885&object_id=929711&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
     "Kronika|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=1277349&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
@@ -101,6 +101,8 @@ class tvp:
                 epgItems = elems.findall("directory_standard/video")
             if not epgItems:
                 epgItems = elems.findall("video")
+            if not epgItems:
+                epgItems = elems.findall("directory_video/video")
 
 
             #print "test[6]: " + str(len(epgItems))
