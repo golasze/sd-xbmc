@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary szczegoly opisa jak spatchowac ffpeg aby obslugiwal Iplex w XBMC.
 
 = Patchowanie i kompilacja Xbmc + Iplex + ffmpeg =
 podziekowania dla *dziorki*, bo to z jego blogu *[http://dziorki.wordpress.com/2012/04/04/patchowanie-i-kompilacja-xbmc-iplex/#more-173 /dev/null]* zostal zaczerpniety ponizszy artykul.
