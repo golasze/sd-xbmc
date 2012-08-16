@@ -38,4 +38,7 @@
     <category label="55300">
         <setting id="tvp_perpage" type="labelenum" label="55301" values="10|20|30|40|50" default="50" />
     </category>
+    <category label="55400">
+        <setting id="iplex_adult" type="bool" label="55401" default="false" />
+    </category>
 </settings>
