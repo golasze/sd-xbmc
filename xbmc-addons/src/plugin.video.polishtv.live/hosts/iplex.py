@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, re, os, sys, math, json
+import urllib, urllib2, re, os, sys, math, json, cookielib
 import xbmcgui, xbmc, xbmcaddon, xbmcplugin
 import elementtree.ElementTree as ET
 try:
@@ -24,6 +24,8 @@ sort_asc = '?o=rosnaco&f=tytul'
 sort_desc = '?o=malejaco&f=tytul'
 iplexplus = False
 
+adult = ptv.getSetting('iplex_adult')
+
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
 MENU_TAB = { 1: "Kategorie",
@@ -47,6 +49,7 @@ class IPLEX:
 
 
     def listsCategoriesMenu(self,category):
+
         req = urllib2.Request(mainUrl)
         req.add_header('User-Agent', HOST)
         openURL = urllib2.urlopen(req)
@@ -76,14 +79,31 @@ class IPLEX:
         req.add_header('User-Agent', HOST)
         openURL = urllib2.urlopen(req)
         readURL = openURL.read()
-	#sprawdz czy to ostatnia strona 
-	lastPage = True
-	match = re.compile('page=(.+?)">ostatnia strona</a>').findall(readURL)
-	if len(match) > 0:
-	    lastPage = False
-        readURL = readURL.replace('\n', '').replace('     ', ' ').replace('    ', ' ').replace('   ', ' ').replace('  ', ' ').split('class="movie"')
         openURL.close()
+
         if len(readURL) > 0:
+	    #poswiadczenie pelnoletnosci
+	    match = re.compile('<input type="hidden" name="next" value="(.+?)"/>').findall(readURL)
+	    if len(match) > 0:
+		if adult =='true':		
+		    data = urllib.urlencode({'adult_agreement' : 'on',
+				             'next'            : match[0]})
+	    	    req = urllib2.Request(mainUrl + '/adultagreement',data)
+	    	    req.add_header('User-Agent', HOST)
+	    	    cj = cookielib.LWPCookieJar()
+	    	    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+	    	    resp = opener.open(req)
+	    	    readURL = resp.read()
+	    	    resp.close()
+		else:
+        	    d = xbmcgui.Dialog()
+        	    d.ok('Tylko dla doroslych', 'Materialy przeznaczone dla widzow dorosly.', 'Aby obejrzec film, musisz miec ukonczone 18 lat.')
+	    #sprawdz czy to ostatnia strona 
+	    lastPage = True
+	    match = re.compile('page=(.+?)">ostatnia strona</a>').findall(readURL)
+	    if len(match) > 0:
+		lastPage = False
+    	    readURL = readURL.replace('\n', '').replace('     ', ' ').replace('    ', ' ').replace('   ', ' ').replace('  ', ' ').split('class="movie"')
             for i in range(len(readURL)):
             	#match[a][3] to blok gdzie moze znajdowac sie duration i mpaa
 		match = re.compile('<a class=".+?" href="(.+?)" title=".+?"> <img src="(.+?)" alt=".+?" /> <span class="hover sprite"></span> </a>.+?<h1><a class="title" href=".+?">(.+?)</a></h1>(.+?)<span class="title">(.+?)</span>.+?<span class="year"> <span class="label">Rok produkcji:</span> <span class="value">(.+?)</span>.+?<span class="rating"> <span class="label">Ocena:</span> <span class="value rating-desc">(.+?)</span>.+?<span class="votes">.+?<span class="value">(.+?)</span>.+?<span class="description"> <span class="label">Opis:</span><br /> <span class="value">(.+?)</span> </span> </div> </div>').findall(readURL[i])
@@ -110,16 +130,16 @@ class IPLEX:
 			    mpaa = ""		    
 			dict = self.videoMetadata(match[a][4], match[a][8], match[a][6], time, match[a][5], match[a][7], mpaa)			    
                         self.add('iplex', name, category, match[a][4], match[a][1], match[a][0], dict, True, False)
-	#generuj linki ">> pokaz wiecej >>"
-	match = re.compile('f=tytul&page=(\d+)$').findall(url)
-	if lastPage==False:
-	    log.info(str(match[0]))
-	    nextpage = str(int(match[0])+1)
-	    if int(match[0])<10:
-		url = url[:-1] + nextpage
-	    else:
-		url = url[:-2] + nextpage
-    	    self.add('iplex', 'items-menu', 'None', '>> pokaz wiecej >>', 'None', url, self.videoMetadata(), True, False)
+	    #generuj linki ">> pokaz wiecej >>"
+	    match = re.compile('f=tytul&page=(\d+)$').findall(url)
+	    if lastPage==False:
+		log.info(str(match[0]))
+		nextpage = str(int(match[0])+1)
+		if int(match[0])<10:
+		    url = url[:-1] + nextpage
+		else:
+		    url = url[:-2] + nextpage
+    		self.add('iplex', 'items-menu', 'None', '>> pokaz wiecej >>', 'None', url, self.videoMetadata(), True, False)
 	#zmien view na "Media Info 2"
 	xbmcplugin.setContent(int(sys.argv[1]),'movies')
     	xbmc.executebuiltin("Container.SetViewMode(503)")

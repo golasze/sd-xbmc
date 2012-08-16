@@ -37,4 +37,8 @@
     <!-- TVP settings -->
     <string id="55300">TVP</string>
     <string id="55301">Videos per page</string>
+
+    <!-- IPLEX settings -->
+    <string id="55400">IPLEX</string>
+    <string id="55401">Display adult content</string>
 </strings>
