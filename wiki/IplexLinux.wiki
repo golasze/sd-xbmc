@@ -1,6 +1,6 @@
 #summary szczegółowy opis jak spatchować ffmpeg aby obsługiwał Iplex w XBMC.
 
-= Patchowanie i kompilacja Xbmc + Iplex + ffmpeg =
+= Patchowanie i kompilacja XBMC + Iplex + ffmpeg =
 podziękowania dla *dziorki*, bo to z jego blogu *[http://dziorki.wordpress.com/2012/04/04/patchowanie-i-kompilacja-xbmc-iplex/#more-173 /dev/null]* został zaczerpnięty poniższy artykuł.
 
 
