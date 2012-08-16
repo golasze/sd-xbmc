@@ -1,0 +1,14 @@
+#summary krotka instrukcja jak uruchomic Iplex pod Windows
+
+= Uruchamianie Iplex pod Windows =
+podziekowania dla *[http://code.google.com/u/103919219606881973131/  adamscieszko]*, ktory udostepnil skompilowane biblioteki
+
+= Szczegoly =
+Podobnie jak pod linux'em, tak i pod Windows do odpalenia Iplex, musimy miec spachowanego ffmpega. Tutaj sprawa jest owiele prostsza, gdyz wszystko sie sprowadza do podmienia kilku plikow.
+
+Zaczynamy od sciagnieci zpakowanych bibliotek, ktore znajdziesz [http://jatrn.com/xbmc/libs.zip tutaj] albo w orginalnym  [http://code.google.com/p/sd-xbmc/issues/detail?id=28#c15 Issue 28].
+
+Po rozpakowaniu sciagnietej paczki, kopiujemy/nadpisujemy pliki do folderu gdzie zainstalowany jest XBMC:
+{{{
+C:\Program Files\XBMC\system\players\dvdplayers
+}}}
