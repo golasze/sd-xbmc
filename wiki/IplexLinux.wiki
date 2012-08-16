@@ -1,10 +1,10 @@
-#summary szczegołowy opis jak spatchować ffmpeg aby obsługiwał Iplex w XBMC.
+#summary szczegółowy opis jak spatchować ffmpeg aby obsługiwał Iplex w XBMC.
 
 = Patchowanie i kompilacja Xbmc + Iplex + ffmpeg =
-podziękowania dla *dziorki*, bo to z jego blogu *[http://dziorki.wordpress.com/2012/04/04/patchowanie-i-kompilacja-xbmc-iplex/#more-173 /dev/null]* został zaczerpnięty ponizszy artykuł.
+podziękowania dla *dziorki*, bo to z jego blogu *[http://dziorki.wordpress.com/2012/04/04/patchowanie-i-kompilacja-xbmc-iplex/#more-173 /dev/null]* został zaczerpnięty poniższy artykuł.
 
 
-= Szczegoly =
+= Szczegóły =
 Do działania Iplexu na platformie XBMC niezbędne jest spatchowanie ffmpeg. Aby to zrobić należy wykonać poniższe czynności.
 
 Ściągamy źródła XBMC (niezbędny jest na w tym przypadku git)
@@ -42,7 +42,7 @@ następnie uruchamiamy
 ./bootstrap
 }}}
 
-pozniej
+pózniej
 {{{
 ./configure --enable-rtmp
 make -j2
