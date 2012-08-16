@@ -1,7 +1,7 @@
-#summary szczegolowy opis jak spatchowac ffpeg aby obslugiwal Iplex w XBMC.
+#summary szczegołowy opis jak spatchować ffmpeg aby obsługiwał Iplex w XBMC.
 
 = Patchowanie i kompilacja Xbmc + Iplex + ffmpeg =
-podziekowania dla *dziorki*, bo to z jego blogu *[http://dziorki.wordpress.com/2012/04/04/patchowanie-i-kompilacja-xbmc-iplex/#more-173 /dev/null]* zostal zaczerpniety ponizszy artykul.
+podziękowania dla *dziorki*, bo to z jego blogu *[http://dziorki.wordpress.com/2012/04/04/patchowanie-i-kompilacja-xbmc-iplex/#more-173 /dev/null]* został zaczerpnięty ponizszy artykuł.
 
 
 = Szczegoly =
@@ -37,7 +37,7 @@ dla pewności dajemy wcześniej
 export MAKE=make
 }}}
 
-nastepnie uruchamiamy
+następnie uruchamiamy
 {{{
 ./bootstrap
 }}}
