@@ -72,7 +72,10 @@ class IPLA:
         vods = elems.find("VoDs").findall("vod")
         for vod in vods:
             elv = vod.attrib
-            title = elv['title']
+            if elv.has_key('title'):
+                title = elv['title']
+            else:
+                title = elv['descr']
             if 'Odcinek' in title:
                 tab = title.split(' - ')
                 part = tab[0]
