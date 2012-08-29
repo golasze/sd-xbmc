@@ -14,7 +14,8 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser
-import weebtv, ipla, stations, tvp, tvn, iplex, tvpvod
+import weebtv, stations, tvp, tvn, iplex, tvpvod
+#import ipla
 
 log = pLog.pLog()
 
