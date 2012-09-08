@@ -26,8 +26,7 @@ scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
-#PAGE_LIMIT = __settings__.getSetting('tvn_perpage')
-PAGE_LIMIT = 50
+PAGE_LIMIT = ptv.getSetting('tvn_perpage')
 platform = ptv.getSetting('tvn_platform')
 quality = ptv.getSetting('tvn_quality')
 quality_manual = ptv.getSetting('tvn_quality_manual')
@@ -129,7 +128,7 @@ class tvn:
         showNextPage = False
         if ET.iselement(countItemNode):
             countItem = int(countItemNode.text)
-            if countItem > PAGE_LIMIT*(1+self.page):
+            if countItem > int(PAGE_LIMIT)*(1+self.page):
                 showNextPage = True
 
         listsize = len(categories)
