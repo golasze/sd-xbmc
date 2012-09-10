@@ -11,7 +11,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, megavideo, cacaoweb, settings, Parser
+import pLog, cacaoweb, settings, Parser
 
 log = pLog.pLog()
 
@@ -27,11 +27,8 @@ EKINO_MENU_TABLE = { 1: "Filmy [wg. gatunków]",
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 PAGE_MOVIES = 10
-MEGAVIDEO_MOVIE_URL = 'http://www.megavideo.com/v/'
 DUB_LINK = mainUrl + '/tag,lektor.html'
 SUB_LINK = mainUrl + '/tag,napisy.html'
-STREAM_LINK_MEGAVIDEO = 'http://127.0.0.1:4001/megavideo/megavideo.caml?videoid='
-STREAM_LINK_VIDEOBB = 'http://127.0.0.1:4001/videobb/videobb.caml?videoid='
 
 
 class EkinoTV:
@@ -39,7 +36,6 @@ class EkinoTV:
     log.info('Loading EkinoTV')
     self.settings = settings.TVSettings()
     self.parser = Parser.Parser()
-    
     
   def setTable(self):
     return EKINO_MENU_TABLE
@@ -73,7 +69,7 @@ class EkinoTV:
     tabURL = link.replace(' ', '').split('\n')
     for line in tabURL:
       #expr = re.match(r'<a href="(' + mainUrl + '/filmy,.+?)" title="(.+?)">$', line, re.M|re.I)
-      expr = re.match(r'<ahref="(' + mainUrl + '/filmy,.+?)"title="(.+?)"><divclass="columnspan-4">.+?<span>\((.+?)\)</span></div></a>$', line, re.M|re.I)
+      expr = re.match(r'<a href="(' + mainUrl + '/filmy,.+?)" title="(.+?)"><div class="column span-4">.+?<span>\((.+?)\)</span></div></a>$', line, re.M|re.I)
       if expr:
 	strTab.append(expr.group(1))
 	strTab.append(expr.group(2))
@@ -492,7 +488,8 @@ class EkinoTV:
     link = response.read()
     response.close()
     #match = re.compile('<div style=".+?" onclick="(.+?)"></div>').findall(link)
-    match = re.compile('<div style=".+?" onclick="(.+?)"><img src="http://static.ekino.tv/static/img/player_kliknij.jpg" alt="player" /></div>').findall(link)
+    match = re.compile('<div class="placeholder" style=".+?" onclick="(.+?)"><img src="http://static.ekino.tv/static/img/player_kliknij.jpg" alt="player" /></div>').findall(link)
+    #log.info("false link: " + match[0])
     if len(match) == 1:
       fLink = match[0].split('\'')
       fl = str(fLink[1])
@@ -527,17 +524,96 @@ class EkinoTV:
 	 	response = urllib2.urlopen(req)
 	  	link = response.read()
 	   	response.close()
-		#match = re.compile('<param name="movie" value="(.+?)"></param>').findall(link)
-	 	match = re.compile('<param name="movie" value="(.+?)">').findall(link)
-	  	log.info('match: ' + str(match))
+		log.info("iframe: " + link)
+	 	match = re.compile('<iframe src="(.+?)" width').findall(link)
 	   	if len(match) > 0:
-	   		p = match[0].split('=')
-	   		l = p[1].split('&')
-	   		log.info(str(l[0]))
-	   		mega = megavideo
-	   		nUrl = mega.Megavideo(MEGAVIDEO_MOVIE_URL + l[0])
-	   		#log.info(nUrl)
-	return nUrl
+	   		p = match[0].split('?')
+	   		#log.info("almost there: " + p[0])
+			match = re.compile('http://(.+?)/').findall(p[0])
+			host = match[0]
+			log.info("video hosted by: " + host)
+			if host=='hd3d.cc':
+			  nUrl = self.parserHD3D(p[0])
+			if host=='megustavid.com':
+			  nUrl = self.parserMEGUSTAVID(p[0])
+			if host=='www.putlocker.com':
+			  nUrl = self.parserPUTLOCKER(p[0])
+	return nUrl		  
+
+
+#przyklady hostow:
+#http://megustavid.com/e=VAQMQC8
+#http://www.putlocker.com/embed/E3E8E5F6FB802638
+#http://hd3d.cc/file,embed,6747419166EBE0D6.html
+
+  def parserPUTLOCKER(self,url):
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', HOST)
+    response = urllib2.urlopen(req)
+    link = response.read()
+    response.close()
+    r = re.search('value="(.+?)" name="fuck_you"', link)
+    if r:
+      log.info("hash: " + r.group(1))
+      data = urllib.urlencode({'fuck_you' : r.group(1),
+                               'confirm'  : 'Close Ad and Watch as Free User'})
+      req = urllib2.Request(url,data)
+      req.add_header('User-Agent', HOST)
+      cj = cookielib.LWPCookieJar()
+      opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+      resp = opener.open(req)
+      link = resp.read()
+      resp.close()
+      match = re.compile("playlist: '(.+?)'").findall(link)
+      if len(match) > 0:
+	log.info("get_file.php:" + match[0])
+	url = "http://www.putlocker.com" + match[0]
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HOST)
+	resp = opener.open(req)
+	link = resp.read()
+	resp.close()
+	print link
+	match = re.compile('</link><media:content url="(.+?)" type="video').findall(link)
+	if len(match) > 0:
+	  return match[0]
+    else:
+      return False
+
+
+  def parserMEGUSTAVID(self,url):
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', HOST)
+    response = urllib2.urlopen(req)
+    link = response.read()
+    response.close()
+    match = re.compile('value="config=(.+?)">').findall(link)
+    if len(match) > 0:
+      p = match[0].split('=')
+      url = "http://megustavid.com/media/nuevo/player/playlist.php?id=" + p[1]
+      log.info("newlink: " + url)
+      req = urllib2.Request(url)
+      req.add_header('User-Agent', HOST)
+      response = urllib2.urlopen(req)
+      link = response.read()
+      response.close()
+      match = re.compile('<file>(.+?)</file>').findall(link)
+      if len(match) > 0:
+	log.info("final link: " + match[0])
+	return match[0]
+
+
+  def parserHD3D(self,url):
+    url = url + "?i"
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', HOST)
+    response = urllib2.urlopen(req)
+    link = response.read()
+    response.close()
+    match = re.compile("url: '(.+?)', provider").findall(link)
+    if len(match) > 0:
+      log.info("final link: " + match[0])
+      return match[0]
 
 
   def getUnlimitVideoLink(self, url):
@@ -685,8 +761,9 @@ class EkinoTV:
 		d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
 		return False
 	try:
+		log.info("playOK")
 		xbmcPlayer = xbmc.Player()
-		title = str(self.settings.paramTitle)
+		title = ""
 		liz=xbmcgui.ListItem()
 		liz.setInfo( type="Video", infoLabels={ "Title": title } )
 		xbmcPlayer.play(videoUrl, liz)
@@ -753,13 +830,5 @@ class EkinoTV:
 		elif title != 'None' and category == 'serial' and page != 'None':
 			urlLink = self.getPartURL(title, page)	  		
 		if urlLink.startswith('http://'):
-			try:
-				if self.settings.MegaVideoUnlimit == 'false':
-			  		self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-			  	elif self.settings.MegaVideoUnlimit == 'true':
-			  		cw = cacaoweb.CacaoWeb()
-			  		cw.stopApp()
-					cw.runApp()
-		  			self.LOAD_AND_PLAY_VIDEO(self.getUnlimitVideoLink(urlLink))		
-		  	except:
-		  		pass
+			log.info("url: " + urlLink)
+			self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
