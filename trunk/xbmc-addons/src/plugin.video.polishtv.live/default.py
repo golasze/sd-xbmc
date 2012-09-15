@@ -14,24 +14,24 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser
-import weebtv, stations, tvp, tvn, iplex, tvpvod
+import weebtv, stations, tvp, tvn, iplex, tvpvod, ekinotv
 #import ipla
 
 log = pLog.pLog()
 
 
 TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
-					101: "Stacje TV [strumienie]" }
+                    101: "Stacje TV [strumienie]" }
 
-VOD_ONLINE_TABLE = { #200: "Ekino TV [filmy, seriale]",
+VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
 		     #201: "iTVP [filmy, seriale, vod]",
 		     #202: "AnyFiles [różne filmy]",
 		     203: "IPLEX",
 		     #201: "IPLA",
 		     #202: "iiTV info [seriale]",
 		     204: "TVP [info]",
-             205: "TVN Player",
-             206: "TVP VOD",
+		     205: "TVN Player",
+		     206: "TVP VOD",
 }
 
 REC_DOWN_TABLE = { 300: "Weeb TV" }
@@ -62,9 +62,9 @@ class PolishLiveTV:
 	elif mode == 2:
 		#log.info('Wejście do TV internetowej')
 		self.LIST(VOD_ONLINE_TABLE)
-	#elif mode == 200 or service == 'ekinotv':
-	#	vod = ekinotv.EkinoTV()
-	#	vod.handleService()
+	elif mode == 200 or service == 'ekinotv':
+		vod = ekinotv.EkinoTV()
+		vod.handleService()
 	#elif mode == 201:
 	#	vod = itvp.iTVP()
 	#	vod.handleService()
