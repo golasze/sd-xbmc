@@ -16,16 +16,6 @@
     <string id="55012">Przesunięcie czasowe (w godzinach)</string>
     <string id="55013">Przesunięcie czasowe (w minutach)</string>
     
-    <!-- Megavideo settings -->
-    <string id="55100">MegaVideo</string>
-    <string id="55101">Ustawienie logowania do serwisu płatnego</string>
-    <string id="55102">Użytkownik:</string>
-    <string id="55103">Hasło:</string>
-    <string id="55104">Włącz logowanie</string>
-    <string id="55105">Wyłącz limit (dla nie posiadających kont)</string>
-    <string id="55106">Dotyczy serwisu [B]Ekino TV[/B].</string>
-    <string id="55107">Więcej na ([B]http://megavideo.com[/B]).</string>
-
     <!-- TVN settings -->
     <string id="55200">TVN</string>
     <string id="55201">Ilość video na stronie</string>
@@ -41,4 +31,9 @@
     <!-- IPLEX settings -->
     <string id="55400">IPLEX</string>
     <string id="55401">Pokaz materialy "tylko dla doroslych"</string>
+    
+    <!-- Ekino TV settings -->
+    <string id="55500">EkinoTV</string>
+    <string id="55501">Sortuj</string>
+    <string id="55502">Pożądek</string>
 </strings>
