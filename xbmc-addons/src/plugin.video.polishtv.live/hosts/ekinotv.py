@@ -104,55 +104,17 @@ class EkinoTV:
 	break
     return link
     
+ 
+  def videoMetadata(self, title = "", plot = "", year = 0):
+    if self.isNumeric(year):
+      year = int(year)
+    plot = plot.replace("<br />","").replace("<br/>","").replace("<br>","")    
+    details = {'title' : title,
+	       'plot'  : plot,
+	       'year'  : year}
+    return details
   
-  def getCategoryNums(self, key):
-    num = ''
-    origTab = self.getCategories()
-    for i in range(len(origTab)):
-      value = origTab[i]
-      name = value[1]
-      if key in name:
-	num = value[2]
-	break
-    return num
-    
-  
-  def getSortMovies(self, title):
-    sortTab = []
-    s = self.getCategoryNums(title)
-    #log.info(s + ', ' + title)
-    a = math.ceil(float(s) / float(PAGE_MOVIES))
-    for i in range(int(a)):
-      strNum = i + 1
-      strText = 'Lista z filmami: '
-      sortTab.append(strText + str(strNum))
-    return sortTab  
 
-
-  def getSortLinkMovies(self, url):
-    sortTab = []
-    #req = urllib2.Request(url)
-    #req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-    values = {'sSort': 't', 'sHow': 'asc'}
-    headers = { 'User-Agent' : HOST }
-    data = urllib.urlencode(values)
-    req = urllib2.Request(url, data, headers)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
-    match = re.compile('<p>.+?<b>(.+?)</b>.+?"<b>.+?</b>".+?</p>').findall(link)
-    #log.info('match: ' + str(match))
-    if len(match) > 0:
-      a = math.ceil(float(match[0]) / float(PAGE_MOVIES))
-      for i in range(int(a)):
-	strNum = i + 1
-	strText = 'Lista z filmami: '
-	sortTab.append(strText + str(strNum))
-    #log.info(str(sortTab))
-    return sortTab 
-
-#jatrn TU generujemy liste filmow
-# "cover","title","description","link"
   def getMovieTab(self, url):
     log.info(url)
     if sortby=='ocena':
@@ -188,12 +150,19 @@ class EkinoTV:
       expr3 = re.match(r'^<li style="display:inline;" class="next"><a href="(.+?)" title=".+?" >.+?</a></li>$', line, re.M|re.I)
       if expr1:
 	#log.info(expr1.group(1))
+	#log.info(expr1.group(2))
+	expr4 = re.search("\((\d{4})\)",expr1.group(2))
+	year = expr4.group(1)
+	title = expr1.group(2)
 	strTab.append(expr1.group(1))
 	strTab.append(expr1.group(2))
       if expr2:
+	plot = expr2.group(1)
+	metadata = [title,plot,year]
 	#log.info(expr2.group(1))
 	#log.info(expr2.group(2))
-	strTab.append(expr2.group(1))
+	#strTab.append(expr2.group(1))
+	strTab.append(metadata)
 	strTab.append(expr2.group(2))
 	valTab.append(strTab)
       if expr3:
@@ -206,67 +175,9 @@ class EkinoTV:
     return valTab
 
 
-  def getMoviesCatTab(self, page, category):
-    catt = self.getCategoryURL(category).split(',')
-    cat = catt[2].split('.html')
-    num = page.split(': ')
-    url = ''
-    if num[1] == 1:
-      url = mainUrl + '/filmy,' + category + ',' + cat[0] + '.html'
-    else:
-      url = mainUrl + '/filmy,' + category + ',' + cat[0] + ',' + num[1] + '.html'
-    log.info("URL: " + url)
-    return self.getMovieTab(url)
-
-
-  def getMoviesDubTab(self, page):
-    num = page.split(': ')
-    url = ''
-    if num[1] == 1:
-      url = mainUrl + '/tag,lektor.html'
-    else:
-      url = mainUrl + '/tag,lektor,' + num[1] + '.html'
-    return self.getMovieTab(url)
-
-
-  def getMoviesSubTab(self, page):
-    num = page.split(': ')
-    url = ''
-    if num[1] == 1:
-      url = mainUrl + '/tag,napisy.html'
-    else:
-      url = mainUrl + '/tag,napisy,' + num[1] + '.html'
-    return self.getMovieTab(url)
-
-
   def getMoviesPopTab(self):
     url = mainUrl + '/kategorie.html'
     return self.getMovieTab(url)
-
-
-  def getMovieNamesTab(self, table):
-    nameTab = []
-    for i in range(len(table)):
-      value = table[i]
-      name = value[1]
-      nameTab.append(name)
-    nameTab.sort()
-    return nameTab    
-
-
-  def getMovieDubNames(self, page):
-    origTab = self.getMoviesDubTab(page)
-    return self.getMovieNamesTab(origTab)
-
-
-  def getMovieSubNames(self, page):
-    origTab = self.getMoviesSubTab(page)
-    return self.getMovieNamesTab(origTab)
-    
-
-  def getMoviePopNames(self):
-    origTab = self.getMoviesPopTab()
-    return self.getMovieNamesTab(origTab)
 
 
   def getMovieURL(self, table, key):
@@ -278,22 +189,6 @@ class EkinoTV:
 	link = value[3]
 	break
     return link
-
-
-
-  def getMovieDubURL(self, page, key):
-    origTab = self.getMoviesDubTab(page)
-    return self.getMovieURL(origTab, key)
-
-
-  def getMovieSubURL(self, page, key):
-    origTab = self.getMoviesSubTab(page)
-    return self.getMovieURL(origTab, key)
-
-
-  def getMoviePopURL(self, key):
-    origTab = self.getMoviesPopTab()
-    return self.getMovieURL(origTab, key)
 
 
   def getSerialsTab(self):
@@ -310,8 +205,6 @@ class EkinoTV:
     for line in tabURL:
 		#log.info(line)
 		expr = re.match(r'.+?<a class=".+?" href="(.+?)" title=".+?">(.+?)</a>', line, re.M|re.I)
-		#<a class="serNewA" href="link" title="tytul">tytul</a>
-		#expr = re.match(r'<ahref="(' + mainUrl + '/filmy,.+?)"title="(.+?)"><divclass="columnspan-4">.+?<span>\((.+?)\)</span></div></a>$', line, re.M|re.I)
 		if expr:
 			#log.info(expr.group(2))
 			strTab.append(expr.group(2).replace('&nbsp;', ''))
@@ -501,7 +394,6 @@ class EkinoTV:
     response = urllib2.urlopen(req)
     link = response.read()
     response.close()
-    #match = re.compile('<div style=".+?" onclick="(.+?)"></div>').findall(link)
     match = re.compile('<div class="placeholder" style=".+?" onclick="(.+?)"><img src="http://static.ekino.tv/static/img/player_kliknij.jpg" alt="player" /></div>').findall(link)
     #log.info("false link: " + match[0])
     if len(match) == 1:
@@ -524,7 +416,7 @@ class EkinoTV:
 	fl = self.getItemURL(valTab, str(item))
     else:
       d = xbmcgui.Dialog()
-      d.ok('Brak linku do filmu', 'Przepraszamy, ale w tej chwili nie możemy wyświetlić', 'Ci pełnej tego wersji filmu.')
+      d.ok('Brak linku do filmu', 'Przepraszamy, ale w tej chwili nie możemy wyświetlić', 'Ci pełnej wersji tego filmu.')
       fl = 'None'
     return fl
 
@@ -629,34 +521,6 @@ class EkinoTV:
       log.info("final link: " + match[0])
       return match[0]
 
-
-  def getUnlimitVideoLink(self, url):
-    linkVideo = ''
-    link = self.getMovieURLFalse(url)
-    log.info('link: ' + link)
-    if link != 'None':
-		req = urllib2.Request(link)
-		req.add_header('User-Agent', HOST)
-		response = urllib2.urlopen(req)
-		link = response.read()
-		response.close()
-		#match = re.compile('<param name="movie" value="(.+?)"></param>').findall(link)
-		match = re.compile('<param name="movie" value="(.+?)">').findall(link)
-		#log.info('match: ' + str(match))
-		if len(match) > 0:
-			#log.info(str(match[0]))
-			if 'megavideo' in match[0]:
-				p = match[0].split('=')
-				l = p[1].split('&')
-				linkVideo = STREAM_LINK_MEGAVIDEO + str(l[0])
-			elif 'videobb' in match[0]:
-				urlTab = match[0].split("/e/")
-				idTab = urlTab[1].split("\" >")
-				id = idTab[0]
-				linkVideo = STREAM_LINK_VIDEOBB + str(id)
-		#log.info(str(linkVideo))
-    return linkVideo
-    
     
   def searchInputText(self):
     text = None
@@ -683,20 +547,19 @@ class EkinoTV:
     for line in tabURL:
       expr = re.match(r'^.+?<img class="link_img" src="(.+?)" title=".+?" alt=".+?" /></a>.+?</div>.+?<p class="h2"><a href=".+?" title=">.+?">(.+?)</a></p>.+?<p>(.+?)<a href="(.+?)" title=".+?">.+?</a></p>', line, re.M|re.I)
       if expr:
+	year = re.search("\((\d{4})\)",expr.group(2)).group(1)
+	title = expr.group(2)
+	plot = expr.group(3)
 	#log.info('1: ' + expr.group(2))
 	strTab.append(expr.group(1))
 	strTab.append(expr.group(2))
-	strTab.append(expr.group(3))
+	strTab.append([title,plot,year])
 	strTab.append(expr.group(4))
 	valTab.append(strTab)
 	strTab = []
     #log.info(str(valTab))
     return valTab
 
-
-  def getMovieSearchNames(self, text):
-    origTab = self.searchTab(text)
-    return self.getMovieNamesTab(origTab)
     
   def isNumeric(self,s):
     try:
@@ -704,25 +567,6 @@ class EkinoTV:
       return True
     except ValueError:
       return False
-
-
-  def listsMenu(self, table, title):
-    value = ''
-    if len(table) > 0:
-      d = xbmcgui.Dialog()
-      choice = d.select(title, table)
-      for i in range(len(table)):
-	#log.info(table[i])
-	if choice == i:
-	  value = table[i]
-    return value
-
-
-  def listsTable(self, table):
-    nTab = []
-    for num, val in table.items():
-      nTab.append(val)
-    return nTab
 
 
   def listsAddLinkMovie(self, table):
@@ -733,22 +577,23 @@ class EkinoTV:
 	  title = value[1]
 	  iconimage = value[0]
 	  if title!='nastepna' and title!='poprzednia':
-	    self.add('ekinotv', 'playSelectedMovie', 'movie', 'None', title, iconimage, True, False)
+	    dict = self.videoMetadata(value[2][0],value[2][1],value[2][2])
+	    self.add('ekinotv', 'playSelectedMovie', 'movie', 'None', title, iconimage, dict, True, False)
 	  else:
 	    expr1 = value[3].split(',')
-	    #log.info('found navi: ' + str(expr1))
 	    category = expr1[1]
 	    if category=='lektor' or category=='napisy':
 	      expr2 = expr1[2].split('.')
 	    else:
 	      expr2 = expr1[3].split('.')
-	    page = expr2[0]
-	      
-	    
+	    page = expr2[0]    
 	    #log.info(str(expr1))
 	    #log.info(category)
 	    #log.info(page)
-	    self.add('ekinotv', title, category, page, 'None', 'None', True, False)	  
+	    self.add('ekinotv', title, category, page, 'None', 'None', self.videoMetadata(), True, False)
+	#zmien view na "Media Info 2"
+	xbmcplugin.setContent(int(sys.argv[1]),'movies')
+    	xbmc.executebuiltin("Container.SetViewMode(503)")
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -756,24 +601,24 @@ class EkinoTV:
 	#log.info(str(table))
 	for i in range(len(table)):
 	  title = table[i]
-	  self.add('ekinotv', 'playSelectedMovie', 'serial', category, title, '', True, False)
+	  self.add('ekinotv', 'playSelectedMovie', 'serial', category, title, '', self.videoMetadata(), True, False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
   def listsAddDirMenu(self, table, name, category, page):
 	for i in range(len(table)):
 		if name == 'None':
-	  	 	self.add('ekinotv', table[i], 'None', 'None', 'None', 'None', True, False)
+	  	 	self.add('ekinotv', table[i], 'None', 'None', 'None', 'None', self.videoMetadata(), True, False)
 	  	elif category == 'None' and name != 'None':
-	  		self.add('ekinotv', name, table[i], 'None', 'None', 'None', True, False)
+	  		self.add('ekinotv', name, table[i], 'None', 'None', 'None', self.videoMetadata(), True, False)
 	  	elif name != 'None' and category != 'None' and page == 'None':
-	  		self.add('ekinotv', name, category, table[i], 'None', 'None', True, False)
+	  		self.add('ekinotv', name, category, table[i], 'None', 'None', self.videoMetadata(), True, False)
 	  	elif name != 'None' and category != 'None' and page != 'None':
-	  		self.add('ekinotv', name, category, page, table[i], 'None', True, False)
+	  		self.add('ekinotv', name, category, page, table[i], 'None', self.videoMetadata(), True, False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
-  def add(self, service, name, category, page, title, iconimage, folder = True, isPlayable = True):
+  def add(self, service, name, category, page, title, iconimage, metadata, folder = True, isPlayable = True):
     u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name) + "&category=" + urllib.quote_plus(category) + "&page=" + urllib.quote_plus(page) + "&title=" + urllib.quote_plus(title)
     #log.info(str(u))
     if name == 'playSelectedMovie':
@@ -787,7 +632,7 @@ class EkinoTV:
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     if isPlayable:
 		liz.setProperty("IsPlayable", "true")
-    liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": "tu bedzie description" } )
+    liz.setInfo('video', metadata )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
     
 
@@ -829,46 +674,34 @@ class EkinoTV:
   	elif name == self.setTable()[1] and category == 'None':
   		self.listsAddDirMenu(self.getCategoryName(), name, 'None', 'None')
   	elif name == self.setTable()[1] and category != 'None' and page == 'None':
-  	 	#self.listsAddDirMenu(self.getSortMovies(category), name, category, 'None')
 		self.listsAddLinkMovie(self.getMovieTab(mainUrl + '/filmy,' + category + ',1,1.html'))
-  	elif name == self.setTable()[1] and category != 'None' and page != 'None' and title == 'None':
-  		self.listsAddLinkMovie(self.getMoviesCatTab(page, category))
   	elif name == 'nastepna' and category != 'None' and self.isNumeric(page):
 		if category == 'lektor' or category=='napisy':
 		  self.listsAddLinkMovie(self.getMovieTab(mainUrl + '/tag,' + category + ',' + page + '.html'))		  
 		else:
 		  self.listsAddLinkMovie(self.getMovieTab(mainUrl + '/filmy,' + category + ',1,' + page + '.html'))
 		page = str(int(page) + 1)
-
-
   	#lektor
   	if name == self.setTable()[2]:
-  		#self.listsAddDirMenu(self.getSortLinkMovies(self.setDubLink()), name, 'dub', 'None')
-		self.listsAddLinkMovie(self.getMovieTab(DUB_LINK))
- # 	elif name == self.setTable()[2] and category == 'dub' and page != 'None':
- #		self.listsAddLinkMovie(self.getMoviesDubTab(page))
+		self.listsAddLinkMovie(self.getMovieTab(self.setDubLink()))
 	#napisy
   	if name == self.setTable()[3]:
-  		#self.listsAddDirMenu(self.getSortLinkMovies(self.setSubLink()), name, 'sub', 'None')
-		self.listsAddLinkMovie(self.getMovieTab(SUB_LINK))
-  	elif name == self.setTable()[3] and category == 'sub' and page != 'None':
-  		self.listsAddLinkMovie(self.getMoviesSubTab(page))
-
+		self.listsAddLinkMovie(self.getMovieTab(self.setSubLink()))
+	#najpopularniejsze
   	if name == self.setTable()[4]:
   		self.listsAddLinkMovie(self.getMoviesPopTab())
-	
+	#serial
 	if name == self.setTable()[5] and category == 'None':
 		self.listsAddDirMenu(self.getSerialNames(), name, 'None', 'None')
 	elif name == self.setTable()[5] and category != 'None' and page == 'None':
 		self.listsAddDirMenu(self.getSeasonsTab(self.getSerialURL(category)), name, category, page)
 	elif name == self.setTable()[5] and category != 'None' and page != 'None':
 		self.listsAddLinkSerial(self.getSeasonPartsTitle(page, category), category)
-	
+	#szukaj
 	if name == self.setTable()[6]:
 		text = self.searchInputText()
 		if text != None:
 			self.listsAddLinkMovie(self.searchTab(text))
-  		
   	
   	if name == 'playSelectedMovie':
 		urlLink = ''
