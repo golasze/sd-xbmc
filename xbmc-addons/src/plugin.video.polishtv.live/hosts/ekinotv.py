@@ -11,7 +11,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser
+import pLog, settings, Parser, urlparser
 
 log = pLog.pLog()
 
@@ -39,6 +39,7 @@ class EkinoTV:
     log.info('Loading EkinoTV')
     self.settings = settings.TVSettings()
     self.parser = Parser.Parser()
+    self.up = urlparser.urlparser()
     
   def setTable(self):
     return EKINO_MENU_TABLE
@@ -105,13 +106,10 @@ class EkinoTV:
     return link
     
  
-  def videoMetadata(self, title = "", plot = "", year = 0):
-    if self.isNumeric(year):
-      year = int(year)
-    plot = plot.replace("<br />","").replace("<br/>","").replace("<br>","")    
+  def videoMetadata(self, title = "", plot = ""):
+    plot = plot.replace("<br />","").replace("<br/>","").replace("<br>","").replace("&quot;","\"") 
     details = {'title' : title,
-	       'plot'  : plot,
-	       'year'  : year}
+	       'plot'  : plot}
     return details
   
 
@@ -151,14 +149,12 @@ class EkinoTV:
       if expr1:
 	#log.info(expr1.group(1))
 	#log.info(expr1.group(2))
-	expr4 = re.search("\((\d{4})\)",expr1.group(2))
-	year = expr4.group(1)
 	title = expr1.group(2)
 	strTab.append(expr1.group(1))
 	strTab.append(expr1.group(2))
       if expr2:
 	plot = expr2.group(1)
-	metadata = [title,plot,year]
+	metadata = [title,plot]
 	#log.info(expr2.group(1))
 	#log.info(expr2.group(2))
 	#strTab.append(expr2.group(1))
@@ -431,7 +427,7 @@ class EkinoTV:
 	  	link = response.read()
 	   	response.close()
 		log.info("iframe: " + link)
-	 	match = re.compile('<iframe src="(.+?)" width').findall(link)
+	 	match = re.compile('<iframe src="(.+?)".+?width').findall(link)
 	   	if len(match) > 0:
 	   		p = match[0].split('?')
 	   		#log.info("almost there: " + p[0])
@@ -439,87 +435,21 @@ class EkinoTV:
 			host = match[0]
 			log.info("video hosted by: " + host)
 			if host=='hd3d.cc':
-			  nUrl = self.parserHD3D(p[0])
+			  nUrl = self.up.parserHD3D(p[0])
 			if host=='megustavid.com':
-			  nUrl = self.parserMEGUSTAVID(p[0])
+			  nUrl = self.up.parserMEGUSTAVID(p[0])
 			if host=='www.putlocker.com':
-			  nUrl = self.parserPUTLOCKER(p[0])
+			  nUrl = self.up.parserPUTLOCKER(p[0])
+
+			if nUrl=='':
+			  d = xbmcgui.Dialog()
+			  d.ok('Znaleziono nowy host', 'brak obslugi ' + host)
+		else:
+		  d = xbmcgui.Dialog()
+		  d.ok('Player Limit','Wyczerpany limit czasowy oglądania','Spróbuj ponownie za jakiś czas')
+ 	  
+			  
 	return nUrl		  
-
-
-#przyklady hostow:
-#http://megustavid.com/e=VAQMQC8
-#http://www.putlocker.com/embed/E3E8E5F6FB802638
-#http://hd3d.cc/file,embed,6747419166EBE0D6.html
-
-  def parserPUTLOCKER(self,url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
-    r = re.search('value="(.+?)" name="fuck_you"', link)
-    if r:
-      log.info("hash: " + r.group(1))
-      data = urllib.urlencode({'fuck_you' : r.group(1),
-                               'confirm'  : 'Close Ad and Watch as Free User'})
-      req = urllib2.Request(url,data)
-      req.add_header('User-Agent', HOST)
-      cj = cookielib.LWPCookieJar()
-      opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-      resp = opener.open(req)
-      link = resp.read()
-      resp.close()
-      match = re.compile("playlist: '(.+?)'").findall(link)
-      if len(match) > 0:
-	log.info("get_file.php:" + match[0])
-	url = "http://www.putlocker.com" + match[0]
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', HOST)
-	resp = opener.open(req)
-	link = resp.read()
-	resp.close()
-	print link
-	match = re.compile('</link><media:content url="(.+?)" type="video').findall(link)
-	if len(match) > 0:
-	  return match[0]
-    else:
-      return False
-
-
-  def parserMEGUSTAVID(self,url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
-    match = re.compile('value="config=(.+?)">').findall(link)
-    if len(match) > 0:
-      p = match[0].split('=')
-      url = "http://megustavid.com/media/nuevo/player/playlist.php?id=" + p[1]
-      log.info("newlink: " + url)
-      req = urllib2.Request(url)
-      req.add_header('User-Agent', HOST)
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
-      match = re.compile('<file>(.+?)</file>').findall(link)
-      if len(match) > 0:
-	log.info("final link: " + match[0])
-	return match[0]
-
-
-  def parserHD3D(self,url):
-    url = url + "?i"
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
-    match = re.compile("url: '(.+?)', provider").findall(link)
-    if len(match) > 0:
-      log.info("final link: " + match[0])
-      return match[0]
 
     
   def searchInputText(self):
@@ -547,13 +477,12 @@ class EkinoTV:
     for line in tabURL:
       expr = re.match(r'^.+?<img class="link_img" src="(.+?)" title=".+?" alt=".+?" /></a>.+?</div>.+?<p class="h2"><a href=".+?" title=">.+?">(.+?)</a></p>.+?<p>(.+?)<a href="(.+?)" title=".+?">.+?</a></p>', line, re.M|re.I)
       if expr:
-	year = re.search("\((\d{4})\)",expr.group(2)).group(1)
 	title = expr.group(2)
 	plot = expr.group(3)
 	#log.info('1: ' + expr.group(2))
 	strTab.append(expr.group(1))
 	strTab.append(expr.group(2))
-	strTab.append([title,plot,year])
+	strTab.append([title,plot])
 	strTab.append(expr.group(4))
 	valTab.append(strTab)
 	strTab = []
@@ -577,7 +506,7 @@ class EkinoTV:
 	  title = value[1]
 	  iconimage = value[0]
 	  if title!='nastepna' and title!='poprzednia':
-	    dict = self.videoMetadata(value[2][0],value[2][1],value[2][2])
+	    dict = self.videoMetadata(value[2][0],value[2][1])
 	    self.add('ekinotv', 'playSelectedMovie', 'movie', 'None', title, iconimage, dict, True, False)
 	  else:
 	    expr1 = value[3].split(',')
@@ -639,8 +568,8 @@ class EkinoTV:
   def LOAD_AND_PLAY_VIDEO(self, videoUrl):
   	ok=True
   	if videoUrl == '':
-		d = xbmcgui.Dialog()
-		d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+#		d = xbmcgui.Dialog()
+#		d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
 		return False
 	try:
 		xbmcPlayer = xbmc.Player()
