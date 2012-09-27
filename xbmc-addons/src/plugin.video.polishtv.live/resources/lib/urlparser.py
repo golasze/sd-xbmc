@@ -2,7 +2,6 @@
 import cookielib, os, string, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
-import xbmcgui
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -14,51 +13,92 @@ log = pLog.pLog()
 DEBUG = True
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
+#to do:
+#http://xvidstage.com/id6olxl28ul2
+#http://flashstream.in/jnu976yuwga3
+#http://muchshare.net/air7v5uggpw6
+#http://maxvideo.pl/w/ZYiiszCc
+#http://nextvideo.pl/embed/630x430/w/9pAGgL8Os5iRx0rx
+
+#generates final link but XBMC doesnt want to play it
+#http://www.wootly.ch/?v=G79EEEE4
+
+#cannot figure out these ones:
+#http://www.videoweed.es/file/7a554a4b44291
+#http://video.anyfiles.pl/uppod/uppod.swf?st=c:I7Jwt8nZ1UvXvkxZ1bFYWevXmkxB1ozl1LdwWeVs3kVhWex2PysGP45Ld4abN7s0v4wV
+#http://dwn.so/v/DS301459CC
+#http://www.novamov.com/video/ec0a25241419e
+
 class urlparser:
   def __init__(self):
     pass
 
-  def getHost(self, url):
+
+  def getHostName(self, url):
+    hostName = ''	
+    match = re.search('http://(.+?)/',url)
+    if match:
+      hostName = match.group(1)
+    return hostName
+
+
+  def requestData(self, url, postdata = {}):
+    d = ''
+    if len(postdata)<>0:
+      d = urllib.urlencode(postdata)  
+    req = urllib2.Request(url, d) #1
+    req.add_header('User-Agent', HOST) #1
+    cj = cookielib.LWPCookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    response = opener.open(req)
+    data = response.read()
+    response.close()
+    return data
+ 
+
+  def getVideoLink(self, url):
     nUrl=''
-    match = re.compile('http://(.+?)/').findall(url)
-    host = match[0]
+    host = self.getHostName(url)
     log.info("video hosted by: " + host)
-    
-    if host=='hd3d.cc':
-	nUrl = self.parserHD3D(url)
-    if host=='megustavid.com':
-	nUrl = self.parserMEGUSTAVID(url)
+
     if host=='www.putlocker.com':
 	nUrl = self.parserPUTLOCKER(url)
-    if host=='www.wgrane.pl':
-	nUrl = self.parserWGRANE(url)
+    if host=='megustavid.com':
+	nUrl = self.parserMEGUSTAVID(url)
+    if host=='hd3d.cc':
+	nUrl = self.parserHD3D(url)
     if host=='sprocked.com':
 	nUrl = self.parserSPROCKED(url)
+    if host=='odsiebie.pl':
+	nUrl = self.parserODSIEBIE(url)	
+    if host=='www.wgrane.pl':
+	nUrl = self.parserWGRANE(url)
     if host=='www.cda.pl':
 	nUrl = self.parserCDA(url)
+
+#    if host=='www.novamov.com':
+#	nUrl = self.parserNOVAMOV(url)
+#    if host=='dwn.so':
+#	nUrl = self.parserDWN(url)
 #    if host=='www.wootly.ch':
 #	nUrl = self.parserWOOTLY(url)
-
 #    if host=='video.anyfiles.pl':
 #	nUrl = self.parserANYFILES(url)
 
-    if nUrl=='':
-	d = xbmcgui.Dialog()
-	d.ok('Znaleziono nowy host', 'brak obslugi ' + host)
-	nUrl = False;
     return nUrl
 
+#nUrl - "" ; brak obslugi hosta
+#nUrl - False ; broken parser, cos sie pewnie zmienilo
+#nUrl - "http:...." ; link do streamu
+
+
   def parserPUTLOCKER(self,url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
+    link = self.requestData(url)    
     r = re.search('value="(.+?)" name="fuck_you"', link)
     if r:
       if DEBUG: log.info("hash: " + r.group(1))
-      data = urllib.urlencode({'fuck_you' : r.group(1),
-                               'confirm'  : 'Close Ad and Watch as Free User'})
+      postdata = {'fuck_you' : r.group(1), 'confirm' : 'Close Ad and Watch as Free User'}
+      data = urllib.urlencode(postdata)
       req = urllib2.Request(url,data)
       req.add_header('User-Agent', HOST)
       cj = cookielib.LWPCookieJar()
@@ -88,22 +128,16 @@ class urlparser:
     else:
       return False
 
+
   def parserMEGUSTAVID(self,url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
+    link = self.requestData(url)    
     match = re.compile('value="config=(.+?)">').findall(link)
     if len(match) > 0:
       p = match[0].split('=')
       url = "http://megustavid.com/media/nuevo/player/playlist.php?id=" + p[1]
-      if DEBUG: log.info("newlink: " + url)
-      req = urllib2.Request(url)
-      req.add_header('User-Agent', HOST)
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
+      if DEBUG: log.info("newlink: " + url)     
+      link = self.requestData(url)      
+      if DEBUG: log.info(link)
       match = re.compile('<file>(.+?)</file>').findall(link)
       if len(match) > 0:
 	if DEBUG: log.info("final link: " + match[0])
@@ -113,34 +147,23 @@ class urlparser:
     else: 
       return False
 
+
   def parserHD3D(self,url):
-    url = url + "?i"
-    if DEBUG: log.info("hd3d url: " + url)
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
+    nUrl = url + "?i"
+    link = self.requestData(nUrl)
     if DEBUG: log.info(link)
     match = re.compile("""url: ["'](.+?)["'],.+?provider:""").findall(link)
     if len(match) > 0:
       if DEBUG: log.info("final link: " + match[0])
       ret = match[0]
     else:
-      d = xbmcgui.Dialog()
-      d.ok('Brak linku hd3d', 'Przekroczony limit.','Odczekaj chwile i sprobuj jeszcze raz.')
-      ret = False
+     ret = False
     return ret
 
 
   def parserSPROCKED(self,url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
+    link = self.requestData(url)
     if DEBUG: log.info(link)
-    #autoBuffering: false, url: 'http://178.33.233.217/movies/267?st=YBjFJeEH_u8r-38XCYoD7A', provider: 'lighttpd'
     match = re.search("""url: ['"](.+?)['"],.*\nprovider""",link)
     if match:
       if DEBUG: log.info("final link: " + match.group(1))	
@@ -149,37 +172,23 @@ class urlparser:
       return False
 
 
-  def parserANYFILES(self,url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
+  def parserODSIEBIE(self,url):
+    link = self.requestData(url)
     if DEBUG: log.info(link)
-    #<meta property="og:video" content="http://video.anyfiles.pl/uppod/uppod.swf?st=c:I7Jwt8nZ1UvXvkxZ1bFYWevXmkxB1ozl1LdwWeVs3kVhWex2PysGP45Ld4abN7s0v4wV" >
-    match = re.search("""<meta property="og:video" content=['"](.+?)['"].*>""",link)
-    log.info(match.group(1))
-    if match:
-      return match.group(1)
-    else: 
-      return False
- 
+    (v_ext, v_file, v_dir, v_port, v_host) = re.search("\|\|.*SWFObject",link).group().split('|')[40:45]
+    url = "http://%s.odsiebie.pl:%s/d/%s/%s.%s" % (v_host, v_port, v_dir, v_file, v_ext);
+    return url
+
 
   def parserWGRANE(self,url):
     hostUrl = 'http://www.wgrane.pl' 		
     playlist = hostUrl + '/html/player_hd/xml/playlist.php?file='
     key = url[-32:]
     nUrl = playlist + key
-    if DEBUG: log.info("playlist: " + nUrl)    
-    req = urllib2.Request(nUrl)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
+    if DEBUG: log.info("playlist: " + nUrl)
+    link = self.requestData(nUrl)
     if DEBUG: log.info(link)
-    #<mainvideo url="http://s1.wgrane.pl/download.php?file=168585&amp;time=1334552782"
     match = re.search("""<mainvideo url=["'](.+?)["']""",link)
-    #log.info(match.group(1))
     if match:
       ret = match.group(1).replace('&amp;','&')
       if DEBUG: log.info("final link: " + ret)
@@ -187,16 +196,11 @@ class urlparser:
     else: 
       return False
 
+
   def parserCDA(self,url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
+    link = self.requestData(url)
     if DEBUG: log.info(link)
-    #file: 'http://srv2.cda.pl/13480562406186.mp4?st=a0kN7Z2QoBh-S7kzd0JCiQ&e=1348514615', provider: 'http'
     match = re.search("""file: ['"](.+?)['"],""",link)
-    #log.info("match: " +str(match.group(1)))
     if match:
       if DEBUG: log.info("final link: " + match.group(1))	
       return match.group(1)
@@ -204,12 +208,43 @@ class urlparser:
       return False
 
 
+  def parserNOVAMOV(self,url):
+    link = self.requestData(url)
+    if DEBUG: log.info(link)
+    match = re.search("""file: ['"](.+?)['"],""",link)
+    if match:
+      if DEBUG: log.info("final link: " + match.group(1))	
+      return match.group(1)
+    else: 
+      return False
+
+
+
+  def parserDWN(self,url):
+    link = self.requestData(url)
+    if DEBUG: log.info(link)
+    #<iframe src="http://dwn.so/player/embed.php?v=DS301459CC&width=850&height=440"
+    match = re.search("""<iframe src="(.+?)&""",link)
+    if match:
+      link = self.requestData(match.group(1))
+      if DEBUG: log.info(link)	
+
+    else: 
+      return False
+
+
+  def parserANYFILES(self,url):
+    link = self.requestData(url)
+    if DEBUG: log.info(link)
+    match = re.search("""<meta property="og:video" content=['"](.+?)['"].*>""",link)
+    if match:
+      return match.group(1)
+    else: 
+      return False
+
+
   def parserWOOTLY(self,url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    link = response.read()
-    response.close()
+    link = self.requestData(url)
     if DEBUG: log.info(link)
     #c.value="9ee163b21f5b018544e977cf1fe87569231e4816";
     c = re.search("""c.value="(.+?)";""",link)
@@ -219,7 +254,6 @@ class urlparser:
     else: 
       return False    
     #<input type="hidden" value="148184646935bc200ed80035c2d16304" class="textbox" name="9ee163b21f5b018544e977cf1fe87569231e4816"
-    #file: 'http://srv2.cda.pl/13480562406186.mp4?st=a0kN7Z2QoBh-S7kzd0JCiQ&e=1348514615', provider: 'http'
     match = re.compile("""<input type=['"]hidden['"] value=['"](.+?)['"].+?name=['"](.+?)['"]""").findall(link)
     if len(match) > 0:
       postdata = {};
