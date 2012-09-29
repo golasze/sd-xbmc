@@ -164,8 +164,7 @@ class urlparser:
 
 
   def parserHD3D(self,url):
-    nUrl = url + "?i"
-    link = self.requestData(nUrl)
+    link = self.requestData(url)
     if DEBUG: log.info(link)
     match = re.compile("""url: ["'](.+?)["'],.+?provider:""").findall(link)
     if len(match) > 0:
