@@ -1,6 +1,6 @@
-#summary Instalcja pluginu, instrukcja krok po kroku.
+#summary Instrukcja jak zainstalować plugin.video.polishtv.live
 
-= Jak zainstalowac plugin.video.polishtv.live =
+= Jak zainstalować plugin.video.polishtv.live =
 
 autorem artykułu jest *broman*, a poniższa instrukcja została zaporzyczona z jego blogu [http://broman.pl/blog]
 
