@@ -221,7 +221,8 @@ class iiTVInfo:
             linkVideo = ''
             ID = self.getVideoID(nUrl)
             if ID != '':
-                linkVideo = self.up.getHost(ID)
+                #linkVideo = self.up.getHost(ID)
+                linkVideo = self.up.getVideoLink(ID)
                 if linkVideo != False:
                     self.LOAD_AND_PLAY_VIDEO(linkVideo)
             else:
