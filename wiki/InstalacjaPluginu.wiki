@@ -1,0 +1,67 @@
+#summary Instalcja pluginu, instrukcja krok po kroku.
+
+= Jak zainstalowac plugin.video.polishtv.live =
+
+autorem artykułu jest *broman*, a poniższa instrukcja została zaporzyczona z jego blogu [http://broman.pl/blog]
+
+= Instalacja krok po kroku: =
+
+Pobieramy plik zip z repozytorium [http://sd-xbmc.googlecode.com/files/repository.sd-addons.eu.zip]
+
+Instalujemy pobrane repozytorium:
+
+Wybieramy _*System > Settings*_
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-000.png
+
+Dalej _*Add-ons*_
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-001.png
+
+Dalej _*Install from zip file*_
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-002.png
+
+Dalej wybieramy wcześniej ściągnięty plik *_repository.sd-addons.eu.zip_*
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-003.png
+
+Widzimy że nasze repozytorium zostało dodane (prawy dolny róg)
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-004.png
+
+Wybieramy _*Get Add-ons*_
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-005.png
+
+Dalej wybieramy nasze repozytorum *_SD XBMC Add-ons_*
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-006.png
+
+Dalej _*Video Add-ons*_
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-007.png
+
+I nasz poszukiwany plugin *_Telewizja Polska ..._*
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-008.png
+
+Wybieramy _*Install*_
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-009.png
+
+Czekamy aż plugin się ściągnie
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-010.png
+
+I widzimy że jest już zainstalowany
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-011.png
+
+Teraz z ekranu startowego juz możemy wybrać _*Videos > Add-ons*_
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-012.png
+
+I widzimy nasz plugin
+
+http://broman.pl/webdocs/image/xbmc-tvp/xbmc-instalacja-tvp-013.png
