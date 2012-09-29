@@ -434,16 +434,7 @@ class EkinoTV:
 			match = re.compile('http://(.+?)/').findall(p[0])
 			host = match[0]
 			log.info("video hosted by: " + host)
-			if host=='hd3d.cc':
-			  nUrl = self.up.parserHD3D(p[0])
-			if host=='megustavid.com':
-			  nUrl = self.up.parserMEGUSTAVID(p[0])
-			if host=='www.putlocker.com':
-			  nUrl = self.up.parserPUTLOCKER(p[0])
-
-			if nUrl=='':
-			  d = xbmcgui.Dialog()
-			  d.ok('Znaleziono nowy host', 'brak obslugi ' + host)
+			nUrl = self.up.getVideoLink(p[0])
 		else:
 		  d = xbmcgui.Dialog()
 		  d.ok('Player Limit','Wyczerpany limit czasowy oglądania','Spróbuj ponownie za jakiś czas')
