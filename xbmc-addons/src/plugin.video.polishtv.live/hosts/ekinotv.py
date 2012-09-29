@@ -429,12 +429,8 @@ class EkinoTV:
 		log.info("iframe: " + link)
 	 	match = re.compile('<iframe src="(.+?)".+?width').findall(link)
 	   	if len(match) > 0:
-	   		p = match[0].split('?')
-	   		#log.info("almost there: " + p[0])
-			match = re.compile('http://(.+?)/').findall(p[0])
-			host = match[0]
-			log.info("video hosted by: " + host)
-			nUrl = self.up.getVideoLink(p[0])
+	   		#log.info("almost there: " + match[0])
+			nUrl = self.up.getVideoLink(match[0])
 		else:
 		  d = xbmcgui.Dialog()
 		  d.ok('Player Limit','Wyczerpany limit czasowy oglądania','Spróbuj ponownie za jakiś czas')
