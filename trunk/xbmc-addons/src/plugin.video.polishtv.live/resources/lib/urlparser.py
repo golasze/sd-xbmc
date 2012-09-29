@@ -13,11 +13,19 @@ log = pLog.pLog()
 DEBUG = True
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
+str_table = {
+  '*': '/',
+  '?': ':',
+  '%6z': 'l',
+  '%6x': 'm',
+  'maxvidej.pl': 'maxvideo.pl'
+}
+
 #to do:
 #http://xvidstage.com/id6olxl28ul2
 #http://flashstream.in/jnu976yuwga3
 #http://muchshare.net/air7v5uggpw6
-#http://maxvideo.pl/w/ZYiiszCc
+#http://maxvideo.pl/w/ZYiiszCc - almost DONE!!!
 #http://nextvideo.pl/embed/630x430/w/9pAGgL8Os5iRx0rx
 
 #generates final link but XBMC doesnt want to play it
@@ -33,9 +41,14 @@ class urlparser:
   def __init__(self):
     pass
 
+  def replaceString(self, string):
+      for str_in, str_out in str_table.items():
+          out = string.replace(str_in, str_out)
+          string = out
+      return out
 
   def getHostName(self, url):
-    hostName = ''	
+    hostName = ''       
     match = re.search('http://(.+?)/',url)
     if match:
       hostName = match.group(1)
@@ -62,28 +75,30 @@ class urlparser:
     log.info("video hosted by: " + host)
 
     if host=='www.putlocker.com':
-	nUrl = self.parserPUTLOCKER(url)
+        nUrl = self.parserPUTLOCKER(url)
     if host=='megustavid.com':
-	nUrl = self.parserMEGUSTAVID(url)
+        nUrl = self.parserMEGUSTAVID(url)
     if host=='hd3d.cc':
-	nUrl = self.parserHD3D(url)
+        nUrl = self.parserHD3D(url)
     if host=='sprocked.com':
-	nUrl = self.parserSPROCKED(url)
+        nUrl = self.parserSPROCKED(url)
     if host=='odsiebie.pl':
-	nUrl = self.parserODSIEBIE(url)	
+        nUrl = self.parserODSIEBIE(url) 
     if host=='www.wgrane.pl':
-	nUrl = self.parserWGRANE(url)
+        nUrl = self.parserWGRANE(url)
     if host=='www.cda.pl':
-	nUrl = self.parserCDA(url)
-
+        nUrl = self.parserCDA(url)
+    if host == 'maxvideo.pl':
+        nUrl = self.parserMAXVIDEO(url)
+        
 #    if host=='www.novamov.com':
-#	nUrl = self.parserNOVAMOV(url)
+#       nUrl = self.parserNOVAMOV(url)
 #    if host=='dwn.so':
-#	nUrl = self.parserDWN(url)
+#       nUrl = self.parserDWN(url)
 #    if host=='www.wootly.ch':
-#	nUrl = self.parserWOOTLY(url)
+#       nUrl = self.parserWOOTLY(url)
 #    if host=='video.anyfiles.pl':
-#	nUrl = self.parserANYFILES(url)
+#       nUrl = self.parserANYFILES(url)
 
     return nUrl
 
@@ -108,23 +123,23 @@ class urlparser:
       resp.close()
       match = re.compile("playlist: '(.+?)'").findall(link)
       if len(match) > 0:
-	if DEBUG: log.info("get_file.php:" + match[0])
-	url = "http://www.putlocker.com" + match[0]
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', HOST)
-	resp = opener.open(req)
-	link = resp.read()
-	resp.close()
-	if DEBUG: log.info(link)
-	match = re.compile('</link><media:content url="(.+?)" type="video').findall(link)
-	if len(match) > 0:
-	  url = match[0].replace('&amp;','&')
-	  if DEBUG: log.info("final link: " + url)
-	  return url
-	else:
-	  return False
+        if DEBUG: log.info("get_file.php:" + match[0])
+        url = "http://www.putlocker.com" + match[0]
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', HOST)
+        resp = opener.open(req)
+        link = resp.read()
+        resp.close()
+        if DEBUG: log.info(link)
+        match = re.compile('</link><media:content url="(.+?)" type="video').findall(link)
+        if len(match) > 0:
+          url = match[0].replace('&amp;','&')
+          if DEBUG: log.info("final link: " + url)
+          return url
+        else:
+          return False
       else:
-	return False
+        return False
     else:
       return False
 
@@ -140,10 +155,10 @@ class urlparser:
       if DEBUG: log.info(link)
       match = re.compile('<file>(.+?)</file>').findall(link)
       if len(match) > 0:
-	if DEBUG: log.info("final link: " + match[0])
-	return match[0]
+        if DEBUG: log.info("final link: " + match[0])
+        return match[0]
       else:
-	return False
+        return False
     else: 
       return False
 
@@ -166,7 +181,7 @@ class urlparser:
     if DEBUG: log.info(link)
     match = re.search("""url: ['"](.+?)['"],.*\nprovider""",link)
     if match:
-      if DEBUG: log.info("final link: " + match.group(1))	
+      if DEBUG: log.info("final link: " + match.group(1))       
       return match.group(1)
     else: 
       return False
@@ -181,7 +196,7 @@ class urlparser:
 
 
   def parserWGRANE(self,url):
-    hostUrl = 'http://www.wgrane.pl' 		
+    hostUrl = 'http://www.wgrane.pl'            
     playlist = hostUrl + '/html/player_hd/xml/playlist.php?file='
     key = url[-32:]
     nUrl = playlist + key
@@ -202,7 +217,7 @@ class urlparser:
     if DEBUG: log.info(link)
     match = re.search("""file: ['"](.+?)['"],""",link)
     if match:
-      if DEBUG: log.info("final link: " + match.group(1))	
+      if DEBUG: log.info("final link: " + match.group(1))       
       return match.group(1)
     else: 
       return False
@@ -213,7 +228,7 @@ class urlparser:
     if DEBUG: log.info(link)
     match = re.search("""file: ['"](.+?)['"],""",link)
     if match:
-      if DEBUG: log.info("final link: " + match.group(1))	
+      if DEBUG: log.info("final link: " + match.group(1))       
       return match.group(1)
     else: 
       return False
@@ -227,7 +242,7 @@ class urlparser:
     match = re.search("""<iframe src="(.+?)&""",link)
     if match:
       link = self.requestData(match.group(1))
-      if DEBUG: log.info(link)	
+      if DEBUG: log.info(link)  
 
     else: 
       return False
@@ -258,10 +273,10 @@ class urlparser:
     if len(match) > 0:
       postdata = {};
       for i in range(len(match)):
-	if (len(match[i][0])) > len(cval):
-	  postdata[cval] = match[i][1]
-	else:
-	  postdata[match[i][0]] = match[i][1]
+        if (len(match[i][0])) > len(cval):
+          postdata[cval] = match[i][1]
+        else:
+          postdata[match[i][0]] = match[i][1]
       if DEBUG: log.info(str(postdata))
       data = urllib.urlencode(postdata)
       req = urllib2.Request(url,data)
@@ -276,10 +291,35 @@ class urlparser:
       match = re.search("""<video.*\n.*src=['"](.+?)['"]""",link)
       #log.info("match: " +str(match.group(1)))
       if match:
-	if DEBUG: log.info("final link: " + match.group(1))
-	return match.group(1)
+        if DEBUG: log.info("final link: " + match.group(1))
+        return match.group(1)
       else: 
         return False
     else: 
       return False
 
+  def parserMAXVIDEO(self, url):
+      req = urllib2.Request(url)
+      req.add_header('User-Agent', HOST)
+      response = urllib2.urlopen(req)
+      link = response.read()
+      response.close()
+      #if DEBUG: log.info(link)
+      #eval(unescape('%76%61%72%20%6C%6E%6B%20%3D%20%75%6E%65%73%63%61%70%65%28%63%68%65%63%6B%6C%6E%74%28%75%6E%65%73%63%61%70%65%28%27%25%32%35%36%38%25%32%35%37%34%25%32%35%37%34%25%32%35%37%30%25%32%35%33%66%25%32%35%32%61%25%32%35%32%61%25%32%35%37%33%25%32%35%33%31%25%32%35%32%45%25%32%35%36%78%25%32%35%36%31%25%32%35%37%38%25%32%35%37%36%25%32%35%36%39%25%32%35%36%34%25%32%35%36%35%25%32%35%36%61%25%32%35%32%45%25%32%35%37%30%25%32%35%36%7A%25%32%35%32%61%25%32%35%37%33%25%32%35%37%34%25%32%35%37%32%25%32%35%36%35%25%32%35%36%31%25%32%35%36%78%25%32%35%32%61%25%32%35%33%33%25%32%35%36%34%25%32%35%33%39%25%32%35%33%37%25%32%35%33%31%25%32%35%33%35%25%32%35%36%32%25%32%35%36%31%25%32%35%33%36%25%32%35%33%31%25%32%35%33%31%25%32%35%33%32%25%32%35%33%34%25%32%35%33%33%25%32%35%36%31%25%32%35%36%33%25%32%35%33%33%25%32%35%33%39%25%32%35%36%32%25%32%35%33%39%25%32%35%33%30%25%32%35%33%36%25%32%35%33%39%25%32%35%33%33%25%32%35%33%35%25%32%35%33%39%25%32%35%33%37%25%32%35%36%33%25%32%35%33%39%25%32%35%36%36%25%32%35%36%33%25%32%35%36%34%25%32%35%33%37%25%32%35%33%38%25%32%35%33%37%25%32%35%36%33%25%32%35%33%31%25%32%35%36%35%25%32%35%33%39%25%32%35%36%35%25%32%35%33%34%25%32%35%33%32%25%32%35%33%39%25%32%35%36%34%25%32%35%33%38%25%32%35%36%34%25%32%35%33%35%25%32%35%36%31%25%32%35%36%32%25%32%35%36%36%25%32%35%33%32%25%32%35%33%33%25%32%35%33%34%25%32%35%33%39%25%32%35%36%31%25%32%35%33%31%25%32%35%36%31%25%32%35%36%32%25%32%35%33%33%25%32%35%36%31%25%32%35%33%31%25%32%35%36%36%25%32%35%33%34%25%32%35%36%31%25%32%35%32%61%25%32%35%36%36%25%32%35%36%39%25%32%35%36%7A%25%32%35%36%35%25%32%35%32%45%25%32%35%36%36%25%32%35%36%7A%25%32%35%37%36%27%29%29%29%3B'));
+      match1 = re.compile('eval\(unescape\((.+?)\)\)').findall(link)
+      if len(match1) > 0:
+          str1 = urllib.unquote(match1[0])
+          if 'var lnk' in str1:
+              tab = str1.split(" = ")
+              match2 = re.compile('unescape\(checklnt\(unescape\((.+?)\)\)\)').findall(tab[1])
+              if len(match2) > 0:
+                  txt1 = match2[0].replace("'", "")
+                  str2 = urllib.unquote(urllib.unquote(txt1))
+                  if DEBUG: log.info("final link: " + self.replaceString(str2))
+                  return self.replaceString(str2)
+              else:
+                  return False
+          else:
+              return False  
+      else:
+          return False
