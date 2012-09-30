@@ -6,11 +6,11 @@ import urllib, urllib2, re, sys, math
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 
-import pLog, xppod
+import pLog, xppod, Parser
 
 log = pLog.pLog()
 
-DEBUG = False
+DEBUG = True
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
 chars_table = {
@@ -112,8 +112,10 @@ class urlparser:
         nUrl = self.parserMAXVIDEO(url)
     if host == 'nextvideo.pl':
         nUrl = self.parserNEXTVIDEO(url)
-    if host=='video.anyfiles.pl':
+    if host == 'video.anyfiles.pl':
        nUrl = self.parserANYFILES(url)
+    if host == 'www.videoweed.se' or host == 'www.videoweed.com' or host == 'videoweed.se' or host == 'videowee.com':
+        nUrl = self.parserVIDEOWEED(url)
 
 #    if host=='www.novamov.com':
 #       nUrl = self.parserNOVAMOV(url)
@@ -374,3 +376,30 @@ class urlparser:
           return match[0]
       else:
           return False
+      
+  def parserVIDEOWEED(self, url):
+      req = urllib2.Request(url)
+      req.add_header('User-Agent', HOST)
+      response = urllib2.urlopen(req)
+      link = response.read()
+      response.close()
+      match_domain = re.compile('flashvars.domain="(.+?)"').findall(link)
+      match_file = re.compile('flashvars.file="(.+?)"').findall(link)
+      match_filekey = re.compile('flashvars.filekey="(.+?)"').findall(link)
+      if len(match_domain) > 0 and len(match_file) > 0 and len(match_filekey) > 0:
+          get_api_url = ('%s/api/player.api.php?user=undefined&codes=1&file=%s&pass=undefined&key=%s') % (match_domain[0], match_file[0], match_filekey[0])
+          req_api = urllib2.Request(get_api_url)
+          req_api.add_header('User-Agent', HOST)
+          response_api = urllib2.urlopen(req_api)
+          link_api = response_api.read()
+          response_api.close()
+          if 'url' in link_api:
+              parser = Parser.Parser()
+              params = parser.getParams(link_api)
+              if DEBUG: log.info("final link: " + parser.getParam(params, "url"))
+              return parser.getParam(params, "url")
+          else:
+              return False
+      else:
+          return False
+          
