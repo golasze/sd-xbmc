@@ -6,11 +6,11 @@ import urllib, urllib2, re, sys, math
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 
-import pLog
+import pLog, xppod
 
 log = pLog.pLog()
 
-DEBUG = True
+DEBUG = False
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
 chars_table = {
@@ -38,15 +38,12 @@ chars_table = {
 #http://xvidstage.com/id6olxl28ul2
 #http://flashstream.in/jnu976yuwga3
 #http://muchshare.net/air7v5uggpw6
-#http://maxvideo.pl/w/ZYiiszCc - almost DONE!!!
-#http://nextvideo.pl/embed/630x430/w/9pAGgL8Os5iRx0rx
 
 #generates final link but XBMC doesnt want to play it
 #http://www.wootly.ch/?v=G79EEEE4
 
 #cannot figure out these ones:
 #http://www.videoweed.es/file/7a554a4b44291
-#http://video.anyfiles.pl/uppod/uppod.swf?st=c:I7Jwt8nZ1UvXvkxZ1bFYWevXmkxB1ozl1LdwWeVs3kVhWex2PysGP45Ld4abN7s0v4wV
 #http://dwn.so/v/DS301459CC
 #http://www.novamov.com/video/ec0a25241419e
 
@@ -84,17 +81,12 @@ class urlparser:
 
 
   def requestData(self, url, postdata = {}):
-    d = ''
-    if len(postdata)<>0:
-      d = urllib.urlencode(postdata)  
-    req = urllib2.Request(url, d) #1
-    req.add_header('User-Agent', HOST) #1
-    cj = cookielib.LWPCookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-    response = opener.open(req)
-    data = response.read()
-    response.close()
-    return data
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HOST)
+	response = urllib2.urlopen(req)
+	data = response.read()
+	response.close()	
+	return data
  
 
   def getVideoLink(self, url):
@@ -120,15 +112,16 @@ class urlparser:
         nUrl = self.parserMAXVIDEO(url)
     if host == 'nextvideo.pl':
         nUrl = self.parserNEXTVIDEO(url)
-    
+    if host=='video.anyfiles.pl':
+       nUrl = self.parserANYFILES(url)
+
 #    if host=='www.novamov.com':
 #       nUrl = self.parserNOVAMOV(url)
 #    if host=='dwn.so':
 #       nUrl = self.parserDWN(url)
 #    if host=='www.wootly.ch':
 #       nUrl = self.parserWOOTLY(url)
-#    if host=='video.anyfiles.pl':
-#       nUrl = self.parserANYFILES(url)
+
 
     return nUrl
 
@@ -263,7 +256,6 @@ class urlparser:
       return False
 
 
-
   def parserDWN(self,url):
     link = self.requestData(url)
     if DEBUG: log.info(link)
@@ -278,13 +270,32 @@ class urlparser:
 
 
   def parserANYFILES(self,url):
-    link = self.requestData(url)
-    if DEBUG: log.info(link)
-    match = re.search("""<meta property="og:video" content=['"](.+?)['"].*>""",link)
-    if match:
-      return match.group(1)
-    else: 
-      return False
+	hostUrl = 'http://video.anyfiles.pl'
+	data = self.requestData(url)
+	if DEBUG: log.info(data)
+	#var flashvars = {"uid":"player-vid-8552","m":"video","st":"c:1LdwWeVs3kVhWex2PysGP45Ld4abN7s0v4wV"};
+	match = re.search("""var flashvars = {.+?"st":"(.+?)"}""",data)
+	if match:
+		nUrl = xppod.Decode(match.group(1)[2:]).encode('utf-8').strip()
+		if 'http://' in nUrl:
+			url = nUrl
+		else:
+			url = hostUrl + nUrl
+		data = self.requestData(url)
+		data = xppod.Decode(data).encode('utf-8').strip()
+		#{"file":"http://50.7.221.26/folder/776713c560821c666da18d8550594050_8552.mp4 or http://50.7.220.66/folder/776713c560821c666da18d8550594050_8552.mp4","ytube":"0",
+		match = re.search("""file":"(.+?)",""",data)
+		if match:
+			if 'or' in match.group(1):
+				links = match.group(1).split(" or ")
+				if DEBUG: log.info(str(links))
+				return links[1]			
+			else:
+				return match.group(1)
+		else:
+			return False
+	else: 
+		return False
 
 
   def parserWOOTLY(self,url):
