@@ -10,7 +10,7 @@ import pLog, xppod, Parser
 
 log = pLog.pLog()
 
-DEBUG = True
+DEBUG = False
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
 chars_table = {
@@ -38,12 +38,12 @@ chars_table = {
 #http://xvidstage.com/id6olxl28ul2
 #http://flashstream.in/jnu976yuwga3
 #http://muchshare.net/air7v5uggpw6
+#http://rd3.videos.sapo.pt/3zWWAFLUjDJMT0fadtCu
 
 #generates final link but XBMC doesnt want to play it
 #http://www.wootly.ch/?v=G79EEEE4
 
 #cannot figure out these ones:
-#http://www.videoweed.es/file/7a554a4b44291
 #http://dwn.so/v/DS301459CC
 #http://www.novamov.com/video/ec0a25241419e
 
@@ -59,6 +59,7 @@ class urlparser:
               break
       return out_char  
 
+
   def createString(self, string):
       string_in_tab = list(string)
       string_out_tab = []
@@ -71,6 +72,7 @@ class urlparser:
           else:
               string_out += string_out_tab[a]
       return string_out
+
 
   def getHostName(self, url):
     hostName = ''       
@@ -87,34 +89,34 @@ class urlparser:
 	data = response.read()
 	response.close()	
 	return data
- 
+
 
   def getVideoLink(self, url):
     nUrl=''
     host = self.getHostName(url)
     log.info("video hosted by: " + host)
 
-    if host=='www.putlocker.com':
+    if host == 'www.putlocker.com':
         nUrl = self.parserPUTLOCKER(url)
-    if host=='megustavid.com':
+    if host == 'megustavid.com':
         nUrl = self.parserMEGUSTAVID(url)
-    if host=='hd3d.cc':
+    if host == 'hd3d.cc':
         nUrl = self.parserHD3D(url)
-    if host=='sprocked.com':
+    if host == 'sprocked.com':
         nUrl = self.parserSPROCKED(url)
-    if host=='odsiebie.pl':
+    if host == 'odsiebie.pl':
         nUrl = self.parserODSIEBIE(url) 
-    if host=='www.wgrane.pl':
+    if host == 'www.wgrane.pl':
         nUrl = self.parserWGRANE(url)
-    if host=='www.cda.pl':
+    if host == 'www.cda.pl':
         nUrl = self.parserCDA(url)
     if host == 'maxvideo.pl':
         nUrl = self.parserMAXVIDEO(url)
     if host == 'nextvideo.pl':
         nUrl = self.parserNEXTVIDEO(url)
     if host == 'video.anyfiles.pl':
-       nUrl = self.parserANYFILES(url)
-    if host == 'www.videoweed.se' or host == 'www.videoweed.com' or host == 'videoweed.se' or host == 'videowee.com':
+        nUrl = self.parserANYFILES(url)
+    if host == 'www.videoweed.es' or host == 'www.videoweed.com' or host == 'videoweed.es' or host == 'videoweed.com':
         nUrl = self.parserVIDEOWEED(url)
 
 #    if host=='www.novamov.com':
@@ -123,7 +125,6 @@ class urlparser:
 #       nUrl = self.parserDWN(url)
 #    if host=='www.wootly.ch':
 #       nUrl = self.parserWOOTLY(url)
-
 
     return nUrl
 
@@ -266,7 +267,6 @@ class urlparser:
     if match:
       link = self.requestData(match.group(1))
       if DEBUG: log.info(link)  
-
     else: 
       return False
 
@@ -290,7 +290,7 @@ class urlparser:
 		if match:
 			if 'or' in match.group(1):
 				links = match.group(1).split(" or ")
-				if DEBUG: log.info(str(links))
+				if DEBUG: log.info("final link: " + links[1])
 				return links[1]			
 			else:
 				return match.group(1)
@@ -305,7 +305,7 @@ class urlparser:
     if DEBUG: log.info(link)
     #c.value="9ee163b21f5b018544e977cf1fe87569231e4816";
     c = re.search("""c.value="(.+?)";""",link)
-    log.info("match: " +str(c.group(1)))
+    #log.info("match: " +str(c.group(1)))
     if c:
       cval = c.group(1)   
     else: 
@@ -340,13 +340,10 @@ class urlparser:
     else: 
       return False
 
+
   def parserMAXVIDEO(self, url):
-      req = urllib2.Request(url)
-      req.add_header('User-Agent', HOST)
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
-      #if DEBUG: log.info(link)
+      link = self.requestData(url)
+      if DEBUG: log.info(link)
       #eval(unescape('%76%61%72%20%6C%6E%6B%20%3D%20%75%6E%65%73%63%61%70%65%28%63%68%65%63%6B%6C%6E%74%28%75%6E%65%73%63%61%70%65%28%27%25%32%35%36%38%25%32%35%37%34%25%32%35%37%34%25%32%35%37%30%25%32%35%33%66%25%32%35%32%61%25%32%35%32%61%25%32%35%37%33%25%32%35%33%31%25%32%35%32%45%25%32%35%36%78%25%32%35%36%31%25%32%35%37%38%25%32%35%37%36%25%32%35%36%39%25%32%35%36%34%25%32%35%36%35%25%32%35%36%61%25%32%35%32%45%25%32%35%37%30%25%32%35%36%7A%25%32%35%32%61%25%32%35%37%33%25%32%35%37%34%25%32%35%37%32%25%32%35%36%35%25%32%35%36%31%25%32%35%36%78%25%32%35%32%61%25%32%35%33%33%25%32%35%36%34%25%32%35%33%39%25%32%35%33%37%25%32%35%33%31%25%32%35%33%35%25%32%35%36%32%25%32%35%36%31%25%32%35%33%36%25%32%35%33%31%25%32%35%33%31%25%32%35%33%32%25%32%35%33%34%25%32%35%33%33%25%32%35%36%31%25%32%35%36%33%25%32%35%33%33%25%32%35%33%39%25%32%35%36%32%25%32%35%33%39%25%32%35%33%30%25%32%35%33%36%25%32%35%33%39%25%32%35%33%33%25%32%35%33%35%25%32%35%33%39%25%32%35%33%37%25%32%35%36%33%25%32%35%33%39%25%32%35%36%36%25%32%35%36%33%25%32%35%36%34%25%32%35%33%37%25%32%35%33%38%25%32%35%33%37%25%32%35%36%33%25%32%35%33%31%25%32%35%36%35%25%32%35%33%39%25%32%35%36%35%25%32%35%33%34%25%32%35%33%32%25%32%35%33%39%25%32%35%36%34%25%32%35%33%38%25%32%35%36%34%25%32%35%33%35%25%32%35%36%31%25%32%35%36%32%25%32%35%36%36%25%32%35%33%32%25%32%35%33%33%25%32%35%33%34%25%32%35%33%39%25%32%35%36%31%25%32%35%33%31%25%32%35%36%31%25%32%35%36%32%25%32%35%33%33%25%32%35%36%31%25%32%35%33%31%25%32%35%36%36%25%32%35%33%34%25%32%35%36%31%25%32%35%32%61%25%32%35%36%36%25%32%35%36%39%25%32%35%36%7A%25%32%35%36%35%25%32%35%32%45%25%32%35%36%36%25%32%35%36%7A%25%32%35%37%36%27%29%29%29%3B'));
       match1 = re.compile('eval\(unescape\((.+?)\)\)').findall(link)
       if len(match1) > 0:
@@ -365,35 +362,26 @@ class urlparser:
       else:
           return False
       
+      
   def parserNEXTVIDEO(self, url):
-      req = urllib2.Request(url)
-      req.add_header('User-Agent', HOST)
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
+      link = self.requestData(url)
       match = re.compile('file\: "(.+?)",').findall(link)
       if len(match) > 0:
+	  if DEBUG: log.info("final link: " + match[0])
           return match[0]
       else:
           return False
       
+      
   def parserVIDEOWEED(self, url):
-      req = urllib2.Request(url)
-      req.add_header('User-Agent', HOST)
-      response = urllib2.urlopen(req)
-      link = response.read()
-      response.close()
+      link = self.requestData(url)
       match_domain = re.compile('flashvars.domain="(.+?)"').findall(link)
       match_file = re.compile('flashvars.file="(.+?)"').findall(link)
       match_filekey = re.compile('flashvars.filekey="(.+?)"').findall(link)
       if len(match_domain) > 0 and len(match_file) > 0 and len(match_filekey) > 0:
           get_api_url = ('%s/api/player.api.php?user=undefined&codes=1&file=%s&pass=undefined&key=%s') % (match_domain[0], match_file[0], match_filekey[0])
-          req_api = urllib2.Request(get_api_url)
-          req_api.add_header('User-Agent', HOST)
-          response_api = urllib2.urlopen(req_api)
-          link_api = response_api.read()
-          response_api.close()
-          if 'url' in link_api:
+	  link_api = self.requestData(get_api_url)
+	  if 'url' in link_api:
               parser = Parser.Parser()
               params = parser.getParams(link_api)
               if DEBUG: log.info("final link: " + parser.getParam(params, "url"))

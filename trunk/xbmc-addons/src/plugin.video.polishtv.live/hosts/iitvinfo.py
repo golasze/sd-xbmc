@@ -219,6 +219,7 @@ class iiTVInfo:
         if name == 'playSelectedMovie':
             nUrl = mainUrl + page
             linkVideo = ''
+            ID = ''
             ID = self.getVideoID(nUrl)
             if ID != '':
                 #linkVideo = self.up.getHost(ID)
