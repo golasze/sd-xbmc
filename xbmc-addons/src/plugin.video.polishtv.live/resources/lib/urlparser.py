@@ -118,7 +118,9 @@ class urlparser:
         nUrl = self.parserCDA(url)
     if host == 'maxvideo.pl':
         nUrl = self.parserMAXVIDEO(url)
-        
+    if host == 'nextvideo.pl':
+        nUrl = self.parserNEXTVIDEO(url)
+    
 #    if host=='www.novamov.com':
 #       nUrl = self.parserNOVAMOV(url)
 #    if host=='dwn.so':
@@ -347,5 +349,17 @@ class urlparser:
                   return False
           else:
               return False  
+      else:
+          return False
+      
+  def parserNEXTVIDEO(self, url):
+      req = urllib2.Request(url)
+      req.add_header('User-Agent', HOST)
+      response = urllib2.urlopen(req)
+      link = response.read()
+      response.close()
+      match = re.compile('file\: "(.+?)",').findall(link)
+      if len(match) > 0:
+          return match[0]
       else:
           return False
