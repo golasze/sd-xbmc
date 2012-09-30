@@ -13,12 +13,25 @@ log = pLog.pLog()
 DEBUG = True
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
-str_table = {
-  '*': '/',
-  '?': ':',
-  '%6z': 'l',
-  '%6x': 'm',
-  'maxvidej.pl': 'maxvideo.pl'
+chars_table = {
+  'f': 'A',
+  'F': 'a',
+  'a': 'F',
+  'A': 'f',
+  'k': 'B',
+  'K': 'b',
+  'b': 'K',
+  'B': 'k',
+  'm': 'I',
+  'M': 'i',
+  'i': 'M',
+  'I': 'm',
+  'D': 'x',
+  'x': 'D',
+  'O': 'y',
+  'y': 'O',
+  'C': 'z',
+  'z': 'C'
 }
 
 #to do:
@@ -41,11 +54,26 @@ class urlparser:
   def __init__(self):
     pass
 
-  def replaceString(self, string):
-      for str_in, str_out in str_table.items():
-          out = string.replace(str_in, str_out)
-          string = out
-      return out
+  def replaceChars(self, char):
+      out_char = char
+      for char_in, char_out in chars_table.items():
+          if char == char_in:
+              out_char = char_out
+              break
+      return out_char  
+
+  def createString(self, string):
+      string_in_tab = list(string)
+      string_out_tab = []
+      string_out = string
+      for i in range(len(string_in_tab)):
+          string_out_tab.append(self.replaceChars(string_in_tab[i]))
+      for a in range(len(string_out_tab)):
+          if a == 0:
+              string_out = string_out_tab[a]
+          else:
+              string_out += string_out_tab[a]
+      return string_out
 
   def getHostName(self, url):
     hostName = ''       
@@ -313,9 +341,8 @@ class urlparser:
               match2 = re.compile('unescape\(checklnt\(unescape\((.+?)\)\)\)').findall(tab[1])
               if len(match2) > 0:
                   txt1 = match2[0].replace("'", "")
-                  str2 = urllib.unquote(urllib.unquote(txt1))
-                  if DEBUG: log.info("final link: " + self.replaceString(str2))
-                  return self.replaceString(str2)
+                  if DEBUG: log.info("final link: " + urllib.unquote(self.createString(urllib.unquote(txt1))))
+                  return urllib.unquote(self.createString(urllib.unquote(txt1)))
               else:
                   return False
           else:
