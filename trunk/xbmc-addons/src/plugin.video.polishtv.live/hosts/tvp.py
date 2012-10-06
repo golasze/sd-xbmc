@@ -23,7 +23,14 @@ TVP_MAIN_MENU_TABLE = [
     "Sport najnowsze|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=1775930&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
     "Sport teraz oglądane|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=928060&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
     "Sport najwyżej oceniane|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=928062&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
-    "Sport najczęściej oglądane|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=928059&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES)
+    "Sport najczęściej oglądane|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=928059&object_type=video&child_mode=SIMPLE&sort_by=RELEASE_DATE&sort_desc=true&rec_count=" + str(PAGE_MOVIES),
+    "Kultura|xml|http://www.tvp.pl/pub/stat/videolisting?object_id=883&with_subdirs=true&sort_desc=true&sort_by=RELEASE_DATE&child_mode=SIMPLE&rec_count=" + str(PAGE_MOVIES),
+    "Kultura teraz oglądane|xml|http://www.tvp.pl/pub/stat/listing?src_id=2&object_id=929222&object_type=video&child_mode=SIMPLE&list_mode=CURRENT&play_mode=VOD%3ALIVE&rec_count=" + str(PAGE_MOVIES),
+    "Kultura najwyżej oceniane|xml|http://www.tvp.pl/pub/stat/listing?src_id=2&object_id=929223&object_type=video&child_mode=SIMPLE&list_mode=VOTES&play_mode=VOD&rec_count=" + str(PAGE_MOVIES),
+    "Kultura najczęściej oglądane|xml|http://www.tvp.pl/pub/stat/listing?src_id=2&object_id=929221&object_type=video&child_mode=SIMPLE&list_mode=TOPLIST&play_mode=VOD&rec_count=" + str(PAGE_MOVIES),
+    "Rozrywka teraz oglądane|xml|http://www.tvp.pl/pub/stat/listing?src_id=2&object_id=929212&object_type=video&child_mode=SIMPLE&list_mode=CURRENT&play_mode=VOD%3ALIVE&rec_count=" + str(PAGE_MOVIES),
+    "Rozrywka najwyżej oceniane|xml|http://www.tvp.pl/pub/stat/listing?src_id=2&object_id=929213&object_type=video&child_mode=SIMPLE&list_mode=VOTES&play_mode=VOD&rec_count=" + str(PAGE_MOVIES),
+    "Rozrywka najczęściej oglądane|xml|http://www.tvp.pl/pub/stat/listing?src_id=2&object_id=929211&object_type=video&child_mode=SIMPLE&list_mode=TOPLIST&play_mode=VOD&rec_count=" + str(PAGE_MOVIES),
 ]
 
 NEXT_PAGE_HTML = '?sort_by=POSITION&sort_desc=false&start_rec=6'
@@ -260,7 +267,8 @@ class tvp:
 
     def watched(self, videoUrl):
         videoFile = videoUrl.split('/')[-1]
-        sql_data = "select count(*) from files WHERE strFilename ='%s' AND playCount > 0" % videoFile
+        shortVideoFile = videoFile[videoFile.find('.')+1:]
+        sql_data = "select count(*) from files WHERE (strFilename ='%s' OR strFilename ='%s') AND playCount > 0" % (videoFile,shortVideoFile)
         xml_data = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % urllib.quote_plus( sql_data ), )
         wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
         if wasWatched == "1":
