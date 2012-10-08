@@ -1,30 +1,42 @@
 # -*- coding: utf-8 -*-
-import cookielib, os, string, cookielib, StringIO
-import os, time, base64, logging, calendar
+import os, string, cookielib, StringIO
+import time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
-import xbmcgui, xbmc
+import xbmcgui, xbmc, xbmcaddon, xbmcplugin
 
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "../resources" )
+scriptID = 'plugin.video.polishtv.live'
+scriptname = "Polish Live TV"
+ptv = xbmcaddon.Addon(scriptID)
+
+BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog
+import pLog, settings, Parser, urlparser
 
 log = pLog.pLog()
 
 mainUrl = 'http://video.anyfiles.pl'
 
-ANYFILES_MENU_TABLE = { 1: "Podział według kategorii",
+ANYFILES_MENU_TABLE = { 1: "Kategorie",
 			2: "Najnowsze",
-			3: "Popularne" }
+			3: "Popularne",
+			4: "Szukaj" }
 			
 
 HOST = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
 
+NEW_LINK = mainUrl + '/najnowsze/0'
+HOT_LINK = mainUrl + '/najpopularniejsze/0'
+
+
 class AnyFiles:
   def __init__(self):
     log.info('Loading AnyFiles')
-    
-    
+    self.settings = settings.TVSettings()
+    self.parser = Parser.Parser()
+    self.up = urlparser.urlparser()
+ 
+ 
   def setTable(self):
     return ANYFILES_MENU_TABLE
     
@@ -34,156 +46,187 @@ class AnyFiles:
     for num, val in ANYFILES_MENU_TABLE.items():
       nTab.append(val)
     return nTab
+  
+        
+  def requestData(self, url):
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', HOST)
+    response = urllib2.urlopen(req)
+    data = response.read()
+    response.close()	
+    return data
     
+    
+  def searchInputText(self):
+    text = None
+    k = xbmc.Keyboard()
+    k.doModal()
+    if (k.isConfirmed()):
+      text = k.getText()
+    return text  
+  
+  
+  def searchTab(self, text):
+    strTab = []
+    valTab = []
+    searchUrl = mainUrl + '/Search.jsp'
+    values = { 'q': text, 'oe': 'polish' }
+    headers = { 'User-Agent' : HOST }
+    data = urllib.urlencode(values)
+    req = urllib2.Request(searchUrl, data, headers)
+    response = urllib2.urlopen(req)
+    link = response.read()
+    response.close()
+    match = re.compile('src="(.+?)" class="icon-img "></a>.+?<a class="box-title" href="(.+?)">(.+?)</a></td></tr>').findall(link)
+    if len(match) > 0:
+      for i in range(len(match)):
+	value = match[i]
+	strTab.append(value[2])
+	strTab.append(mainUrl + value[1])
+	strTab.append(value[0])	
+	valTab.append(strTab)
+	strTab = []
+    return valTab
+     
     
   def getCategories(self):
-	    valTab = []
-	    strTab = []
-	    url = mainUrl
-	    req = urllib2.Request(url)
-	    req.add_header('User-Agent', HOST)
-	    response = urllib2.urlopen(req)
-	    link = response.read()
-	    response.close()
-	    tabURL = link.replace('\t', '').split('\n')
-	    for line in tabURL:
-	    	#log.info(line)
-	    	expr = re.match(r'.+?<li><a href="(.+?)">(.+?)</a></li>$', line, re.M|re.I)
-	    	if expr:
-	    		strTab.append(mainUrl + expr.group(1))
-	    		strTab.append(expr.group(2))
-	    		#log.info(str(strTab))
-	    		valTab.append(strTab)
-	    		strTab = []
-	    return valTab 
+    valTab = []
+    strTab = []
+    link = self.requestData(mainUrl)
+    match = re.compile('<tr><td><a href="(.+?)" class="kat-box-title">(.+?)</a></td></tr>').findall(link)
+    print str(match)
+    if len(match) > 0:
+      for i in range(len(match)):	
+	value = match[i]
+	strTab.append(value[1])
+	strTab.append(mainUrl + value[0])
+	valTab.append(strTab)
+	strTab = []
+    return valTab 
     
-
-  def getCategoryName(self):
-    nameTab = []
-    origTab = self.getCategories()
-    for i in range(len(origTab)):
-      value = origTab[i]
-      name = value[1]
-      nameTab.append(name)
-    nameTab.sort()
-    return nameTab
-    
-    
-  def getCategoryURL(self, key):
-  	link = ''
-  	origTab = self.getCategories()
-  	for i in range(len(origTab)):
-  		value = origTab[i]
-  		name = value[1]
-  		if key in name:
-  			link = value[0]
-  			break
-  	return link
-
-
+  
   def getMovieTab(self, url):
-  	strTab = []
-  	valTab = []
-  	req = urllib2.Request(url)
-  	req.add_header('User-Agent', HOST)
-  	response = urllib2.urlopen(req)
-  	link = response.read()
-  	response.close()
-  	match = re.compile('<tr><td align="center"><img class="items_img" title="<span>.+?</span>(.+?)<br><span>.+?</span>.+?<br><span>.+?</span>.+?<br><span>.+?</span>.+?<br><span.+?</span>.+?<br><span>.+?</span>.+?<br><span>.+?</span>.+?<br><span>.+?</span>.+?"  onclick="javascript:window.open\(\'(.+?)\',\'\',\'\'\)" src="(.+?)"  alt=".+?"></td></tr>').findall(link)
-  	if len(match) > 0:
-  		for i in range(len(match)):
-  			value = match[i]
-  			#log.info(str(value))
-  			strTab.append(value[0])
-  			strTab.append(mainUrl + value[1])
-  			strTab.append(value[2])
-  			valTab.append(strTab)
-  			strTab = []
-  	#log.info(str(valTab))
-  	return valTab
+    strTab = []
+    valTab = []
+    link = self.requestData(url)
+    match = re.compile('src="(.+?)".+?(?:\n|\r\n?).+?(?:\n|\r\n?).+?(?:\n|\r\n?)<tr><td><a href="(.+?)" class="kat-box-name">(.+?)</a>', re.MULTILINE).findall(link)
+    if len(match) > 0:
+      for i in range(len(match)):
+	value = match[i]
+	strTab.append(value[2])
+	strTab.append(mainUrl + value[1])
+	strTab.append(value[0])	
+	valTab.append(strTab)
+	strTab = []
+      match = re.search('Paginator.+?,(.+?), 8, (.+?),',link)
+    if match:
+      if int(match.group(2)) < int(match.group(1)):
+	p = url.split('/')
+	nextpage = (int(match.group(2))+1) * 20
+	strTab.append("pokaz wiecej")
+	strTab.append(mainUrl + "/" + p[3] + "/" + p[4] + "/" + p[5] + "/" + str(nextpage))
+	strTab.append("")
+	valTab.append(strTab)
+    return valTab
+  
+   
+  def listsAddLinkMovie(self, table):
+    print str (table)
+    for i in range(len(table)):
+      value = table[i]
+      title = value[0]
+      url = value[1]
+      iconimage = value[2]
+      if title == 'pokaz wiecej':
+	self.add('anyfiles', title, 'movie', 'None', title, iconimage, url, True, False)
+      else:
+	self.add('anyfiles', 'playSelectedMovie', 'movie', 'None', title, iconimage, url, True, False)	
+    #zmien view na "Thumbnail"
+    xbmcplugin.setContent(int(sys.argv[1]),'movies')
+    xbmc.executebuiltin("Container.SetViewMode(500)")    
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
   
   
-  def getMovieNames(self, url):
-  	out = []
-  	tab = self.getMovieTab(url)
-  	for i in range(len(tab)):
-  		value = tab[i]
-  		out.append(value[0])
-  	return out
+  def listsAddDirMenu(self, table, name, category, page):
+    for i in range(len(table)):
+      if name == 'None':
+	self.add('anyfiles', table[i], 'None', 'None', 'None', 'None', 'None', True, False)
+      if name == 'category':
+	self.add('anyfiles', table[i][0], table[i][0], 'None', 'None', 'None', table[i][1], True, False)
+    #zmien view na "List"
+    xbmcplugin.setContent(int(sys.argv[1]),'movies')
+    xbmc.executebuiltin("Container.SetViewMode(502)")    	
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+
+  def add(self, service, name, category, page, title, iconimage, url, folder = True, isPlayable = True):
+    u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name) + "&category=" + urllib.quote_plus(category) + "&page=" + urllib.quote_plus(page) + "&title=" + urllib.quote_plus(title) + "&url=" + urllib.quote_plus(url)
+    #log.info(str(u))
+    if name == 'playSelectedMovie':
+    	name = title
+    if iconimage == '':
+    	iconimage = "DefaultVideo.png"
+    liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+    if isPlayable:
+	liz.setProperty("IsPlayable", "true")
+    liz.setInfo('video', {'title' : title} )
+    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
   
-
-  def getMovieURL(self, url, key):
-  	link = ''
-  	tab = self.getMovieTab(url)
-  	for i in range(len(tab)):
-  		value = tab[i]
-  		if key in value[0]:
-  			link = value[1]
-  			break
-  	return link
-
-
-  def videoMovieLink(self, url):
-  	req = urllib2.Request(url)
-  	req.add_header('User-Agent', HOST)
-  	response = urllib2.urlopen(req)
-  	link = response.read()
-  	log.info(link)
-  	response.close()
-  	match = re.compile('<param name="flashvars" value="config={.+?;(.+?)&quot;.+?}"></object></div>').findall(link)
-  	if len(match) == 1:
-  		log.info(str(match[0]))
-  		return match[0]
-  		 	
-
-
-  def listsMenu(self, table, title):
-    value = ''
-    if len(table) > 0:
-      d = xbmcgui.Dialog()
-      choice = d.select(title, table)
-      for i in range(len(table)):
-        #log.info(table[i])
-        if choice == i:
-            value = table[i]
-    return value
-
-
-  def listsTable(self, table):
-    nTab = []
-    for num, val in table.items():
-      nTab.append(val)
-    return nTab
-
 
   def LOAD_AND_PLAY_VIDEO(self, videoUrl):
-  	ok=True
-  	if videoUrl == '':
-		d = xbmcgui.Dialog()
-		d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
-		return False
-	try:
-		xbmcPlayer = xbmc.Player()
-		xbmcPlayer.play(videoUrl)
-	except:
-		d = xbmcgui.Dialog()
-		d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')		
-	return ok
+    ok=True
+    if videoUrl == '':
+      d = xbmcgui.Dialog()
+      d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+      return False
+    try:
+      xbmcPlayer = xbmc.Player()
+      xbmcPlayer.play(videoUrl)
+    except:
+      d = xbmcgui.Dialog()
+      d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')		
+    return ok
     
 
   def handleService(self):
-   	cm = self.listsMenu(self.getMenuTable(), "Wybór")
-   	if cm == self.setTable()[1]:
-   		category = self.listsMenu(self.getCategoryName(), "Wybór kategorii")
-   		if category != '':
-   			mm = self.listsMenu(self.getMovieNames(self.getCategoryURL(category)), "Wybór tytułu")
-   			if mm != '':
-   				urlLink = self.getMovieURL(self.getCategoryURL(category), mm)
-   				#urlLink = self.getCategoryURL(category)
-   				log.info(urlLink)
-   				if urlLink.startswith('http://'):
-   					log.info(self.videoMovieLink(urlLink))
-   					self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
-   					
-   		
-   	
+    params = self.parser.getParams()
+    name = str(self.parser.getParam(params, "name"))
+    title = str(self.parser.getParam(params, "title"))
+    category = str(self.parser.getParam(params, "category"))
+    page = str(self.parser.getParam(params, "page"))
+    url = str(self.parser.getParam(params, "url"))
+    name = name.replace("+", " ")
+    title = title.replace("+", " ")
+    category = category.replace("+", " ")
+    page = page.replace("+", " ")
+    #log.info('nazwa: ' + name)
+    #log.info('cat: ' + category)
+    #log.info('page: ' + page)
+    #log.info('tytuł: ' + title)
+    #log.info('url: ' + url)
+  	
+    if name == 'None':
+      self.listsAddDirMenu(self.getMenuTable(), 'None', 'None', 'None')
+    #Kategorie
+    if name == self.setTable()[1]:
+      self.listsAddDirMenu(self.getCategories(), 'category', 'None', 'None')      
+    #Najnowsze
+    if name == self.setTable()[2]:
+      self.listsAddLinkMovie(self.getMovieTab(NEW_LINK))
+    #Popularne	
+    if name == self.setTable()[3]:
+      self.listsAddLinkMovie(self.getMovieTab(HOT_LINK))      
+    #lista tytulow w kategorii
+    if category != 'None' and url != 'None' and name != 'playSelectedMovie':
+      self.listsAddLinkMovie(self.getMovieTab(url))
+    #Szukaj
+    if name == self.setTable()[4]:
+      text = self.searchInputText()
+      if text != None:
+	self.listsAddLinkMovie(self.searchTab(text))
+    #odtwarzaj video
+    if name == 'playSelectedMovie':
+      urlLink = self.up.getVideoLink(url)
+      log.info("urlLink: "+ urlLink)
+      self.LOAD_AND_PLAY_VIDEO(urlLink) 
+
