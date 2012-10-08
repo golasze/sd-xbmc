@@ -122,16 +122,19 @@ class AnyFiles:
     if match:
       if int(match.group(2)) < int(match.group(1)):
 	p = url.split('/')
+	size = len(p)
 	nextpage = (int(match.group(2))+1) * 20
 	strTab.append("pokaz wiecej")
-	strTab.append(mainUrl + "/" + p[3] + "/" + p[4] + "/" + p[5] + "/" + str(nextpage))
+	if len(p) == 7:
+	  strTab.append(mainUrl + "/" + p[3] + "/" + p[4] + "/" + p[5] + "/" + str(nextpage))
+	else:
+	  strTab.append(mainUrl + "/" + p[3] + "/" + str(nextpage))	  
 	strTab.append("")
 	valTab.append(strTab)
     return valTab
   
    
   def listsAddLinkMovie(self, table):
-    print str (table)
     for i in range(len(table)):
       value = table[i]
       title = value[0]
