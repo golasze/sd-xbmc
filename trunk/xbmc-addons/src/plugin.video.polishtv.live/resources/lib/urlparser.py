@@ -34,12 +34,6 @@ chars_table = {
   'z': 'C'
 }
 
-#to do:
-#http://xvidstage.com/id6olxl28ul2
-#http://flashstream.in/jnu976yuwga3
-#http://muchshare.net/air7v5uggpw6
-#http://rd3.videos.sapo.pt/3zWWAFLUjDJMT0fadtCu
-
 #generates final link but XBMC doesnt want to play it
 #http://www.wootly.ch/?v=G79EEEE4
 
@@ -286,14 +280,19 @@ class urlparser:
 		data = self.requestData(url)
 		data = xppod.Decode(data).encode('utf-8').strip()
 		#{"file":"http://50.7.221.26/folder/776713c560821c666da18d8550594050_8552.mp4 or http://50.7.220.66/folder/776713c560821c666da18d8550594050_8552.mp4","ytube":"0",
-		match = re.search("""file":"(.+?)",""",data)
+		match = re.search("""file":"(.+?)","ytube":"(.+?)",""",data)
 		if match:
 			if 'or' in match.group(1):
 				links = match.group(1).split(" or ")
 				if DEBUG: log.info("final link: " + links[1])
 				return links[1]			
 			else:
-				return match.group(1)
+				if match.group(2)=='1':
+				    p = match.group(1).split("/")
+				    plugin = 'plugin://plugin.video.youtube/?action=play_video&videoid=' + p[3]			    
+				    return plugin
+				else:	
+				    return match.group(1)
 		else:
 			return False
 	else: 

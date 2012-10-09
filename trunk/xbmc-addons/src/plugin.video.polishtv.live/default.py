@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, re, sys, xbmcplugin, xbmcgui
+import urllib, urllib2, re, sys
+#xbmcplugin, xbmcgui
 import cookielib, os, string, cookielib, StringIO
 import os, time, base64, logging, calendar
 import xbmcaddon
