@@ -36,4 +36,16 @@
     <string id="55500">EkinoTV</string>
     <string id="55501">Sortuj</string>
     <string id="55502">Porządek</string>
+    
+    <!-- Wlacz TV settings -->
+    <string id="55600">WlaczTV</string>
+    <string id="55601">E-mail:</string>
+    <string id="55602">Hasło:</string>
+    <string id="55603">Wymagane logowanie</string>
+    <string id="55604">Wejdź na stronę wlacz.tv aby się zarejestrować,</string>
+    <string id="55605">a później ustaw użytkownika i hasło w ustawieniach.</string>
+    <string id="55606">Nie można znaleźć stremingu</string>
+    <string id="55607">Spróbuj za jakiś czas</string>
+    <string id="55608">Błąd podczas przetwarzabua, lub wyczerpany limit czasowy oglądania.</string>
+    <string id="55609">Aby oglądać za darmo spróbuj ponownie za jakiś czas</string>
 </strings>

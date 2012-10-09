@@ -36,4 +36,16 @@
     <string id="55500">EkinoTV</string>
     <string id="55501">Sort by</string>
     <string id="55502">Order by</string>
+    
+     <!-- Wlacz TV settings -->
+    <string id="55600">WlaczTV</string>
+    <string id="55601">E-mail:</string>
+    <string id="55602">Password:</string>
+    <string id="55603">Login requied</string>
+    <string id="55604">Enter to wlacz.tv website to registry,</string>
+    <string id="55605">then set your username and password to settings.</string>
+    <string id="55606">Couldn't find stream</string>
+    <string id="55607">Try for a while</string>
+    <string id="55608">Error while playing, or time limit</string>
+    <string id="55609">Try for a while</string>
 </strings>
