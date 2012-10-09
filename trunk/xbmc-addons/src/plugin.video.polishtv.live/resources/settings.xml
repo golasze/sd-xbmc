@@ -34,5 +34,8 @@
         <setting id="ekinotv_sort" type="labelenum" label="55501" values="ocena|popularnosc|data dodania|tytul" default="data dodania" />
         <setting id="ekinotv_sortorder" type="labelenum" label="55502" values="malejaco|rosnaco" default="malejaco" />
     </category>
-
+    <category label="55600">
+        <setting id="wlacztv_login" type="text" label="55601" default="" />
+        <setting id="wlacztv_pass" type="text" label="55602" option="hidden" default="" />
+    </category>
 </settings>
