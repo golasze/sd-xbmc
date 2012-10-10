@@ -289,7 +289,11 @@ class urlparser:
 			else:
 				if match.group(2)=='1':
 				    p = match.group(1).split("/")
-				    plugin = 'plugin://plugin.video.youtube/?action=play_video&videoid=' + p[3]			    
+				    if 'watch' in p[3]:
+					videoid = p[3][8:19]
+				    else:	
+					videoid = p[3]
+				    plugin = 'plugin://plugin.video.youtube/?action=play_video&videoid=' + videoid
 				    return plugin
 				else:	
 				    return match.group(1)

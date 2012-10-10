@@ -93,13 +93,13 @@ class AnyFiles:
     valTab = []
     strTab = []
     link = self.requestData(mainUrl)
-    match = re.compile('<tr><td><a href="(.+?)" class="kat-box-title">(.+?)</a></td></tr>').findall(link)
-    print str(match)
+    match = re.compile('<tr><td><a href="(.+?)" class="kat-box-title">.+?</a></td></tr>').findall(link)
     if len(match) > 0:
       for i in range(len(match)):	
-	value = match[i]
-	strTab.append(value[1])
-	strTab.append(mainUrl + value[0])
+	c = match[i].split('/')
+	#cat = c[1].replace('+',' ')
+	strTab.append(c[1].replace('+',' '))
+	strTab.append(mainUrl + match[i])
 	valTab.append(strTab)
 	strTab = []
     return valTab 
@@ -169,10 +169,10 @@ class AnyFiles:
     	name = title
     if iconimage == '':
     	iconimage = "DefaultVideo.png"
-    liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+    liz=xbmcgui.ListItem(name.decode('iso8859-2'), iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     if isPlayable:
 	liz.setProperty("IsPlayable", "true")
-    liz.setInfo('video', {'title' : title} )
+    liz.setInfo('video', {'title' : title.decode('iso8859-2')} )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
   
 
