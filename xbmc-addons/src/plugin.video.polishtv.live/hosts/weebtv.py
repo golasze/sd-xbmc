@@ -29,10 +29,10 @@ login = ptv.getSetting('weebtv_login')
 password = ptv.getSetting('weebtv_password')
 multi = ptv.getSetting('weebtv_hq')
 record = ptv.getSetting('weebtv_rec')
-rtmppath = ptv.getSetting('weebtv_rtmp')
-dstpath = ptv.getSetting('weebtv_dstpath')
-timedelta_h = ptv.getSetting('weebtv_timedelta_hours')
-timedelta_m = ptv.getSetting('weebtv_timedelta_minutes')
+rtmppath = ptv.getSetting('default_rtmp')
+dstpath = ptv.getSetting('default_dstpath')
+timedelta_h = ptv.getSetting('default_timedelta_hours')
+timedelta_m = ptv.getSetting('default_timedelta_minutes')
 
 VIDEO_MENU = [ "Nagrywanie", "Odtwarzanie", "Zaprogramowanie nagrania" ]
 
@@ -401,7 +401,7 @@ class Record:
         e_End = self.input(nTime, "Koniec nagrania")
         setTime = self.SetTime(s_Date, s_Start, e_Date, e_End)
         nameRec = title.replace(" ", "_") + "_" + s_Date + "." + s_Start.replace(":", ".")
-        opts = { 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'channel': channel, 'login': login, 'password': password, 'hq': multi, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m, 'urlPlayer': playerUrl }
+        opts = { 'service': 'weebtv', 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'channel': channel, 'login': login, 'password': password, 'hq': multi, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m, 'urlPlayer': playerUrl }
         self.saveFile(opts)
         xbmc.executebuiltin('AlarmClock(' + str(nameRec) + ', "RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(nameRec) + '.json)", ' + str(setTime[0]) + '))')
         

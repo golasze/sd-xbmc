@@ -1,17 +1,24 @@
 # -*- coding: utf-8 -*-
-import urllib, urllib2, httplib
+import urllib, urllib2, httplib, cookielib
 import re, sys, os
 import threading
 import datetime
 import time
+import xbmcaddon
 
 try:
     import simplejson as json
 except ImportError:
     import json
 
+scriptID = 'plugin.video.polishtv.live'
+ptv = xbmcaddon.Addon(scriptID)
+
 #REC_JSON_PATH = os.path.join(os.getcwd(), "../recs")
-HOST = 'XBMC'
+HOST_XBMC = 'XBMC'
+HOST_URL = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
+
+COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "wlacztv.cookie"
 
 
 class Parser:
@@ -65,13 +72,19 @@ class Record:
             res = json.loads(raw)
             return res
     
-    def download(self, rtmp, rectime, dstpath, name, opts = {}):
+    def downloadWeebTV(self, rtmp, rectime, dstpath, name, opts = {}):
         if os.path.isfile(rtmp) and os.access(rtmp, os.X_OK) and os.path.isdir(dstpath):
             file = os.path.join(str(dstpath), name + ".flv")
             os.system(str(rtmp) + " -B " + str(rectime) + " -r " + str(opts['rtmp']) + " -s " + str(opts['ticket']) + " -p token -v live -o " + file)
             os.remove(sys.argv[1])
+ 
+    def downloadWlaczTV(self, rtmp, rectime, dstpath, name, opts = {}):
+        if os.path.isfile(rtmp) and os.access(rtmp, os.X_OK) and os.path.isdir(dstpath):
+            file = os.path.join(str(dstpath), name + ".flv")
+            os.system(str(rtmp) + " -B " + str(rectime) + " -r " + str(opts['rtmp']) + " -a " + str(opts['app']) + " -p " + str(opts['pageurl']) + " -t " + str(opts['tcurl']) + " -y " + str(opts['playpath']) + " -v live -o " + file)
+            os.remove(sys.argv[1])
     
-    def getParams(self, playerUrl, login, password, channel, hq):
+    def getWeebTVParams(self, playerUrl, login, password, channel, hq):
         data = None
         if login == '' and password == '':
             values = { 'cid': channel, 'platform': 'XBMC' }
@@ -79,7 +92,7 @@ class Record:
             values = { 'cid': channel, 'username': login, 'userpassword': password, 'platform': 'XBMC' }
         try:
             parser = Parser()
-            headers = { 'User-Agent' : HOST }
+            headers = { 'User-Agent' : HOST_XBMC }
             data = urllib.urlencode(values)
             reqUrl = urllib2.Request(playerUrl, data, headers)
             response = urllib2.urlopen(reqUrl)
@@ -97,8 +110,53 @@ class Record:
             print urlerr
         return data
 
+    def getWlaczTVParams(self, login_url, login, password, url):
+        rtmp = {}
+        cj = cookielib.LWPCookieJar()
+        l_headers = { 'User-Agent' : HOST_URL }
+        l_post = { 'email': login, 'password': password }
+        l_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+        l_data = urllib.urlencode(l_post)
+        l_req = urllib2.Request(login_url, l_data, l_headers)
+        l_response = l_opener.open(l_req)
+        l_link = l_response.read()
+        l_response.close()
+        if not os.path.isdir(ptv.getAddonInfo('path') + os.path.sep + "cookies"):
+            os.mkdir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
+        cj.save(COOKIEFILE)
+        if os.path.isfile(COOKIEFILE):
+            cj.load(COOKIEFILE)
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', HOST_URL)
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+        response = opener.open(req)
+        data = response.read()
+        response.close()
+        match = re.compile("<param name=\"flashvars\" value=\"src=(.+?)&poster=(.+?)&streamType=live&autoPlay=true\"></param>").findall(data)
+        if len(match) > 0:
+            raw_rtmp_tab = match[0][0].split("?")
+            split_rtmp_tab = raw_rtmp_tab[0].split("/")
+            rtmp_link = raw_rtmp_tab[0]
+            if split_rtmp_tab[len(split_rtmp_tab) - 1].endswith(".stream"):
+                app = "live?" + raw_rtmp_tab[1]
+                tcurl = "rtmp://" + split_rtmp_tab[len(split_rtmp_tab) - 3] + ":1935/live?" + raw_rtmp_tab[1]
+                playpath = split_rtmp_tab[len(split_rtmp_tab) - 1]
+            else:
+                app = "wlacztv?" + raw_rtmp_tab[1]
+                tcurl = "rtmp://" + split_rtmp_tab[len(split_rtmp_tab) - 3] + ":1935/live?" + raw_rtmp_tab[1]
+                playpath = split_rtmp_tab[len(split_rtmp_tab) - 1] + "?" + raw_rtmp_tab[1]
+            rtmp = {'rtmp': rtmp_link, 'app': app, 'pageurl': url, 'tcurl': tcurl, 'playpath': playpath}
+            #log.info("rtmp link: " + str(rtmp))
+        return rtmp
+
 
 rec = Record()
 opts = rec.getOptions()
-params = rec.getParams(opts['urlPlayer'], opts['login'], opts['password'], int(opts['channel']), opts['hq'])
-rec.download(opts['rtmp_path'], opts['rectime'], opts['dst_path'], opts['name'], params)  
+params = {}
+if opts['service'] == 'weebtv':
+    params = rec.getWeebTVParams(opts['urlPlayer'], opts['login'], opts['password'], int(opts['channel']), opts['hq'])
+    rec.downloadWeebTV(opts['rtmp_path'], opts['rectime'], opts['dst_path'], opts['name'], params)
+elif opts['service'] == 'wlacztv':
+    params = rec.getWlaczTVParams(opts['login_url'], opts['login'], opts['password'], opts['url'])
+    rec.downloadWlaczTV(opts['rtmp_path'], opts['rectime'], opts['dst_path'], opts['name'], params)
+  
