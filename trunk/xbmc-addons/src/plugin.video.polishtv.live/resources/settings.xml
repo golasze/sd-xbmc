@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
+	<category label="55100">
+		<setting type="lsep" label="55101"/>
+		<setting id="default_rtmp" type="file" label="55102" default="" />
+		<setting id="default_dstpath" type="folder" label="55103" default="" />
+		<setting id="default_timedelta_hours" type="text" label="55104" default="0" />
+		<setting id="default_timedelta_minutes" type="text" label="55105" default="0" />	
+	</category>
     <category label="55000">
-	<setting type="sep"/>
-	<setting type="lsep" label="55001"/>
-	<setting id="weebtv_login" type="text" label="55002" default="" />
-	<setting id="weebtv_password" type="text" label="55003" option="hidden" default="" />
-	<!--<setting id="weebtv_enable" type="bool" label="55004" default="false" />-->
-	<setting type="sep"/>
-	<setting type="lsep" label="55005"/>
-	<setting id="weebtv_hq" type="bool" label="55009" default="true" />
-	<setting type="sep"/>
-	<setting type="lsep" label="55010"/>
-	<setting id="weebtv_rec" type="bool" label="55011" default="false" />
-	<setting id="weebtv_rtmp" type="file" label="55007" default="" />
-	<setting id="weebtv_dstpath" type="folder" label="55008" default="" />
-	<setting id="weebtv_timedelta_hours" type="text" label="55012" default="0" />
-	<setting id="weebtv_timedelta_minutes" type="text" label="55013" default="0" />
+		<setting type="sep"/>
+		<setting type="lsep" label="55001"/>
+		<setting id="weebtv_login" type="text" label="55002" default="" />
+		<setting id="weebtv_password" type="text" label="55003" option="hidden" default="" />
+		<!--<setting id="weebtv_enable" type="bool" label="55004" default="false" />-->
+		<setting type="sep"/>
+		<setting type="lsep" label="55005"/>
+		<setting id="weebtv_hq" type="bool" label="55009" default="true" />
+		<setting type="sep"/>
+		<setting type="lsep" label="55010"/>
+		<setting id="weebtv_rec" type="bool" label="55011" default="false" />
+		<!--<setting id="weebtv_rtmp" type="file" label="55007" default="" />-->
+		<!--<setting id="weebtv_dstpath" type="folder" label="55008" default="" />-->
     </category>
     <category label="55200">
         <setting id="tvn_perpage" type="labelenum" label="55201" values="10|20|30|40|50" default="50" />
@@ -35,7 +40,10 @@
         <setting id="ekinotv_sortorder" type="labelenum" label="55502" values="malejaco|rosnaco" default="malejaco" />
     </category>
     <category label="55600">
-        <setting id="wlacztv_login" type="text" label="55601" default="" />
-        <setting id="wlacztv_pass" type="text" label="55602" option="hidden" default="" />
+    	<setting type="lsep" label="55601"/>
+        <setting id="wlacztv_login" type="text" label="55602" default="" />
+        <setting id="wlacztv_pass" type="text" label="55603" option="hidden" default="" />
+        <setting type="lsep" label="55611"/>
+        <setting id="wlacztv_rec" type="bool" label="55612" default="false" />
     </category>
 </settings>

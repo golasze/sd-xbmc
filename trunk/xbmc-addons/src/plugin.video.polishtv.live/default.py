@@ -7,6 +7,8 @@ import xbmcaddon
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
+language = ptv.getLocalizedString
+t = sys.modules[ "__main__" ].language
 
 #BASE_RESOURCE_PATH = os.path.join( os.getcwd(), "resources" )
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "resources" )
@@ -14,14 +16,15 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser
-import weebtv, stations, tvp, tvn, iplex, tvpvod, ekinotv, iitvinfo
+import weebtv, stations, tvp, tvn, iplex, tvpvod, ekinotv, iitvinfo, wlacztv
 #import ipla
 
 log = pLog.pLog()
 
 
 TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
-                    101: "Stacje TV [strumienie]" }
+                    101: "Włącz TV [wyświetl kanały]",
+                    102: "Stacje TV [strumienie]" }
 
 VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
                      #201: "iTVP [filmy, seriale, vod]",
@@ -34,7 +37,8 @@ VOD_ONLINE_TABLE = { 200: "Ekino TV [filmy, seriale]",
                      206: "TVP VOD",
 }
 
-REC_DOWN_TABLE = { 300: "Weeb TV" }
+REC_DOWN_TABLE = { 300: "Weeb TV",
+                   301: "Włącz TV" }
 
 
 class PolishLiveTV:
@@ -56,7 +60,10 @@ class PolishLiveTV:
         elif mode == 100 or service == 'weebtv':
                 tv = weebtv.WeebTV()
                 tv.handleService()
-        elif mode == 101:
+        elif mode == 101 or service == 'wlacztv':
+                tv = wlacztv.WlaczTV()
+                tv.handleService()
+        elif mode == 102:
                 tv = stations.StreamStations()
                 tv.handleService()
         elif mode == 2:
@@ -91,6 +98,9 @@ class PolishLiveTV:
                 vod.handleService()
         elif mode == 300:
                 vod = weebtv.WeebTV()
+                vod.handleRecords()
+        elif mode == 301:
+                vod = wlacztv.WlaczTV()
                 vod.handleRecords()
         elif mode == 19:
                 log.info('Zarządzanie nagrywaniem/ściąganiem')

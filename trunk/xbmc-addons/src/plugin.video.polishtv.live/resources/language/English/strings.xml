@@ -1,4 +1,12 @@
 <strings>
+	<!-- Default settings -->
+	<string id="55100">Default</string>
+	<string id="55101">Recording</string>
+	<string id="55102">RTMP app path</string>
+	<string id="55103">Recorded channels path</string>
+    <string id="55104">Time offset (in hours)</string>
+    <string id="55105">Time offset (in minutes)</string>
+    	
     <!-- Weeb TV settings -->
     <string id="55000">Weeb TV</string>
     <string id="55001">Ustawienie logowania do serwisu płatnego</string>
@@ -8,13 +16,9 @@
     <!--<string id="55005">Ustawienie IP streamingu</string>-->
     <string id="55005">Ustawienie jakości streamingu</string>
     <string id="55006">Wybierz IP</string>
-    <string id="55007">RTMP app path</string>
-    <string id="55008">Recorded channels path</string>
     <string id="55009">High quality (if available)</string>
     <string id="55010">Record</string>
     <string id="55011">Enable record question</string>
-    <string id="55012">Time offset (in hours)</string>
-    <string id="55013">Time offset (in minutes)</string>
     
     <!-- TVN settings -->
     <string id="55200">TVN</string>
@@ -39,13 +43,27 @@
     
      <!-- Wlacz TV settings -->
     <string id="55600">WlaczTV</string>
-    <string id="55601">E-mail:</string>
-    <string id="55602">Password:</string>
-    <string id="55603">Login requied</string>
-    <string id="55604">Enter to wlacz.tv website to registry,</string>
-    <string id="55605">then set your username and password to settings.</string>
-    <string id="55606">Couldn't find stream</string>
-    <string id="55607">Try for a while</string>
-    <string id="55608">Error while playing, or time limit</string>
-    <string id="55609">Try for a while</string>
+    <string id="55601">Login settings</string>
+    <string id="55602">E-mail:</string>
+    <string id="55603">Password:</string>
+    <string id="55604">Login requied</string>
+    <string id="55605">Enter to wlacz.tv website to registry,</string>
+    <string id="55606">then set your username and password to settings.</string>
+    <string id="55607">Couldn't find stream</string>
+    <string id="55608">Try for a while</string>
+    <string id="55609">Error while playing, or time limit</string>
+    <string id="55610">Try for a while</string>
+    <string id="55611">Recording</string>
+    <string id="55612">Enable record question</string>
+    <string id="55613">Playing</string>
+    <string id="55614">Set of record</string>
+    <string id="55615">Choose</string>
+    <string id="55616">Start record</string>
+    <string id="55617">End recording time [HH:MM]:</string>
+    <string id="55618">Information</string>
+    <string id="55619">You don't have installed rtmpdump</string>
+    <string id="55620">Enter start of recording date</string>
+    <string id="55621">Start recording time</string>
+    <string id="55622">Enter end of recording date</string>
+    <string id="55623">End recording time</string>
 </strings>

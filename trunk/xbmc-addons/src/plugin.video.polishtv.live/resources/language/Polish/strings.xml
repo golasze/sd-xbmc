@@ -1,4 +1,12 @@
 <strings>
+	<!-- Default settings -->
+	<string id="55100">Domyślne</string>
+	<string id="55101">Nagrywanie</string>
+	<string id="55102">Ścieżka do rtmp</string>
+	<string id="55103">Katalog nagrywanych programów</string>
+    <string id="55104">Przesunięcie czasowe (w godzinach)</string>
+    <string id="55105">Przesunięcie czasowe (w minutach)</string>
+    
     <!-- Weeb TV settings -->
     <string id="55000">Weeb TV</string>
     <string id="55001">Ustawienie logowania do serwisu płatnego</string>
@@ -8,13 +16,9 @@
     <!--<string id="55005">Ustawienie IP streamingu</string>-->
     <string id="55005">Ustawienie jakości streamingu</string>
     <string id="55006">Wybierz IP</string>
-    <string id="55007">Ścieżka do rtmp</string>
-    <string id="55008">Katalog nagrywanych programów</string>
     <string id="55009">Wysoka jakość (jeśli dostępna)</string>
     <string id="55010">Nagrywanie</string>
     <string id="55011">Włącz pytanie o nagranie</string>
-    <string id="55012">Przesunięcie czasowe (w godzinach)</string>
-    <string id="55013">Przesunięcie czasowe (w minutach)</string>
     
     <!-- TVN settings -->
     <string id="55200">TVN</string>
@@ -39,13 +43,27 @@
     
     <!-- Wlacz TV settings -->
     <string id="55600">WlaczTV</string>
-    <string id="55601">E-mail:</string>
-    <string id="55602">Hasło:</string>
-    <string id="55603">Wymagane logowanie</string>
-    <string id="55604">Wejdź na stronę wlacz.tv aby się zarejestrować,</string>
-    <string id="55605">a później ustaw użytkownika i hasło w ustawieniach.</string>
-    <string id="55606">Nie można znaleźć stremingu</string>
-    <string id="55607">Spróbuj za jakiś czas</string>
-    <string id="55608">Błąd podczas przetwarzabua, lub wyczerpany limit czasowy oglądania.</string>
-    <string id="55609">Aby oglądać za darmo spróbuj ponownie za jakiś czas</string>
+    <string id="55601">Ustawienia logowania</string>
+    <string id="55602">E-mail:</string>
+    <string id="55603">Hasło:</string>
+    <string id="55604">Wymagane logowanie</string>
+    <string id="55605">Wejdź na stronę wlacz.tv aby się zarejestrować,</string>
+    <string id="55606">a później ustaw użytkownika i hasło w ustawieniach.</string>
+    <string id="55607">Nie można znaleźć stremingu</string>
+    <string id="55608">Spróbuj za jakiś czas</string>
+    <string id="55609">Błąd podczas przetwarzabua, lub wyczerpany limit czasowy oglądania.</string>
+    <string id="55610">Aby oglądać za darmo spróbuj ponownie za jakiś czas</string>
+    <string id="55611">Nagrywanie</string>
+    <string id="55612">Włącz pytanie o nagranie</string>
+    <string id="55613">Odtwarzanie</string>
+    <string id="55614">Ustawienie nagrywania</string>
+    <string id="55615">Wybór</string>
+    <string id="55616">Początek nagrania:</string>
+    <string id="55617">Czas zakończenia [HH:MM]:</string>
+    <string id="55618">Informacja</string>
+    <string id="55619">Nie masz zainstalowanego rtmpdump</string>
+    <string id="55620">Wprowadź datę początku nagrania</string>
+    <string id="55621">Początek nagrania</string>
+    <string id="55622">Wprowadź datę końca nagrania</string>
+    <string id="55623">Koniec nagrania</string>
 </strings>
