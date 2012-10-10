@@ -34,7 +34,7 @@ MENU_TAB = [ [ "ESKA TV", "rtmp://46.105.112.212:1935/live playpath=mpegts.strea
              [ "TV Kujawy", "http://77.91.63.211:8090/stream.flv" ],
              [ "TV Narew", "http://93.105.142.26:2525/" ],
              [ "TOYA ", "http://217.113.224.22/TVToya" ],
-             [ "TV Astra ", "http://xeon.asta-net.pl/tvasta" ],
+             [ "TV Asta ", "http://xeon.asta-net.pl/tvasta" ],
              [ "CW24TV", "rtmp://cdn4.stream360.pl:1935/CW24/transmisja_live" ],
              [ "Telewizja lubuszan", "rtmp://212-104.livestream.com/mogulus-stream-edge/tllive/rtmp://212-97.livestream.com/mogulus/tllive/40c823ce-648b-44cd-9596-d5f4d6d31c8d" ],
              [ "TiWi", "rtmp://extondemand.livestream.com:80/ondemand/trans/dv02/mogulus-user-files/chv2tivinet/2009/05/11/b4ae4fc2-a938-488b-9731-cb93278a10ad" ],
