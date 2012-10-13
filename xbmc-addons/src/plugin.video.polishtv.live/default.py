@@ -38,7 +38,7 @@ VOD_ONLINE_TABLE = {
 		     207: "TVP VOD",
 }
 
-REC_DOWN_TABLE = { 300: "Weeb TV"
+REC_DOWN_TABLE = { 300: "Weeb TV",
                    301: "Włącz TV",
 }
 
