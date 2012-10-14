@@ -1,12 +1,15 @@
 <strings>
-	<!-- Default settings -->
-	<string id="55100">Default</string>
-	<string id="55101">Recording</string>
-	<string id="55102">RTMP app path</string>
-	<string id="55103">Recorded channels path</string>
+    <!-- Default settings -->
+    <string id="55100">Default</string>
+    <string id="55101">Recording</string>
+    <string id="55102">RTMP app path</string>
+    <string id="55103">Recorded channels path</string>
     <string id="55104">Time offset (in hours)</string>
     <string id="55105">Time offset (in minutes)</string>
-    	
+    <string id="55106">Custom Update</string>
+    <string id="55107">XML file path</string>	
+    <string id="55108">Run Custom Update</string>	
+    
     <!-- Weeb TV settings -->
     <string id="55000">Weeb TV</string>
     <string id="55001">Ustawienie logowania do serwisu płatnego</string>
@@ -41,7 +44,7 @@
     <string id="55501">Sort by</string>
     <string id="55502">Order by</string>
     
-     <!-- Wlacz TV settings -->
+    <!-- Wlacz TV settings -->
     <string id="55600">WlaczTV</string>
     <string id="55601">Login settings</string>
     <string id="55602">E-mail:</string>
