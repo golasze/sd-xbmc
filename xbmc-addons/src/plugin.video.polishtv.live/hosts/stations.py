@@ -25,7 +25,12 @@ MENU_TAB = [ [ "ESKA TV", "rtmp://46.105.112.212:1935/live playpath=mpegts.strea
             [ "Czwórka Polskie Radio", "rtmp://stream85.polskieradio.pl/video/czworka.sdp" ],
             [ "Kiss TV", "rtmp://kisstelevision.es.flash3.glb.ipercast.net/kisstelevision.es-live/live" ],
             [ "CT.Fm", "rtmp://80.245.113.12/live/pubtalk2?ctfm&ctfm2012pgp" ],
+            [ "TVN", "rtmp://198.105.217.36/live/telewizyjka_pl_mix_?id=119553" ],
+            [ "Polsat", "rtmp://75.126.203.130/stream/darmowatelewizjacompolsat?id=59168" ],
+            [ "TVP INFO ", "rtmp://freeview.fms.visionip.tv/live/tvnetwork-polskaplus-tvpinfo-hsslive-25f-4x3-SDh?extsessionid=50444e8f09104-69afb3db1bb7434f243177b5996b8af1" ],
+            [ "TVP MIX", "http://195.245.213.199/Ch0003" ],
             [ "Trwam", "http://195.94.205.211/Trwam" ],
+            [ "Christus Vincit ", "http://82.160.147.122/pustelnia" ],
             [ "EduSat", "rtmp://178.73.10.66:1935/live/mpegts.stream" ],
             [ "iTV", "mms://stream.mni.pl/ITV" ],
              [ "Pomerania TV", "mms://pomerania.tv:8080/" ],
@@ -34,21 +39,21 @@ MENU_TAB = [ [ "ESKA TV", "rtmp://46.105.112.212:1935/live playpath=mpegts.strea
              [ "TV Kujawy", "http://77.91.63.211:8090/stream.flv" ],
              [ "TV Narew", "http://93.105.142.26:2525/" ],
              [ "TOYA ", "http://217.113.224.22/TVToya" ],
+             [ "RTV Lubuska", "rtmp://94.23.0.87/bankier/rtl" ],
+
              [ "TV Asta ", "http://xeon.asta-net.pl/tvasta" ],
              [ "CW24TV", "rtmp://cdn4.stream360.pl:1935/CW24/transmisja_live" ],
              [ "Telewizja lubuszan", "rtmp://212-104.livestream.com/mogulus-stream-edge/tllive/rtmp://212-97.livestream.com/mogulus/tllive/40c823ce-648b-44cd-9596-d5f4d6d31c8d" ],
              [ "TiWi", "rtmp://extondemand.livestream.com:80/ondemand/trans/dv02/mogulus-user-files/chv2tivinet/2009/05/11/b4ae4fc2-a938-488b-9731-cb93278a10ad" ],
-              [ "Panorama Polska", "rtmp://extondemand.livestream.com/ondemand/trans/dv03/mogulus-user-files/chpanoramapolska/2010/01/07/5825602e-bdd1-490f-8680-4054c7db78ca" ],
+             [ "Panorama Polska", "rtmp://extondemand.livestream.com/ondemand/trans/dv03/mogulus-user-files/chpanoramapolska/2010/01/07/5825602e-bdd1-490f-8680-4054c7db78ca" ],
              [ "Zdrowy Puls", "rtmp://extondemand.livestream.com/ondemand/trans/dv15/mogulus-user-files/chzdrowypuls/2012/04/04/15bbcc6c-30dc-4f08-91ca-b14dc40bbe3a" ],
              [ "Oczko tv", "rtmp://stream7.idnes.cz/live/ocko playpath=ocko swfUrl=http://g.idnes.cz/swf/flv/player.swf pageUrl=http://www.megawypas.pl/readarticle.php?article_id=194  live=true swfVfy=true" ],
 #             [ "SKY NEWS", "mms://194.88.72.17:1755/skynews_wmlz_live300k" ],
 #             [ "CNN", "rtsp://media2.lsops.net:554/live/cnn_en_medium.sdp" ],
 #             [ "Russia Today", "rtmp://fms5.visionip.tv/live/RT_3" ],
-
-              
 #             [ "3Sat", "rtsp://a62.l12560554061.c125605.g.lm.akamaistream.net/D/62/125605/v0001/reflector:54061" ],
              
-            
+           
 #             [ "The Voice", "http://62.41.56.32:80/PUBLIC_votv_fi" ],
              
 
@@ -61,7 +66,7 @@ MENU_TAB = [ [ "ESKA TV", "rtmp://46.105.112.212:1935/live playpath=mpegts.strea
 
 class StreamStations:
     #def __init__(self):
-    
+   
 
     def showStations(self):
         #MENU_TAB.sort()
@@ -76,7 +81,8 @@ class StreamStations:
         liz.setProperty("IsPlayable", "true")
         liz.setInfo( type="Video", infoLabels={ "Title": title } )
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
-        
-        
+       
+       
     def handleService(self):
         self.showStations()
+
