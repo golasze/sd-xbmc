@@ -5,7 +5,10 @@
 		<setting id="default_rtmp" type="file" label="55102" default="" />
 		<setting id="default_dstpath" type="folder" label="55103" default="" />
 		<setting id="default_timedelta_hours" type="text" label="55104" default="0" />
-		<setting id="default_timedelta_minutes" type="text" label="55105" default="0" />	
+		<setting id="default_timedelta_minutes" type="text" label="55105" default="0" />
+	        <setting type="lsep" label="55106"/>
+		<setting id="default_customupdate" type="text" label="55107" default="" />
+		<setting id="default_runupdate" type="action" label="55108" action="RunScript($CWD/resources/lib/custom.py)"/>
 	</category>
     <category label="55000">
 		<setting type="sep"/>
