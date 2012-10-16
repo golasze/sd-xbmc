@@ -102,14 +102,17 @@ class iiTVInfo:
         response = urllib2.urlopen(req)
         link = response.read()
         response.close()       
-        match_parts = re.compile('<a href="(.+?)"><span class="release">(.+?)</span> (.+?)</a>').findall(link)
+        match_parts = re.compile('<a href="(.+?)"><span class="release">(.+?)</span>(.+?)</a>').findall(link)
         if len(match_parts) > 0:
             for i in range(len(match_parts)):
                 if s in match_parts[i][1]:
                     pTab = match_parts[i][1].split('e')
                     if (len(pTab)==2):
+                        title = match_parts[i][1] + ' - ' + match_parts[i][2]
+                        if match_parts[i][2] == '' or match_parts[i][2] == ' ':
+                            title = match_parts[i][1]
                         nUrl = url + match_parts[i][0]
-                        self.addDir('iitvinfo', 'playSelectedMovie', 'None', match_parts[i][1] + ' - ' + match_parts[i][2], nUrl, imageLink, True, False)
+                        self.addDir('iitvinfo', 'playSelectedMovie', 'None', title, nUrl, imageLink, True, False)
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
             
 
