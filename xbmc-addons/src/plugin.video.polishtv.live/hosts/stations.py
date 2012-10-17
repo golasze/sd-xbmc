@@ -29,10 +29,13 @@ MENU_TAB = [ [ "ESKA TV", "rtmp://46.105.112.212:1935/live playpath=mpegts.strea
             [ "Polsat", "rtmp://75.126.203.130/stream/darmowatelewizjacompolsat?id=59168" ],
             [ "TVP INFO ", "rtmp://freeview.fms.visionip.tv/live/tvnetwork-polskaplus-tvpinfo-hsslive-25f-4x3-SDh?extsessionid=50444e8f09104-69afb3db1bb7434f243177b5996b8af1" ],
             [ "TVP MIX", "http://195.245.213.199/Ch0003" ],
+            [ "orange sport", "rtmp://cdn.rtmp.tp.pl/orangecontent_s4/fmlestream" ],
             [ "Trwam", "http://195.94.205.211/Trwam" ],
+            [ "Word of God", "mms://media.WordofGod.gr/WordofGod150PL" ],
             [ "Christus Vincit ", "http://82.160.147.122/pustelnia" ],
             [ "EduSat", "rtmp://178.73.10.66:1935/live/mpegts.stream" ],
             [ "iTV", "mms://stream.mni.pl/ITV" ],
+            [ "Kosmica TV", "rtmp://streamserver.smartcast.de/kosmicaber/kosmicaber.stream" ],
              [ "Pomerania TV", "mms://pomerania.tv:8080/" ],
              [ "Telewizja sudecka", "mms://82.139.8.249/sudecka" ],
              [ "Dami Radom", "mms://82.139.8.249/dami/" ],
@@ -52,8 +55,6 @@ MENU_TAB = [ [ "ESKA TV", "rtmp://46.105.112.212:1935/live playpath=mpegts.strea
 #             [ "CNN", "rtsp://media2.lsops.net:554/live/cnn_en_medium.sdp" ],
 #             [ "Russia Today", "rtmp://fms5.visionip.tv/live/RT_3" ],
 #             [ "3Sat", "rtsp://a62.l12560554061.c125605.g.lm.akamaistream.net/D/62/125605/v0001/reflector:54061" ],
-             
-           
 #             [ "The Voice", "http://62.41.56.32:80/PUBLIC_votv_fi" ],
              
 
