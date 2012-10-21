@@ -113,11 +113,12 @@ class tvn:
             urlQuery = '&type=%s&id=%s&limit=%s&page=%s&sort=newest&m=%s' % (self.category, self.id, str(PAGE_LIMIT), str(page), method)
             if self.season > 0:
                 urlQuery = urlQuery + "&season=" + str(self.season)
+            
         else:
             method = 'mainInfo'
             groupName = 'categories'
             urlQuery = '&m=' + method
-        print self.contentHost+self.startUrl + urlQuery
+
 
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
@@ -130,85 +131,88 @@ class tvn:
             countItem = int(countItemNode.text)
             if countItem > int(PAGE_LIMIT)*(1+self.page):
                 showNextPage = True
-
+        
         listsize = len(categories)
 
 
         seasons = xmlDoc.find(method + "/seasons")
         showSeasons = False
-        if ET.iselement(seasons):
+        if ET.iselement(seasons) and self.season == 0:
             showSeasons = True
             listsize = listsize + seasons.__len__()
+            numSeasons = seasons.__len__()
+        else:
+            numSeasons = 0
 
         hasVideo = False
 
-        for category in categories:
-            titleNode = category.find('name')
-            if not ET.iselement(titleNode):
-                titleNode = category.find('title')
+        if self.season<>0 or (self.season==numSeasons):
+            for category in categories:
+                titleNode = category.find('name')
+                if not ET.iselement(titleNode):
+                    titleNode = category.find('title')
 
-            if ET.iselement(titleNode):
-                name = titleNode.text.encode('utf-8')
-            else:
-                name = 'brak'
+                if ET.iselement(titleNode):
+                    name = titleNode.text.encode('utf-8')
+                else:
+                    name = 'brak'
 
-            episodeNode = category.find('episode')
-            if ET.iselement(episodeNode):
-                episodeNo = episodeNode.text
-                if episodeNo:
-                    if episodeNode.text != "0":
-                        name = name + ", odcinek " + str(episodeNode.text)
-            seasonNode = category.find('season')
-            if ET.iselement(seasonNode):
-                seasonNo = seasonNode.text
-                if seasonNo:
-                    if seasonNo != "0":
-                        name = name + ", sezon " + str(seasonNo)
+                episodeNode = category.find('episode')
+                if ET.iselement(episodeNode):
+                    episodeNo = episodeNode.text
+                    if episodeNo:
+                        if episodeNode.text != "0":
+                            name = name + ", odcinek " + str(episodeNode.text)
+                seasonNode = category.find('season')
+                if ET.iselement(seasonNode):
+                    seasonNo = seasonNode.text
+                    if seasonNo:
+                        if seasonNo != "0":
+                            name = name + ", sezon " + str(seasonNo)
 
+                airDateNode = category.find('start_date')
+                if ET.iselement(airDateNode):
+                    airDateStr = airDateNode.text
+                    if airDateStr:
+                        airDate = strptime(airDateStr,"%Y-%m-%d %H:%M")
+                        #if airDate <
+                        now = localtime()
+                        if airDate > now:
+                            name = name + " (planowany)"
+                            #print airDate.text
 
-            airDateNode = category.find('start_date')
-            if ET.iselement(airDateNode):
-                airDateStr = airDateNode.text
-                if airDateStr:
-                    airDate = strptime(airDateStr,"%Y-%m-%d %H:%M")
-                    #if airDate <
-                    now = localtime()
-                    if airDate > now:
-                        name = name + " (planowany)"
+                type = category.find('type').text.encode('utf-8')
+                id = category.find('id').text.encode('utf-8')
+                videoUrl = ''
+                if type == 'episode':
+                    videoProp = self.getVideoUrl(type,id)
+                    videoUrl = videoProp[0]
 
-                        #print airDate.text
+                iconUrl = self.getIconUrl(category)
+            
+                if videoUrl == "":
+                    self.addDir(name,id,self.mode,type,iconUrl,videoUrl,listsize)
+                else:
+                    prop = {
+                        'title': name,
+                        'TVShowTitle' : name,
+                        'aired' : airDate,
+                        'episode' : 0,
+                        'description': videoProp[2],
+                        'time': int(videoProp[1])
+                        }
+                    if self.watched(videoUrl):
+                        prop['overlay'] = 7
 
-            type = category.find('type').text.encode('utf-8')
-            id = category.find('id').text.encode('utf-8')
-            videoUrl = ''
-            if type == 'episode':
-                videoProp = self.getVideoUrl(type,id)
-                videoUrl = videoProp[0]
+                    self.addVideoLink(prop,videoUrl,iconUrl,listsize)
+                    hasVideo = True
 
-            iconUrl = self.getIconUrl(category)
-
-            if videoUrl == "":
-                self.addDir(name,id,self.mode,type,iconUrl,videoUrl,listsize)
-            else:
-                prop = {
-                    'title': name,
-                    'TVShowTitle' : name,
-                    'aired' : airDate,
-                    'episode' : 0,
-                    'description': videoProp[2],
-                    'time': int(videoProp[1])
-                    }
-                if self.watched(videoUrl):
-                    prop['overlay'] = 7
-
-                self.addVideoLink(prop,videoUrl,iconUrl,listsize)
-                hasVideo = True
 
         if showSeasons:
             for season in seasons:
                 iconUrl = self.getIconUrl(season)
                 self.addDir(season.find('name').text,self.id,self.mode,self.category,iconUrl,"",listsize,season.find('id').text)
-                print "1" #ET.dump(season)
+
 
         if showNextPage:
             self.addNextPage()
@@ -234,12 +238,13 @@ class tvn:
         else:
             self.page = int(self.page)
 
+        print ("page: " + str(self.page))
         if not self.season:
             self.season = 0
         else:
             self.season = int(self.season)
 
-        print "name:" + self.name + ", title:" + self.title + ", category:" + self.category + ", mode:" + self.mode + ", id:" + self.id
+        print "name:" + self.name + ", title:" + self.title + ", category:" + self.category + ", mode:" + self.mode + ", id:" + self.id + ", season:" + str(self.season)
 
         if self.name == 'None':
             self.listsCategories()
@@ -332,25 +337,24 @@ class tvn:
         page = self.page
         if not page:
             page = 0
-
-        u = sys.argv[0]+"?mode="+self.mode+"&name="+urllib.quote_plus(self.name)+"&category="+urllib.quote_plus(self.category)+"&page="+str(page+1)+"&url="+urllib.quote_plus(self.url)+"&id="+urllib.quote_plus(self.id)
+        u = sys.argv[0]+"?mode="+self.mode+"&name="+urllib.quote_plus(self.name)+"&category="+urllib.quote_plus(self.category)+"&page="+str(page+1)+"&url="+urllib.quote_plus(self.url)+"&id="+urllib.quote_plus(self.id)+"&season="+urllib.quote_plus(str(self.season))
         ok=True
         image = os.path.join( self.__settings__.getAddonInfo('path'), "images/" ) + "next.png"
-
+        print u
         liz=xbmcgui.ListItem("Następna", iconImage="DefaultFolder.png", thumbnailImage=image)
         liz.setProperty( "Folder", "true" )
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
 
+
     def getIconUrl(self, node):
         thumbnails = node.findall('thumbnail/row')
         iconUrl = ''
-
         if len(thumbnails) > 0:
             icon = thumbnails[0].find('url').text.encode('utf-8')
             iconUrl = self.mediaHost + self.mediaMainUrl + icon + '?quality=70&dstw=290&dsth=187&type=1'
-
         return iconUrl
+    
     
     def getUrlFromTab(self, tab, key):
         out = ''
