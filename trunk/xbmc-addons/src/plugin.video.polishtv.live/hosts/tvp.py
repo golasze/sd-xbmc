@@ -111,6 +111,10 @@ class tvp:
             if not epgItems:
                 epgItems = elems.findall("directory_video/video")
 
+            pub = elems.findall("publication_status")
+            if pub[0].attrib['publication_status_id']=='4':
+                d = xbmcgui.Dialog()
+                d.ok('Brak video', pub[0].attrib['name'].encode('utf-8'))		
 
             #print "test[6]: " + str(len(epgItems))
 
