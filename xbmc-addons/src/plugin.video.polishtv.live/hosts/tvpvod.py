@@ -64,7 +64,7 @@ class tvpvod:
             return result
 
         except urllib2.HTTPError, e:
-            print "HTTP error " + e.code
+            print "HTTP error " + str(e.code)
         except urllib2.URLError, e:
             print "URL error " + e.reason
         except:
@@ -90,7 +90,7 @@ class tvpvod:
 
     def listCategories(self):
         result = self.getCategoriesJson()
-        if "name" in result:
+        if result and "name" in result:
             self.addDir(result["name"].encode('utf-8'),"list_category",result["id"],"")
             if "collectionOfSubcategories" in result:
                 for subCategory in result["collectionOfSubcategories"]:
@@ -198,7 +198,7 @@ class tvpvod:
             return result
 
         except urllib2.HTTPError, e:
-            print "HTTP error " + e.code
+            print "HTTP error " + str(e.code)
         except urllib2.URLError, e:
             print "URL error " + e.reason
         except:
