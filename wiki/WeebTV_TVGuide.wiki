@@ -25,7 +25,7 @@ W polu plik XMLTV wskazujemy ścieżkę do pliku który ściągnęliśmy.
 ściągamy: [http://dl.dropbox.com/u/42558348/weeb.tv/picons.rar]
 
 po wypakowaniu podajemy ścieżkę ikonek stacji w _"wyszukaj obrazki kanałów w"_, całość wygląda tak:
-
+[https://lh4.googleusercontent.com/-rccbG6DSxjc/UIvdmFkMVOI/AAAAAAAAA20/Z881nOryGDs/s800/screenshot001.png]
 
 ==Podlinkowanie kanałów TV Guide z plikami STRM wygenerowanymi przez wtyczke polishtv.live==
 Odpalamy TV Guide, zaznaczamy np: Polsat wciskamy ENTER => _wybierz plik STRM_.
@@ -74,3 +74,4 @@ U mnie na TV (na PC działa normalnie) podświetlona pozycja w programie zlewa s
 }}}
 
 Zmieniłem podświetlenie na czerwony wygląda to tak:
+[https://lh6.googleusercontent.com/-g6PlKJXNXCQ/UIvuaHT6aiI/AAAAAAAAA3M/xymMdMc_ebc/s800/screenshot002.png]
