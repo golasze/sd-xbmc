@@ -6,7 +6,9 @@ import os, sys, urllib, urllib2, simplejson, re
 
 
 log = pLog.pLog()
-urlCategoryList = 'https://itvp.one-2-one.pl/api/mp4.php'
+#urlCategoryList = 'https://itvp.one-2-one.pl/api/mp4.php'
+urlCategoryList = 'http://www.api.v3.tvp.pl/shared/listing.php?dump=json&direct=true&count=100&parent_id=1785454'
+
 urlRecommended  = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json'
 urlEpisodesList = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json&type=video&order=release_date_long,-1'
 urlVideo = 'http://www.tvp.pl/pub/stat/videofileinfo?video_id=%d&mime_type=video/mp4'
@@ -14,6 +16,7 @@ urlImage = 'http://s.v3.tvp.pl/images/%s/%s/%s/uid_%s_width_%d_gs_0.jpg'
 
 USER_AGENT = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
 VOD_ID = 6442748
+
 PAGE_MOVIES = 15
 
 HANDLE = int(sys.argv[1])
@@ -70,6 +73,7 @@ class tvpvod:
         except:
             print "Request to TVP API failed"
             return []
+        
     def getVideoJson(self,id):
         url = urlVideo % (id)
         try:
@@ -90,16 +94,15 @@ class tvpvod:
 
     def listCategories(self):
         result = self.getCategoriesJson()
-        if result and "name" in result:
-            self.addDir(result["name"].encode('utf-8'),"list_category",result["id"],"")
-            if "collectionOfSubcategories" in result:
-                for subCategory in result["collectionOfSubcategories"]:
-                    if "name" in subCategory:
-                        self.addDir(subCategory["name"].encode('utf-8'),"list_category",subCategory["id"],"")
+        for i in range(len(result.get('items'))):
+            if result.get('items')[i].get('types')[1] == 'directory_series':
+                ID = result.get('items')[i].get('_id')
+                title = result.get('items')[i].get('title').title().encode('utf-8')
+                self.addDir(title,"list_category",ID,"")
 
         self.addDir("Polecane","list_category",VOD_ID,"")
-
         xbmcplugin.endOfDirectory(HANDLE)
+
 
     def listsVOD(self):
         result = self.getListJson(int(self.actionid))
@@ -194,7 +197,7 @@ class tvpvod:
             req.add_header('User-Agent', USER_AGENT)
             response = urllib2.urlopen(req)
             result = response.read()
-            result = simplejson.loads(result)
+            result = simplejson.loads(result)      
             return result
 
         except urllib2.HTTPError, e:
