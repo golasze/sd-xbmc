@@ -1,0 +1,76 @@
+#summary integracja strumieni weebtv z TVGuide
+
+=Opisy i modyfikacje wykonane na TV Guide v1.3.5 + XBMC 11 Eden + WIN XP SP3=
+Autorem jest *midcars1@gmail.com*
+
+==Instalacja pluginu TV Guide==
+W XBMC wchodzimy w _programy => pobierz więcej_ i z listy wybieramy TV Guide.
+
+
+==Konfiguracja==
+Wchodzimy  w _system => wtyczki => włączone wtyczki => wtyczki programów => TV Guide_
+
+Klikamy ustaw, jako źródło ustawiamy XMLTV, następnie ściągamy na dysk którąś z wersji EPG:
+
+||[http://db.tt/FxbKgS16]|| wersja na 3 dni + opisy  około 2-3Mb posegregowane tematycznie||
+||[http://jatrn.com/xbmc/epg_weebtv.xml]|| wersja na 48 godzin dla weeb.tv||
+||[http://dl.dropbox.com/u/42558348/weeb.tv/weebtv%20epg%20tom.xml]|| wersja na 8 dni bez opisów ok. 6Mb||
+||[http://www.jatrn.com/xbmc/epg.xml]|| wersja na 7 dni dla 160+ kanałów, około 14Mb||
+ 
+
+W polu plik XMLTV wskazujemy ścieżkę do pliku który ściągnęliśmy.
+
+
+==Dodanie loga kanałów do TV Guide==
+ściągamy: [http://dl.dropbox.com/u/42558348/weeb.tv/picons.rar]
+
+po wypakowaniu podajemy ścieżkę ikonek stacji w _"wyszukaj obrazki kanałów w"_, całość wygląda tak:
+
+
+==Podlinkowanie kanałów TV Guide z plikami STRM wygenerowanymi przez wtyczke polishtv.live==
+Odpalamy TV Guide, zaznaczamy np: Polsat wciskamy ENTER => _wybierz plik STRM_.
+Pliki STRM są w lokalizacji: 
+{{{
+\Dane aplikacji\XBMC\addons\plugin.video.polishtv.live\strm
+}}}
+Może się zdarzyć ze XBMC nie będzie widział folderu {{{\Dane aplikacji\}}} wtedy trzeba odznaczyć ukryty we właściwościach folderu. Następnie ta czynność powtarzamy dla reszty stacji.
+
+==Usunięcie powiadomienia "otwieram strumień"==
+ściągamy :
+[http://sd-xbmc.googlecode.com/issues/attachment?aid=730030000&name=gui.py&token=KhCLaeafpJhGg2ORU9hlnRQNmLU%3A1351323873615]
+ 
+
+Następnie kopiujemy plik do:
+||Win XP|| {{{\Dane aplikacji\XBMC\addons\script.tvguide\}}}||
+||AppleTV 2|| {{{/private/var/mobile/Library/Preferences/XBMC/addons/script.tvguide/}}}||
+
+
+==Poprawne wyświetlanie godziny w TV Guide==
+jeśli godzina wyświetla się np.: _1220:20_ zamiast _12:20_, edytujemy plik {{{langinfo.xml}}}, ktory znajduje się w {{{XBMC/language/Polish}}}, jest:
+{{{
+<time symbolAM="" symbolPM="">HH:mm:ss</time>
+}}}
+zmieniamy na:
+{{{
+<time symbolAM="" symbolPM="">H:mm:ss</time>
+}}}
+i godzina wyświetla się normalnie.
+
+
+==Automatyczne pobieranie pliku z programem EPG po uruchomieniu komputera==
+ściągamy [http://users.ugent.be/~bpuype/cgi-bin/fetch.pl?dl=wget/wget.exe], plik {{{wget.exe}}} wrzucamy do {{{c:\windows}}}, tworzymy plik tekstowy który zawiera:
+{{{
+cd\
+d:
+del d:\weebtv~1.xml
+wget http://db.tt/FxbKgS16
+}}}
+zapisujemy go jako {{{*.bat}}} i wrzucamy do autostartu. W moim przypadku po każdym uruchomieniu kompa stary plik EPG jest kasowany a na jego miejsce zapisywany jest nowy plik z epg, zapis u mnie następuje na dysku D, potem tylko zmieniamy ścieżkę w TVGuide i zawsze mamy aktualny plik z programem.
+
+==Zmiana podświetlenia programu==
+U mnie na TV (na PC działa normalnie) podświetlona pozycja w programie zlewa się z reszta, aby to rozwiązać edytujemy plik {{{tvguide-program-grey-focus.png}}}, znajduje się on w:
+{{{
+\Dane aplikacji\XBMC\addons\script.tvguide\resources\skins\Default\media
+}}}
+
+Zmieniłem podświetlenie na czerwony wygląda to tak:
