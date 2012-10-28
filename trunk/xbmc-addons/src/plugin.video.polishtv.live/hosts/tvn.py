@@ -328,7 +328,7 @@ class tvn:
         videoPath = videoUrl[0:1+videoUrl.rfind('/')]
     #    sql_data = "SELECT count(*) FROM files LEFT JOIN path ON files.idPath = path.idPath WHERE path.strPath = '" + videoPath + "' AND files.playCount > 0"
     #    xml_data = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % urllib.quote_plus( sql_data ), )
-        wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
+    #    wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
         if wasWatched == "1":
             return True
         else :
