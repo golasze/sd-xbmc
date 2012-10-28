@@ -37,7 +37,7 @@ Może się zdarzyć ze XBMC nie będzie widział folderu {{{\Dane aplikacji\}}} 
 
 ==Usunięcie powiadomienia "otwieram strumień"==
 ściągamy :
-[http://code.google.com/p/sd-xbmc/issues/attachmentText?id=73&aid=730030000&name=gui.py]
+[http://jatrn.com/xbmc/wiki/gui.py]
  
 
 Następnie kopiujemy plik do:
