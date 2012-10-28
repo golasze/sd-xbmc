@@ -46,7 +46,7 @@ Następnie kopiujemy plik do:
 
 
 ==Poprawne wyświetlanie godziny w TV Guide==
-jeśli godzina wyświetla się np.: _1220:20_ zamiast _12:20_, edytujemy plik {{{langinfo.xml}}}, ktory znajduje się w {{{XBMC/language/Polish}}}, jest:
+jeśli godzina wyświetla się np.: _1220:20_ zamiast _12:20_, edytujemy plik {{{langinfo.xml}}}, ktory znajduje się w {{{c:\Program Files\XBMC\language\Polish}}}, jest:
 {{{
 <time symbolAM="" symbolPM="">HH:mm:ss</time>
 }}}
