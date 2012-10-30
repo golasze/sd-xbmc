@@ -22,8 +22,8 @@
 		<setting type="sep"/>
 		<setting type="lsep" label="55010"/>
 		<setting id="weebtv_rec" type="bool" label="55011" default="false" />
-		<!--<setting id="weebtv_rtmp" type="file" label="55007" default="" />-->
-		<!--<setting id="weebtv_dstpath" type="folder" label="55008" default="" />-->
+		<setting type="lsep" label="55007" />
+		<setting id="weebtv_strm" type="folder" label="55008" default="None" />
     </category>
     <category label="55200">
         <setting id="tvn_perpage" type="labelenum" label="55201" values="10|20|30|40|50" default="50" />

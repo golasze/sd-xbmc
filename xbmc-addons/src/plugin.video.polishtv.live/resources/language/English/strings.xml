@@ -18,7 +18,8 @@
     <string id="55004">Włącz logowanie</string>
     <!--<string id="55005">Ustawienie IP streamingu</string>-->
     <string id="55005">Ustawienie jakości streamingu</string>
-    <string id="55006">Wybierz IP</string>
+    <string id="55007">EPG</string>
+    <string id="55008">Choose directory for STRM files</string>
     <string id="55009">High quality (if available)</string>
     <string id="55010">Record</string>
     <string id="55011">Enable record question</string>

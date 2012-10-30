@@ -33,6 +33,7 @@ rtmppath = ptv.getSetting('default_rtmp')
 dstpath = ptv.getSetting('default_dstpath')
 timedelta_h = ptv.getSetting('default_timedelta_hours')
 timedelta_m = ptv.getSetting('default_timedelta_minutes')
+strmdir = record = ptv.getSetting('weebtv_strm')
 
 VIDEO_MENU = [ "Nagrywanie", "Odtwarzanie", "Zaprogramowanie nagrania" ]
 
@@ -134,19 +135,22 @@ class Channels:
 			msg = xbmcgui.Dialog()
 			msg.ok("Błąd API", "Brak kanałów pobranych z API.")
 
-	def addChannel(self, service, action, cid, title, img, desc, tags, user, name):
-		label = title
-		liz = xbmcgui.ListItem(label, iconImage = "DefaultFolder.png", thumbnailImage = img)
-		liz.setProperty("IsPlayable", "false")
-		liz.setInfo(type = "Video", infoLabels={ "Title": title,
+        def addChannel(self, service, action, cid, title, img, desc, tags, user, name):
+            label = title
+            liz = xbmcgui.ListItem(label, iconImage = "DefaultFolder.png", thumbnailImage = img)
+            liz.setProperty("IsPlayable", "false")
+            liz.setInfo(type = "Video", infoLabels={ "Title": title,
 										   "Plot": desc,
 										   "Studio": "WEEB.TV",
 										   "Tagline": tags,
 										   "Aired": user } )
-		u = '%s?service=%s&action=%d&cid=%d&title=%s' % (sys.argv[0], str(service), int(action), int(cid), urllib.quote_plus(title))
-		xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = False)
-		FILE = open(os.path.join(ptv.getAddonInfo('path'), "strm", "%s.strm" % ''.join(c for c in title if c in '-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')),"w+")
-		FILE.write("plugin://plugin.video.polishtv.live/?service=%s&action=%d&cid=%s&title=%s" % (service, int(action), cid, urllib.quote_plus(title)))
+            u = '%s?service=%s&action=%d&cid=%d&title=%s' % (sys.argv[0], str(service), int(action), int(cid), urllib.quote_plus(title))
+            xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = False)
+            if strmdir != 'None':
+                if not os.path.isdir(strmdir):
+                    os.mkdir(strmdir)
+                FILE = open(os.path.join(strmdir, "%s.strm" % ''.join(c for c in title if c in '-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')),"w+")
+                FILE.write("plugin://plugin.video.polishtv.live/?service=%s&action=%d&cid=%s&title=%s" % (service, int(action), cid, urllib.quote_plus(title)))
 
 
 class Player(xbmc.Player):
