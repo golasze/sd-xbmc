@@ -33,7 +33,7 @@ rtmppath = ptv.getSetting('default_rtmp')
 dstpath = ptv.getSetting('default_dstpath')
 timedelta_h = ptv.getSetting('default_timedelta_hours')
 timedelta_m = ptv.getSetting('default_timedelta_minutes')
-strmdir = record = ptv.getSetting('weebtv_strm')
+strmdir = ptv.getSetting('weebtv_strm')
 
 VIDEO_MENU = [ "Nagrywanie", "Odtwarzanie", "Zaprogramowanie nagrania" ]
 
