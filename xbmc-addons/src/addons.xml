@@ -19,6 +19,21 @@
   </extension>
 </addon>
 
+<addon id="plugin.bino3D.openelec" name="Bino 3D player"
+	version="0.0.1" provider-name="SYSTEMS DESIGN - Plesken">
+	<requires>
+		<import addon="xbmc.python" version="1.0" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Bino 3D player</summary>
+		<description>Bino 3D player integrated with openelec</description>
+		<platform>OpenELEC - Linux</platform>
+	</extension>
+</addon>
+
 <addon id="plugin.multimedia.players" name="External Multimedia Players"
 	version="1.0.6" provider-name="SYSTEMS DESIGN - Plesken">
 	<requires>
@@ -36,8 +51,8 @@
 
 <addon id="plugin.video.polishtv.live"
        name="Telewizja Polska (kanały, VOD, filmy, seriale)"
-       version="0.0.4"
-       provider-name="Plesken">
+       version="0.1.0"
+       provider-name="SD teams">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
     <import addon="script.module.elementtree" version="1.2.7" />
@@ -52,6 +67,20 @@
   <extension point="xbmc.addon.metadata">
     <summary>Polish TV: Watch LIVE VIDEO STREAMING of International Cricket</summary>
     <description>Favorite Cricket Channel in Poland.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="script.module.skingui"
+       name="skingui"
+       version="0.0.1"
+       provider-name="code.google.com/sd-xbmc">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.module"
+             library="lib" />
+  <extension point="xbmc.addon.metadata">
     <platform>all</platform>
   </extension>
 </addon>
