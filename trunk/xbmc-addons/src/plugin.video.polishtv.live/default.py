@@ -23,7 +23,7 @@ log = pLog.pLog()
 
 
 TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
-                    101: "Włącz TV [wyświetl kanały]",
+                    #101: "Włącz TV [wyświetl kanały]",
                     102: "Stacje TV [strumienie]",
 }
 
@@ -62,9 +62,9 @@ class PolishLiveTV:
 	elif mode == 100 or service == 'weebtv':
 		tv = weebtv.WeebTV()
 		tv.handleService()
-        elif mode == 101 or service == 'wlacztv':
-		tv = wlacztv.WlaczTV()
-		tv.handleService()		
+        #elif mode == 101 or service == 'wlacztv':
+		#tv = wlacztv.WlaczTV()
+		#tv.handleService()		
 	elif mode == 102:
 		tv = stations.StreamStations()
 		tv.handleService()
