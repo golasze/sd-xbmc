@@ -16,7 +16,7 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser
-import weebtv, stations, tvp, tvn, iplex, tvpvod, ekinotv, iitvinfo, anyfiles, wlacztv
+import weebtv, stations, tvp, tvn, iplex, tvpvod, ekinotv, iitvinfo, anyfiles, wlacztv, serialnet
 #import ipla
 
 log = pLog.pLog()
@@ -28,18 +28,19 @@ TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
 }
 
 VOD_ONLINE_TABLE = {
-     		     200: "AnyFiles [różne filmy]",
-		     201: "Ekino TV [filmy, seriale]",
-		     202: "iiTV info [seriale]",
-		     #203: "IPLA",
-		     204: "IPLEX",
-		     205: "TVN Player",
-		     206: "TVP [info]",
-		     207: "TVP VOD",
+                     200: "AnyFiles [różne filmy]",
+                     201: "Ekino TV [filmy, seriale]",
+                     202: "iiTV info [seriale]",
+                     #203: "IPLA",
+                     204: "IPLEX",
+                     205: "TVN Player",
+                     206: "TVP [info]",
+                     207: "TVP VOD",
+                     208: "SerialNet [seriale]",
 }
 
 REC_DOWN_TABLE = { 300: "Weeb TV",
-                   301: "Włącz TV",
+                   #301: "Włącz TV",
 }
 
 
@@ -50,63 +51,66 @@ class PolishLiveTV:
     self.parser = Parser.Parser()
 
   def showListOptions(self):
-  	params = self.parser.getParams()
-  	mode = self.parser.getIntParam(params, "mode")
-  	name = self.parser.getParam(params, "name")
-  	service = self.parser.getParam(params, 'service')
-  	if mode == None and name == None and service == None:
-  		log.info('Wyświetlam kategorie')
-  		self.CATEGORIES()
-  	elif mode == 1:
-		self.LIST(TV_ONLINE_TABLE)
-	elif mode == 100 or service == 'weebtv':
-		tv = weebtv.WeebTV()
-		tv.handleService()
+        params = self.parser.getParams()
+        mode = self.parser.getIntParam(params, "mode")
+        name = self.parser.getParam(params, "name")
+        service = self.parser.getParam(params, 'service')
+        if mode == None and name == None and service == None:
+                log.info('Wyświetlam kategorie')
+                self.CATEGORIES()
+        elif mode == 1:
+                self.LIST(TV_ONLINE_TABLE)
+        elif mode == 100 or service == 'weebtv':
+                tv = weebtv.WeebTV()
+                tv.handleService()
         #elif mode == 101 or service == 'wlacztv':
-		#tv = wlacztv.WlaczTV()
-		#tv.handleService()		
-	elif mode == 102:
-		tv = stations.StreamStations()
-		tv.handleService()
-	elif mode == 2:
-		#log.info('Wejście do TV internetowej')
-		self.LIST(VOD_ONLINE_TABLE)
-	elif mode == 200 or service == 'anyfiles':
-		vod = anyfiles.AnyFiles()
-		vod.handleService()
-	elif mode == 201 or service == 'ekinotv':
-		vod = ekinotv.EkinoTV()
-		vod.handleService()
-	elif mode == 202 or service == 'iitvinfo':
-		vod = iitvinfo.iiTVInfo()
-		vod.handleService()
-	#elif mode == 203 or service == 'ipla':
-	#	vod = ipla.IPLA()
-	#	vod.handleService()
-	elif mode == 204 or service == 'iplex':
-		vod = iplex.IPLEX()
-		vod.handleService()
-	elif mode == 205 or service == 'tvn':
-		vod = tvn.tvn()
-		vod.handleService()
-	elif mode == 206 or service == 'tvp':
-		vod = tvp.tvp()
-		vod.handleService()
-	elif mode == 207 or service == 'tvpvod':
-		vod = tvpvod.tvpvod()
-		vod.handleService()
-	elif mode == 300:
-		vod = weebtv.WeebTV()
-		vod.handleRecords()
-	elif mode == 301:
+                #tv = wlacztv.WlaczTV()
+                #tv.handleService()            
+        elif mode == 102:
+                tv = stations.StreamStations()
+                tv.handleService()
+        elif mode == 2:
+                #log.info('Wejście do TV internetowej')
+                self.LIST(VOD_ONLINE_TABLE)
+        elif mode == 200 or service == 'anyfiles':
+                vod = anyfiles.AnyFiles()
+                vod.handleService()
+        elif mode == 201 or service == 'ekinotv':
+                vod = ekinotv.EkinoTV()
+                vod.handleService()
+        elif mode == 202 or service == 'iitvinfo':
+                vod = iitvinfo.iiTVInfo()
+                vod.handleService()
+        #elif mode == 203 or service == 'ipla':
+        #       vod = ipla.IPLA()
+        #       vod.handleService()
+        elif mode == 204 or service == 'iplex':
+                vod = iplex.IPLEX()
+                vod.handleService()
+        elif mode == 205 or service == 'tvn':
+                vod = tvn.tvn()
+                vod.handleService()
+        elif mode == 206 or service == 'tvp':
+                vod = tvp.tvp()
+                vod.handleService()
+        elif mode == 207 or service == 'tvpvod':
+                vod = tvpvod.tvpvod()
+                vod.handleService()
+        elif mode == 208 or service == 'serialnet':
+                vod = serialnet.SerialNet()
+                vod.handleService()
+        elif mode == 300:
+                vod = weebtv.WeebTV()
+                vod.handleRecords()
+        elif mode == 301:
                 vod = wlacztv.WlaczTV()
                 vod.handleRecords()              
-	elif mode == 19:
-		log.info('Zarządzanie nagrywaniem/ściąganiem')
-		self.LIST(REC_DOWN_TABLE)
-	elif mode == 20:
-		log.info('Wyświetlam ustawienia')
-		self.settings.showSettings()
+        elif mode == 19:
+                log.info('Zarządzanie nagrywaniem/ściąganiem')
+                self.LIST(REC_DOWN_TABLE)
+        elif mode == 20:
+                log.info('Wyświetlam ustawienia')
+                self.settings.showSettings()
 
 
   def listsMenu(self, table, title):
@@ -115,9 +119,9 @@ class PolishLiveTV:
       d = xbmcgui.Dialog()
       choice = d.select(title, table)
       for i in range(len(table)):
-	#log.info(table[i])
-	if choice == i:
-	  value = table[i]
+        #log.info(table[i])
+        if choice == i:
+          value = table[i]
     return value
 
 
@@ -128,17 +132,17 @@ class PolishLiveTV:
 
 
   def CATEGORIES(self):
-	self.addDir("Telewizja", 1, False, False)
-	self.addDir("Filmy, Seriale", 2, False, False)
-	self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False)
-	self.addDir('Ustawienia', 20, True, False)
-	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        self.addDir("Telewizja", 1, False, False)
+        self.addDir("Filmy, Seriale", 2, False, False)
+        self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False)
+        self.addDir('Ustawienia', 20, True, False)
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
   def LIST(self, table = {}):
-  	for num, val in table.items():
-  		self.addDir(val, num, False, False)
-  	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        for num, val in table.items():
+                self.addDir(val, num, False, False)
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
   def addDir(self, name, mode, autoplay, isPlayable = True):
@@ -155,3 +159,4 @@ class PolishLiveTV:
 
 init = PolishLiveTV()
 init.showListOptions()
+
