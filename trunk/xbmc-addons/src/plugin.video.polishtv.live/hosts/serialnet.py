@@ -16,7 +16,6 @@ import pLog, settings, Parser, common
 log = pLog.pLog()
 
 mainUrl = 'http://serialnet.pl'
-imageUrl = 'http://static.serialnet.pl/thumbs/'
 watchUrl = mainUrl + '/ogladaj/'
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
@@ -45,64 +44,73 @@ class SerialNet:
         return outTab        
     
 
-    def getImage(self,url):
-        #http://static.serialnet.pl/thumbs/swiat-wedlug-kiepskich.png
-        #http://serialnet.pl/serial/2-759/swiat-wedlug-kiepskich
-        uTab = url.split('/')
-        imageLink=imageUrl + uTab[5] + '.jpg'
-        return imageLink
+    def getInfo(self,data):
+        outTab = []       
+        #<meta property="og:image" content="http://static.serialnet.pl/thumbs/zakochana-zlosnica.jpg"/>
+        match = re.compile('<meta property="og:image" content="(.+?)"/>').findall(data)
+        if len(match) > 0:
+            imageLink = match[0]
+        else:
+            imageLink = ''
+        outTab.append(imageLink)
+
+        d = data.replace("<br/>","").replace("\n","")
+        match = re.compile('<p><fb:like href=.+?</p><strong>(.+?)</strong></p></div>').findall(d)
+        if len(match) > 0:
+            desc = match[0]
+        else:
+            desc = ''
+        outTab.append(desc)
+        return outTab
     
 
     def showSerialTitles(self):
         tab = self.getSerialsTable()
         if len(tab) > 0:
             for i in range(len(tab)):
-                imageLink = self.getImage(tab[i][1])
-                self.addDir('serialnet', 'serial-title', 'None', tab[i][0], tab[i][1], imageLink, True, False)
+                self.addDir('serialnet', 'serial-title', 'None', tab[i][0], '', tab[i][1], '', True, False)
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
 
     def showSeason(self, url):  
-        imageLink = self.getImage(url)
-        link = self.cm.requestData(url)
+        link = self.cm.requestData(url)       
+        info = self.getInfo(link)
         #<h3>Sezon 1</h3></div>
         match = re.compile('<div style=".+?"><h3>(.+?)</h3></div>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
                 if 'Sezon' in match[i]:
-                    self.addDir('serialnet', 'serial-season', 'None', match[i], url, imageLink, True, False)
+                    self.addDir('serialnet', 'serial-season', 'None', match[i], info[1], url, info[0], True, False)
+            #zmien view na "Media Info 2"
+            xbmcplugin.setContent(int(sys.argv[1]),'tvshows')
+            xbmc.executebuiltin("Container.SetViewMode(503)")
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
     def showSerialParts(self, url, title):
-        imageLink = self.getImage(url)
-        tTab = title.split(' ')
-        num = tTab[1]
-        
-        s = "sezon-" + str(num)        
-        
-        print s
-        
         link = self.cm.requestData(url)
+        info = self.getInfo(link)
+        tTab = title.split(' ')
+        num = tTab[1]        
+        s = "sezon-" + str(num)               
         #href="http://serialnet.pl/ogladaj/1-20/10-things-i-hate-about-you-sezon-1-odcinek-20"><b>Odcinek: 20 : Revolution</b>
-                                                                                                #<b>Odcinek: 1</b>
+                                                                                              #<b>Odcinek: 1</b>
         match = re.compile('href="(.+?)' + s + '(.+?)"><b>Odcinek:(.+?)</b>').findall(link)
         if len(match) > 0:
-            print str(match)
             for i in range(len(match)):
-                
                 oTab = match[i][2].split(':')
                 if len(oTab)==2:
                     episode = 'Odcinek ' + oTab[0] + ' - ' + oTab[1]
                 else:
                     episode = 'Odcinek ' + oTab[0]
-                self.addDir('serialnet', 'playSelectedMovie', 'None', episode, match[i][0] + s + match[i][1], imageLink, True, False)
+                self.addDir('serialnet', 'playSelectedMovie', 'None', episode, info[1], match[i][0] + s + match[i][1], info[0], True, False)
+            #zmien view na "Media Info 2"
+            xbmcplugin.setContent(int(sys.argv[1]),'tvshows')
+            xbmc.executebuiltin("Container.SetViewMode(503)")    
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
             
 
-    #done
     def getVideoUrl(self, url):
-        videoUrl = ''
         link = self.cm.requestData(url)       
         #<iframe id="framep" class="radi" src="http://serialnet.pl/play.php?t=1-18"
         match = re.compile('<iframe id="framep" class="radi" src="(.+?)"').findall(link)
@@ -113,17 +121,19 @@ class SerialNet:
             match_watch = re.compile("var flm = escape\('(.+?)'\);").findall(link)
             if len(match_watch) > 0:
                 videoUrl = match_watch[0]
+            else:
+                videoUrl = ''
             return videoUrl
         
 
-    def addDir(self, service, name, category, title, link, iconimage, folder = True, isPlayable = True):
+    def addDir(self, service, name, category, title, plot, link, iconimage, folder = True, isPlayable = True):
         u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&page=" + urllib.quote_plus(link)
         if iconimage == '':
             iconimage = "DefaultVideo.png"
         liz=xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         if isPlayable:
             liz.setProperty("IsPlayable", "true")
-        liz.setInfo( type="Video", infoLabels={ "Title": title } )
+        liz.setInfo( type="Video", infoLabels={ "Title": title, "Plot": plot } )
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
       
 
@@ -155,7 +165,6 @@ class SerialNet:
             self.showSeason(page)
         elif name == 'serial-season' and title != None and page != None:    
             self.showSerialParts(page, title)
-
         if name == 'playSelectedMovie':
             log.info('video url: ' + page)
             videoUrl = self.getVideoUrl(page)
