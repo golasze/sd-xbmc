@@ -89,11 +89,11 @@ MENU_TAB = [
 
 
 class StreamStations:
-    #def __init__(self):
+    def __init__(self):
+        MENU_TAB.sort(key = lambda x: x[0])
    
 
     def showStations(self):
-        #MENU_TAB.sort()
         for i in range(len(MENU_TAB)):
             self.addLink(MENU_TAB[i][0], MENU_TAB[i][1])
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
