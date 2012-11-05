@@ -72,4 +72,8 @@
     <string id="55621">Start recording time</string>
     <string id="55622">Enter end of recording date</string>
     <string id="55623">End recording time</string>
+    
+    <!-- SerialNet settings -->
+    <string id="55700">SerialNet</string>
+    <string id="55701">Disable version question</string>
 </strings>

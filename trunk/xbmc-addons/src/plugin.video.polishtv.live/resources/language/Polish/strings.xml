@@ -72,4 +72,8 @@
     <string id="55621">Początek nagrania</string>
     <string id="55622">Wprowadź datę końca nagrania</string>
     <string id="55623">Koniec nagrania</string>
+    
+    <!-- SerialNet settings -->
+    <string id="55700">SerialNet</string>
+    <string id="55701">Wylacz pytanie o wersje video</string>
 </strings>

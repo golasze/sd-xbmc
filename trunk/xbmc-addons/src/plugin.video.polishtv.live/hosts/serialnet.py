@@ -11,12 +11,14 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, common
+import pLog, settings, Parser, pCommon
 
 log = pLog.pLog()
 
 mainUrl = 'http://serialnet.pl'
 watchUrl = mainUrl + '/ogladaj/'
+
+version = ptv.getSetting('serialnet_wersja')
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
@@ -25,7 +27,7 @@ class SerialNet:
         log.info('Loading SerialNet')
         self.settings = settings.TVSettings()
         self.parser = Parser.Parser()
-        self.cm = common.common()
+        self.cm = pCommon.common()
         
  
     def getSerialsTable(self):
@@ -115,7 +117,18 @@ class SerialNet:
         #<iframe id="framep" class="radi" src="http://serialnet.pl/play.php?t=1-18"
         match = re.compile('<iframe id="framep" class="radi" src="(.+?)"').findall(link)
         if len(match) > 0:
-            link = self.cm.requestData(match[0])    
+            nUrl = match[0]
+            if version == 'false':
+                d = xbmcgui.Dialog()
+                item = d.select("Wybór wersji", ["Napisy","Bez lektora i napisow"])
+                if item != '':
+                    log.info(item)
+                    if item == 0:
+                        nUrl = match[0] + '&wersja=napisy'
+                    if item == 1:
+                        nUrl = match[0] + '&wersja=oryginalny'
+                    
+            link = self.cm.requestData(nUrl)    
             #log.info(link)
             #var flm = escape('http://50.7.220.66/folder/432ee8003a064ecc0eb46abfa59a044a_8555.mp4');
             match_watch = re.compile("var flm = escape\('(.+?)'\);").findall(link)
