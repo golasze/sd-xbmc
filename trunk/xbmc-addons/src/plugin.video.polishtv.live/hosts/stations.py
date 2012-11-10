@@ -15,21 +15,20 @@ import pLog
 log = pLog.pLog()
 
 
-MENU_TAB = [
-            #           [ "TVP2", "rtsp://balancer.eu.wlacz.tv:1935/live/tvp2.stream" ],
+MENU_TAB = [ 
+#           [ "TVP2", "rtsp://balancer.eu.wlacz.tv:1935/live/tvp2.stream" ],
 #           [ "TVP2", "rtmp://balancer.eu.wlacz.tv:1935/live/_definst_/atm.stream" ],
-
             [ "TVN", "rtmp://75.126.203.130/stream/JardelloTV3333?id=59199" ],
             [ "TVN LQ", "rtmp://50.23.115.84/stream/telewizyjka?id=61660" ],
             [ "TVN24", "rtmp://50.23.65.36/stream/JardelloTV1002?id=57604" ],
 #           [ "POLSAT", "rtsp://publish.001.wlacz.tv:1935/live/polsat.stream" ],
             [ "POLSAT", "rtmp://198.105.209.124/stream/JardelloTV4343?id=59200" ],
             [ "Polsat LQ", "rtmp://75.126.203.130/stream/darmowatelewizjacompolsat?id=59168" ],
- #          [ "TV4", "rtsp://publish.005.wlacz.tv:1935/live/tv4.stream" ],
- #          [ "TVN7", "rtsp://publish.001.wlacz.tv:1935/live/polsatsportnews.stream" ],
- #          [ "HBO", "rtsp://publish.001.wlacz.tv:1935/live/hbo1.stream" ],
- #          [ "TTV", "rtsp://publish.001.wlacz.tv:1935/live/utv.stream" ],
- #          [ "ATM Rozrywka", "rtsp://publish.001.wlacz.tv:1935/live/atm.stream" ],
+#           [ "TV4", "rtsp://publish.005.wlacz.tv:1935/live/tv4.stream" ],
+#           [ "TVN7", "rtsp://publish.001.wlacz.tv:1935/live/polsatsportnews.stream" ],
+#           [ "HBO", "rtsp://publish.001.wlacz.tv:1935/live/hbo1.stream" ],
+#           [ "TTV", "rtsp://publish.001.wlacz.tv:1935/live/utv.stream" ],
+#           [ "ATM Rozrywka", "rtsp://publish.001.wlacz.tv:1935/live/atm.stream" ],
             [ "TVP INFO ", "rtmp://freeview.fms.visionip.tv/live/tvnetwork-polskaplus-tvpinfo-hsslive-25f-4x3-SDh?extsessionid=50444e8f09104-69afb3db1bb7434f243177b5996b8af1" ],
             [ "TVP MIX 1", "http://195.245.213.199/Ch0003" ],
             [ "TVP MIX 2", "http://195.245.213.204/Ch0018" ],
@@ -92,28 +91,28 @@ MENU_TAB = [
 #           [ "LTV 1", "http://82.135.235.37:80/LTV" ],
 #           [ "LTV World", "http://82.135.235.37:80/LTVworld" ],
 #           [ "MTV Россия", "http://77.91.77.19:7015/?sid=" ],
-
 #           [ "CNN", "rtsp://media2.lsops.net:554/live/cnn_en_medium.sdp" ],
 #           [ "Russia Today", "rtmp://fms5.visionip.tv/live/RT_3" ],
 #           [ "3Sat", "rtsp://a62.l12560554061.c125605.g.lm.akamaistream.net/D/62/125605/v0001/reflector:54061" ],
 #           [ "The Voice", "http://62.41.56.32:80/PUBLIC_votv_fi" ],
-
 #           [ "France 24 FR ", "http://stream1.france24.yacast.net/f24_livefr" ],
 #           [ "France 24 ANG ", "http://stream1.france24.yacast.net/f24_liveen" ],
 #           [ "ČT24 ", "rtmp://wcdn42.nacevi.cz:80/CT24?id=HRydF7MABFzyrU7&publisher=lss/CT24-MP4_576p.stream" ],
-#             [ "Publika TV", "rtmp://91.230.214.56/publika/livepublika1" ],
-#            [ "Big Pond Sport ", "http://cht-cdn220-is-12.se.bptvlive.ngcdn.telstra.com/bp_online_bpsport_high" ],
-             [ "TVN24 [chello]", "mms://stream.livetv.chello.pl/TVN24" ],
-             [ "TVN TURBO [BEZ REKLAM]", "rtmp://adm.live.tvtp.pl/TVNTurbo/ playpath=tv swfUrl=http://www.tvtp.pl/player/player_o_video.swf?pUrl=tvnturbo_c.e9baa14091ebd631a7a7d03445c18c18&allowfullscreen=true&pAutoplay=1&pStreaming=11 pageUrl=http://www.tvtp.pl/player/player_o_video.swf?pUrl=tvnturbo_c.e9baa14091ebd631a7a7d03445c18c18&allowfullscreen=true&pAutoplay=1&pStreaming=11  live=true swfVfy=true" ],
-             [ "Poslkie stacje radiowe", "http://xbmc.cba.pl/zbmc/onair.m3u" ], ]
+#           [ "Publika TV", "rtmp://91.230.214.56/publika/livepublika1" ],
+#           [ "Big Pond Sport ", "http://cht-cdn220-is-12.se.bptvlive.ngcdn.telstra.com/bp_online_bpsport_high" ],
+            [ "TVN24 [chello]", "mms://stream.livetv.chello.pl/TVN24" ],
+            [ "TVN TURBO [BEZ REKLAM]", "rtmp://adm.live.tvtp.pl/TVNTurbo/ playpath=tv swfUrl=http://www.tvtp.pl/player/player_o_video.swf?pUrl=tvnturbo_c.e9baa14091ebd631a7a7d03445c18c18&allowfullscreen=true&pAutoplay=1&pStreaming=11 pageUrl=http://www.tvtp.pl/player/player_o_video.swf?pUrl=tvnturbo_c.e9baa14091ebd631a7a7d03445c18c18&allowfullscreen=true&pAutoplay=1&pStreaming=11  live=true swfVfy=true" ],
+            [ "Poslkie stacje radiowe", "http://xbmc.cba.pl/zbmc/onair.m3u" ],
+
+              ]
 
 
 class StreamStations:
-    def __init__(self):
-        MENU_TAB.sort(key = lambda x: x[0])
+    #def __init__(self):
    
 
     def showStations(self):
+        #MENU_TAB.sort()
         for i in range(len(MENU_TAB)):
             self.addLink(MENU_TAB[i][0], MENU_TAB[i][1])
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -129,4 +128,3 @@ class StreamStations:
        
     def handleService(self):
         self.showStations()
-
