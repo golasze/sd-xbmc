@@ -26,7 +26,7 @@ HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mand
 MENU_TAB = {1: "Lektor",
 	    2: "Napisy",
 	    3: "Premiery",
-            4: "TOP 100", 
+            4: "TOP", 
             5: "Data wydania",
             6: "Szukaj" }
 
@@ -181,7 +181,7 @@ class BestPlayer:
             self.listsCategoriesMenu3()
         elif name == 'main-menu' and category == "Premiery":
             self.listsCategoriesMenu4()
-        elif name == 'main-menu' and category == "TOP 100":
+        elif name == 'main-menu' and category == "TOP":
             self.getFilmTable2(mainUrl3)    
         elif name == 'main-menu' and category == 'Data wydania':
             self.listsCategoriesMenu5()
