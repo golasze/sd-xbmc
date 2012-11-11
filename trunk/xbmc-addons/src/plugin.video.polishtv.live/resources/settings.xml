@@ -29,8 +29,7 @@
         <setting id="tvn_perpage" type="labelenum" label="55201" values="10|20|30|40|50" default="50" />
         <setting id="tvn_platform" type="labelenum" label="55202" values="Mobile (Android)|Samsung TV" default="Samsung TV" />
         <setting id="tvn_quality_manual" type="bool" label="55204" default="false" />
-        <setting id="tvn_quality" type="labelenum" label="55203" values="HD|Bardzo wysoka|Wysoka|Standard|Średnia|Niska|Bardzo niska" default="Bardzo wysoka" visible="eq(-1,false)" />
-        <setting id="tvn_quality_temp" type="labelenum" label="" values="" default="" visible="false" />
+	<setting id="tvn_quality" type="labelenum" label="55203" values="Maksymalna|HD|Bardzo wysoka|Wysoka|Standard|Średnia|Niska|Bardzo niska" default="Maksymalna" visible="eq(-1,false)" />        <setting id="tvn_quality_temp" type="labelenum" label="" values="" default="" visible="false" />
     </category>
     <category label="55300">
         <setting id="tvp_perpage" type="labelenum" label="55301" values="10|20|30|40|50" default="50" />
