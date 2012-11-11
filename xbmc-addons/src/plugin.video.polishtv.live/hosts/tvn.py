@@ -26,6 +26,16 @@ scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
+qualities = [
+            'HD',
+            'Bardzo wysoka',
+            'Wysoka',
+            'Standard',
+            'Średnia'
+            'Niska',
+            'Bardzo niska',
+            ]
+
 PAGE_LIMIT = ptv.getSetting('tvn_perpage')
 platform = ptv.getSetting('tvn_platform')
 quality = ptv.getSetting('tvn_quality')
@@ -358,13 +368,16 @@ class tvn:
     
     
     def getUrlFromTab(self, tab, key):
-        out = ''
-        for i in range(len(tab)):
-            k = tab[i][0]
-            v = tab[i][1]
-            if key == k:
-               out = v
-               break
+        out = ''  
+        for key in qualities if key == 'Maksymalna' else [key]:
+            for i in range(len(tab)):
+                k = tab[i][0]
+                v = tab[i][1]
+                if key == k:
+                    out = v
+                    break
+            if out != '':
+                break      
         if out == '':
             tabmenu = []
             for i in range(len(tab)):
