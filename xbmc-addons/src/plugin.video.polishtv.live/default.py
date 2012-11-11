@@ -66,7 +66,7 @@ class PolishLiveTV:
         #elif mode == 101 or service == 'wlacztv':
                 #tv = wlacztv.WlaczTV()
                 #tv.handleService()            
-        elif mode == 102:
+        elif mode == 102 or service == 'stations':
                 tv = stations.StreamStations()
                 tv.handleService()
         elif mode == 2:
