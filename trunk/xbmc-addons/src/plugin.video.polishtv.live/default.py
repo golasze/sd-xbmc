@@ -37,7 +37,7 @@ VOD_ONLINE_TABLE = {
                      206: "TVP [info]",
                      207: "TVP VOD",
                      208: "SerialNet [seriale]",
-                     209: "BestPlayer [filmy],
+                     209: "BestPlayer [filmy]",
 }
 
 REC_DOWN_TABLE = { 300: "Weeb TV",
