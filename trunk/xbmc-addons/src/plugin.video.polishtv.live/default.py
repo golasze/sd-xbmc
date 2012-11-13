@@ -16,7 +16,7 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser
-import weebtv, stations, tvp, tvn, iplex, tvpvod, ekinotv, iitvinfo, anyfiles, wlacztv, serialnet
+import weebtv, stations, tvp, tvn, iplex, tvpvod, ekinotv, iitvinfo, anyfiles, wlacztv, serialnet, bestplayer
 #import ipla
 
 log = pLog.pLog()
@@ -37,6 +37,7 @@ VOD_ONLINE_TABLE = {
                      206: "TVP [info]",
                      207: "TVP VOD",
                      208: "SerialNet [seriale]",
+                     209: "BestPlayer [filmy],
 }
 
 REC_DOWN_TABLE = { 300: "Weeb TV",
@@ -99,6 +100,9 @@ class PolishLiveTV:
         elif mode == 208 or service == 'serialnet':
                 vod = serialnet.SerialNet()
                 vod.handleService()
+        elif mode == 209 or service == 'bestplayer':
+                vod = bestplayer.BestPlayer()
+                vod.handleService()        
         elif mode == 300:
                 vod = weebtv.WeebTV()
                 vod.handleRecords()
