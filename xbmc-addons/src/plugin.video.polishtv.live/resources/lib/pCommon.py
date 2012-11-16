@@ -77,5 +77,5 @@ class common:
         try:
             float(s)
             return True
-         except ValueError:
+        except ValueError:
             return False
