@@ -27,7 +27,6 @@ channelsUrl = mainUrl + '/api/online_channels'
 loginUrl = mainUrl + '/api/login'
 isLoggedUrl = mainUrl + '/api/is_logged'
 
-
 COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "wlacztv.cookie" 
 
 login = ptv.getSetting('wlacztv_login')
@@ -92,10 +91,11 @@ class Channels:
     
     def getChannelRTMPLink(self, key, title, icon):
         post = { 'key': key }
-        #log.info('rtmp: ' + str(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post)))
-        rtmp_raw = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
-        rtmp_link = self.dec(rtmp_raw['rtmp_url']).replace("\"", "")
-        return { 'title': title, 'icon': icon, 'key': key, 'rtmp': rtmp_link }
+        log.info('rtmp: ' + str(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post)))
+        rtmp_json = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
+        #tcurl = rtmp_json['rtmp_server'] + '/wlacztv/' + rtmp_json['playPath']
+        pageurl = mainUrl + '/kanal/' + key
+        return { 'title': title, 'icon': icon, 'key': key, 'rtmp': rtmp_json['rtmp_server'], 'app': rtmp_json['app'], 'pageurl': pageurl, 'playpath': rtmp_json['playPath'], 'token': rtmp_json['token'] }
     
     def addChannel(self, service, title, key, icon):
         u = "%s?service=%s&title=%s&key=%s&icon=%s" % (sys.argv[0], service, title, key, urllib.quote_plus(icon))
@@ -137,6 +137,7 @@ class Player:
         return rectime
         
     def LOAD_AND_PLAY_VIDEO(self, jsonUrl = {}):
+        log.info(str(jsonUrl))
         if jsonUrl['rtmp'] == '':
             d = xbmcgui.Dialog()
             d.ok(t(55607).encode("utf-8"), t(55608).encode("utf-8"))
@@ -166,9 +167,11 @@ class Player:
             try:
                 liz = xbmcgui.ListItem(jsonUrl['title'], iconImage = jsonUrl['icon'], thumbnailImage = jsonUrl['icon'])
                 liz.setInfo( type="Video", infoLabels={ "Title": jsonUrl['title'], } )
-                    
-                videoUrl = jsonUrl['rtmp'] 
-                #log.info('rtmp raw: ' + videoUrl)
+                 
+                videoUrl = jsonUrl['rtmp'] + "/" + jsonUrl['app']+'?wlacztv_session_token=' + jsonUrl['token']   
+                videoUrl += " playpath=" + jsonUrl['playpath']
+                videoUrl += " live=true"
+                log.info('rtmp raw: ' + videoUrl)
                 xbmcPlayer = xbmc.Player()
                 xbmcPlayer.play(videoUrl, liz)
             except:
