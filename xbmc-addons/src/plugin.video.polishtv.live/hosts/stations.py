@@ -21,7 +21,8 @@ CATEGORY_TAB = [
                 [3, "Muzyczne"],
                 [4, "Religijne"],
                 [5, "Lokalne"],
-                [6, "Zagraniczne"]
+                [6, "Zagraniczne"],
+                [7, "Polskie stacje radiowe"]
                ]
 
 #           [title, category_id, videoUrl]
@@ -54,6 +55,7 @@ MENU_TAB = [
             [ "TVP Sport stream 1", 2, "http://195.245.213.204/Ch0002" ],
             [ "TVP Sport stream 2", 2, "http://195.245.213.204/Ch0006" ],
             [ "TVP Sport stream 3", 2, "http://195.245.213.204/Ch0001" ],
+            [ "TVP Parlament", 1, "http://195.245.213.204/Ch0014" ],
             [ "orange sport", 2, "rtmp://cdn.rtmp.tp.pl/orangecontent_s4/fmlestream" ],
             [ "ESKA TV", 3, "rtmp://46.105.112.212:1935/live playpath=mpegts.stream swfUrl=http://www.eska.tv/thrdparty/flowplayer/flowplayer.rtmp-3.1.4.swf pageUrl=http://www.eska.tv/player  live=true swfVfy=true" ],
             [ "Rebel.tv", 3, "rtmp://gdansk.popler.tv:80/publishlive?play=123452/rebeltv playpath=rebeltv swfUrl=http://www.popler.tv/player/flowplayer.cluster.swf pageUrl=http://www.megawypas.pl/readarticle.php?article_id=405  live=true swfVfy=true" ],
@@ -93,6 +95,7 @@ MENU_TAB = [
             [ "BBC World News HD", 6,"http://212.79.96.134:8011/" ],
             [ "BBC 1", 6,"rtsp://195.90.118.93/bbc1_1" ],
             [ "BBC 2", 6,"rtsp://195.90.118.93/bbc2_1" ],
+            [ "Россия 24", 6,"http://cdnvideowmlive.fplive.net/cdnvideowmlive-live/r24_hq" ],
             [ "CBBC", 6,"rtsp://195.90.118.93/CBBC_1" ],
             [ "EuroNews", 6,"http://212.79.96.134:8013/" ],
             [ "Pro7", 6,"http://212.79.96.134:8009/" ],
@@ -113,6 +116,37 @@ MENU_TAB = [
             [ "TVN24 [chello]", 0, "mms://stream.livetv.chello.pl/TVN24" ],
             [ "TVN TURBO [BEZ REKLAM]", 0, "rtmp://adm.live.tvtp.pl/TVNTurbo/ playpath=tv swfUrl=http://www.tvtp.pl/player/player_o_video.swf?pUrl=tvnturbo_c.e9baa14091ebd631a7a7d03445c18c18&allowfullscreen=true&pAutoplay=1&pStreaming=11 pageUrl=http://www.tvtp.pl/player/player_o_video.swf?pUrl=tvnturbo_c.e9baa14091ebd631a7a7d03445c18c18&allowfullscreen=true&pAutoplay=1&pStreaming=11  live=true swfVfy=true" ],
             [ "Poslkie stacje radiowe", 0, "http://xbmc.cba.pl/zbmc/onair.m3u" ],
+            [ "Jedynka Polskie Radio", 7,"rtmp://stream85.polskieradio.pl/live/pr1.sdp" ],
+            [ "Dwójka Polskie Radio", 7,"rtmp://stream85.polskieradio.pl/live/pr2.sdp" ],
+            [ "Trójka Polskie Radio", 7,"rtmp://stream85.polskieradio.pl/live/pr3.sdp" ],
+            [ "Czwórka Polskie Radio", 7,"rtmp://stream85.polskieradio.pl/live/pr4.sdp" ],
+            [ "RMF FM", 7,"http://195.150.20.243/RMFFM48" ],
+            [ "RMF CLASSIC", 7,"http://195.150.20.246/RMFCLASSIC48" ],
+            [ "RMF MAXX", 7,"http://217.74.72.10/RMFMAXXX48" ],
+            [ "Radio ZET", 7,"http://radiozetmp3-17.eurozet.pl:8400/;stream.nsv?seed=6046.38266377151" ],
+            [ "ChilliZET", 7,"http://chillizetmp3-03.eurozet.pl:8400/;stream.nsv?seed=13186.232442967594" ],
+            [ "Planeta FM", 7,"http://planetamp3-01.eurozet.pl:8400/;stream.nsv?seed=3665.857259184122" ],
+            [ "Antyradio ", 7,"http://94.23.88.162:9200/;stream.nsv?seed=20.587672479450703" ],
+            [ "Radio Plus", 7,"http://plus-siec-01.eurozet.pl:8500/;stream.nsv?seed=15073.804180137813" ],
+            [ "TOK FM", 7,"http://fm.tuba.pl/stream.pls?radio=10" ],
+            [ "Radio Złote Przeboje", 7,"http://fm.tuba.pl/stream.pls?radio=9" ],
+            [ "Roxy FM", 7,"http://fm.tuba.pl/stream.pls?radio=8" ],
+            [ "Eska", 7,"http://poznan5-5.radio.pionier.net.pl:8000/eska-warszawa.mp3" ],
+            [ "Eska Rock", 7,"http://poznan5.radio.pionier.net.pl:8000/eskarock.mp3" ],
+            [ "Radio Maryja", 7,"http://195.94.205.211/rm?MSWMExt=.asf" ],
+            [ "Radio Wrocław", 7,"http://poznan5-1.radio.pionier.net.pl:8000/prwroclaw.mp3" ],
+            [ "Radio Lublin", 7,"http://www.radio.lublin.pl/streaming/64k.m3u" ],
+            [ "Radio Kraków", 7,"http://panel.nadaje.com:9150/radiokrakow.ogg?1352066977890.ogg" ],
+            [ "Radio Rzeszów", 7,"http://radiointernetowe.net:9500/" ],
+            [ "Radio Białystok", 7,"http://bh2.pl:9938" ],
+            [ "Radio Katowice", 7,"http://85.11.77.142:8000/RadioKatowice.mp3.m3u" ],
+            [ "Radio Kielce", 7,"http://gra.radio.kielce.com.pl:8000/rk1" ],
+            [ "Radio Opole", 7,"http://213.73.25.178:7055/" ],
+            [ "Radio Szczecin", 7,"http://www.radio.szczecin.pl/onair.m3u" ],
+            [ "Radio Kaszëbë", 7,"http://stream3.nadaje.com:8048/;;0" ],
+            [ "Radio Fest", 7,"http://209.62.16.60/radiofest" ],
+            [ "Radio CCM", 7,"http://209.62.16.60/radioccm?1352151821734.mp3" ],
+            [ "Radio Piekary", 7,"http://shot2.inten.pl:8412/" ],
               ]
 
 
