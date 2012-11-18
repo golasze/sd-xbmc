@@ -189,8 +189,8 @@ class tvp:
                     videoUrl = videoNode.attrib['temp_sdt_url']
 
                 if videoUrl != '':
-                    if self.watched(videoUrl):
-                        prop['overlay'] = 7
+                    #if self.watched(videoUrl):
+                    #    prop['overlay'] = 7
 
                     self.addVideoLink(prop,videoUrl,iconUrl,listsize)
                     #print "test[4]: " + prop['title'] + ", " + iconUrl + ", " + videoUrl
@@ -269,16 +269,16 @@ class tvp:
         if findVideo:
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-    def watched(self, videoUrl):
-        videoFile = videoUrl.split('/')[-1]
-        shortVideoFile = videoFile[videoFile.find('.')+1:]
-        sql_data = "select count(*) from files WHERE (strFilename ='%s' OR strFilename ='%s') AND playCount > 0" % (videoFile,shortVideoFile)
-        xml_data = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % urllib.quote_plus( sql_data ), )
-        wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
-        if wasWatched == "1":
-            return True
-        else :
-            return False
+    #def watched(self, videoUrl):
+    #    videoFile = videoUrl.split('/')[-1]
+    #    shortVideoFile = videoFile[videoFile.find('.')+1:]
+    #    sql_data = "select count(*) from files WHERE (strFilename ='%s' OR strFilename ='%s') AND playCount > 0" % (videoFile,shortVideoFile)
+    #    xml_data = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % urllib.quote_plus( sql_data ), )
+    #    wasWatched = re.findall( "<field>(.*?)</field>", xml_data)[0]
+    #    if wasWatched == "1":
+    #        return True
+    #    else :
+    #        return False
 
 
 
