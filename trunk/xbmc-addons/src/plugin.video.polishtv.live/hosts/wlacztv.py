@@ -91,11 +91,11 @@ class Channels:
     
     def getChannelRTMPLink(self, key, title, icon):
         post = { 'key': key }
-        log.info('rtmp: ' + str(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post)))
+        #log.info('rtmp: ' + str(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post)))
         rtmp_json = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
         #tcurl = rtmp_json['rtmp_server'] + '/wlacztv/' + rtmp_json['playPath']
-        pageurl = mainUrl + '/kanal/' + key
-        return { 'title': title, 'icon': icon, 'key': key, 'rtmp': rtmp_json['rtmp_server'], 'app': rtmp_json['app'], 'pageurl': pageurl, 'playpath': rtmp_json['playPath'], 'token': rtmp_json['token'] }
+        rtmp = rtmp_json['rtmp_server'] + "/" + rtmp_json['app'] + '?wlacztv_session_token=' + rtmp_json['token']
+        return { 'title': title, 'icon': icon, 'key': key, 'rtmp': rtmp, 'playpath': rtmp_json['playPath'] }
     
     def addChannel(self, service, title, key, icon):
         u = "%s?service=%s&title=%s&key=%s&icon=%s" % (sys.argv[0], service, title, key, urllib.quote_plus(icon))
@@ -137,7 +137,6 @@ class Player:
         return rectime
         
     def LOAD_AND_PLAY_VIDEO(self, jsonUrl = {}):
-        log.info(str(jsonUrl))
         if jsonUrl['rtmp'] == '':
             d = xbmcgui.Dialog()
             d.ok(t(55607).encode("utf-8"), t(55608).encode("utf-8"))
@@ -154,21 +153,21 @@ class Player:
                     if os.path.isdir(dstpath):
                         if rectime > 0:
                             dwnl = RTMPDownloader()
-                            params = { "url": jsonUrl['rtmp'], "key": jsonUrl['key'], "title": jsonUrl['title'], "duration": int(rectime) }
+                            params = { "url": jsonUrl['rtmp'], "playpath": jsonUrl['playpath'], "download_path": dstpath, "title": jsonUrl['title'], "duration": int(rectime) }
                             dwnl.download(rtmppath, params)
                 else:
                     msg = xbmcgui.Dialog()
                     msg.ok(t(55618).encode("utf-8"), t(55619).encode("utf-8"))
             elif item == 2:
                 rec = Record()
-                rec.Init(jsonUrl['pageurl'], jsonUrl['title'], mainUrl + "/user/login")
+                rec.Init(playerUrl, jsonUrl['key'], jsonUrl['title'], loginUrl)
                 exit()
         if record == 'false' or item == 1:
             try:
                 liz = xbmcgui.ListItem(jsonUrl['title'], iconImage = jsonUrl['icon'], thumbnailImage = jsonUrl['icon'])
                 liz.setInfo( type="Video", infoLabels={ "Title": jsonUrl['title'], } )
                  
-                videoUrl = jsonUrl['rtmp'] + "/" + jsonUrl['app']+'?wlacztv_session_token=' + jsonUrl['token']   
+                videoUrl = jsonUrl['rtmp']
                 videoUrl += " playpath=" + jsonUrl['playpath']
                 videoUrl += " live=true"
                 log.info('rtmp raw: ' + videoUrl)
@@ -192,7 +191,7 @@ class RTMPDownloader:
         nt = time.mktime(td.timetuple())
         today = datetime.datetime.fromtimestamp(nt)
         file = os.path.join(str(params['download_path']), str(params['title']).replace(" ", "_") + "-" + str(today).replace(" ", "_").replace(":", ".") + ".flv")
-        os.system(str(app) + " -B " + str(params['duration']) + " -r " + str(params['url']) + " -a " + str(params['app']) + " -p " + str(params['pageUrl']) + " -t " + str(params['tcUrl']) + " -y " + str(params['playpath']) + " -v live -o " + file)
+        os.system(str(app) + " -B " + str(params['duration']) + " -r " + str(params['url']) + " -y " + str(params['playpath']) + " -v live -o " + file)
 
 
 class Record:
@@ -207,7 +206,7 @@ class Record:
             text = k.getText()
         return text
     
-    def Init(self, url, title, login_url):
+    def Init(self, url, key, title, login_url):
         nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
         nowDate = str(nowTime.strftime("%Y-%m-%d"))
         nTime = str(nowTime.strftime("%H:%M"))
@@ -217,7 +216,7 @@ class Record:
         e_End = self.input(nTime, t(55623).encode("utf-8"))
         setTime = self.SetTime(s_Date, s_Start, e_Date, e_End)
         nameRec = title.replace(" ", "_") + "_" + s_Date + "." + s_Start.replace(":", ".")
-        opts = { 'service': 'wlacztv', 'login_url': login_url, 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'url': url, 'login': login, 'password': password, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m }
+        opts = { 'service': 'wlacztv', 'key': key, 'login_url': login_url, 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'url': url, 'login': login, 'password': password, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m }
         self.saveFile(opts)
         xbmc.executebuiltin('AlarmClock(' + str(nameRec) + ', "RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(nameRec) + '.json)", ' + str(setTime[0]) + '))')
         
