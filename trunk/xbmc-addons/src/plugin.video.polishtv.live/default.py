@@ -144,9 +144,18 @@ class PolishLiveTV:
 
 
   def LIST(self, table = {}):
-        for num, val in table.items():
-                self.addDir(val, num, False, False)
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+      valTab = []
+      strTab = []
+      for num, val in table.items():
+          #self.addDir(val, num, False, False)
+          strTab.append(num)
+          strTab.append(val)
+          valTab.append(strTab)
+          strTab = []
+      valTab.sort(key = lambda x: x[1])
+      for i in range(len(valTab)):
+          self.addDir(valTab[i][1], valTab[i][0], False, False)
+      xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
   def addDir(self, name, mode, autoplay, isPlayable = True):

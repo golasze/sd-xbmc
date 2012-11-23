@@ -286,6 +286,7 @@ class WlaczTV:
         icon = str(self.parser.getParam(params, "icon"))
         log.info('title: ' + title)
         #log.info('url: ' + url)
+        self.channel.checkDirCookie()
         if title == 'None':
             if not self.channel.isLogged():
                 self.channel.requestLoginData()
