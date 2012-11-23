@@ -49,6 +49,8 @@
         <setting id="wlacztv_pass" type="text" label="55603" option="hidden" default="" />
         <setting type="lsep" label="55611"/>
         <setting id="wlacztv_rec" type="bool" label="55612" default="false" />
+		<setting type="lsep" label="55007" />
+		<setting id="wlacztv_strm" type="folder" label="55008" default="None" />
     </category>
     <category label="55700">
 	<setting id="serialnet_wersja" type="bool" label="55701" default="true" />
