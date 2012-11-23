@@ -54,6 +54,7 @@ class Channels:
     def checkDirCookie(self):
         if not os.path.isdir(ptv.getAddonInfo('path') + os.path.sep + "cookies"):
             os.mkdir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
+            
     
     def isLogged(self):
         content_json = self.common.getURLFromFileCookieData(isLoggedUrl, COOKIEFILE)
@@ -287,15 +288,15 @@ class WlaczTV:
         log.info('title: ' + title)
         #log.info('url: ' + url)
         self.channel.checkDirCookie()
-        if title == 'None':
+        try:
             if not self.channel.isLogged():
                 self.channel.requestLoginData()
+        except:
+            self.channel.requestLoginData()
+        if title == 'None':
             self.channel.channelsList(channelsUrl)
         elif title != '' and key != '':
-            if not self.channel.isLogged():
-                self.channel.requestLoginData()
             self.player.LOAD_AND_PLAY_VIDEO(self.channel.getChannelRTMPLink(key, title, icon))
-            #self.channel.getChannelRTMPLink(key, title, icon)
 
     def handleRecords(self):
         d = xbmcgui.Dialog()
