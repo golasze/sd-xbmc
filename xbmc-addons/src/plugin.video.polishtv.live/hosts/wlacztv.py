@@ -36,6 +36,7 @@ rtmppath = ptv.getSetting('default_rtmp')
 dstpath = ptv.getSetting('default_dstpath')
 timedelta_h = ptv.getSetting('default_timedelta_hours')
 timedelta_m = ptv.getSetting('default_timedelta_minutes')
+strmdir = ptv.getSetting('wlacztv_strm')
 
 VIDEO_MENU = [ t(55611).encode("utf-8"), t(55613).encode("utf-8"), t(55614).encode("utf-8") ]
 
@@ -74,20 +75,19 @@ class Channels:
             self.common.saveURLToFileCookieData(loginUrl, COOKIEFILE, post)
     
     def channelsList(self, url):
-        if self.isLogged():
-            raw_json = self.common.getURLFromFileCookieData(url, COOKIEFILE)
-            result_json = json.loads(raw_json)
-            for o in result_json:
-                title = self.dec(o['name']).replace("\"", "")
-                #url = self.dec(o['uri']).replace("\"", "")
-                icon = self.dec(o['image']).replace("\"", "")
-                key = self.dec(o['key']).replace("\"", "")
-                self.addChannel('wlacztv', title, key, icon)
-            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_UNSORTED)
-            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-            xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
-            xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
-            xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        raw_json = self.common.getURLFromFileCookieData(url, COOKIEFILE)
+        result_json = json.loads(raw_json)
+        for o in result_json:
+            title = self.dec(o['name']).replace("\"", "")
+            #url = self.dec(o['uri']).replace("\"", "")
+            icon = self.dec(o['image']).replace("\"", "")
+            key = self.dec(o['key']).replace("\"", "")
+            self.addChannel('wlacztv', title, key, icon)
+        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_UNSORTED)
+        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
+        xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
+        xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
     def getChannelRTMPLink(self, key, title, icon):
         post = { 'key': key }
@@ -102,6 +102,12 @@ class Channels:
         liz = xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage = icon)
         liz.setInfo(type="Video", infoLabels={ "Title": title, })
         xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = False)
+        if strmdir != 'None':
+            if not os.path.isdir(strmdir):
+                os.mkdir(strmdir)
+            FILE = open(os.path.join(strmdir, "%s.strm" % ''.join(c for c in title if c in '-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')),"w+")
+            FILE.write("plugin://plugin.video.polishtv.live/?service=%s&key=%s&icon=%s&title=%s" % (service, key, urllib.quote_plus(icon), urllib.quote_plus(title)))
+
 
         
 class Player:
@@ -281,9 +287,12 @@ class WlaczTV:
         log.info('title: ' + title)
         #log.info('url: ' + url)
         if title == 'None':
-	 		self.channel.requestLoginData()
-	 		self.channel.channelsList(channelsUrl)
+            if not self.channel.isLogged():
+                self.channel.requestLoginData()
+            self.channel.channelsList(channelsUrl)
         elif title != '' and key != '':
+            if not self.channel.isLogged():
+                self.channel.requestLoginData()
             self.player.LOAD_AND_PLAY_VIDEO(self.channel.getChannelRTMPLink(key, title, icon))
             #self.channel.getChannelRTMPLink(key, title, icon)
 
