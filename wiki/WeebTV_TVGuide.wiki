@@ -16,7 +16,8 @@ Klikamy ustaw, jako źródło ustawiamy XMLTV, następnie ściągamy na dysk kt�
 ||[http://db.tt/HSRgGwSx3]|| wersja na 3 dni + opisy  około 5Mb posegregowane tematycznie dla strefy czasowej UTC||
 ||[http://jatrn.com/xbmc/epg_weebtv.xml]|| wersja na 48 godzin dla weeb.tv||
 ||[http://jatrn.com/xbmc/epg_weebtv_CST.xml]|| wersja na 48 godzin dla weeb.tv dla strefy czasowej CST||
-||[http://www.jatrn.com/xbmc/epg.xml]|| wersja na 7 dni dla 160+ kanałów, około 14Mb||
+||[http://jatrn.com/xbmc/epg_weebtv_EST.xml]|| wersja na 48 godzin dla weeb.tv dla strefy czasowej EST||
+||[http://jatrn.com/xbmc/epg.xml]|| wersja na 7 dni dla 160+ kanałów, około 14Mb||
  
 
 W polu plik XMLTV wskazujemy ścieżkę do pliku który ściągnęliśmy.
