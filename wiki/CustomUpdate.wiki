@@ -21,9 +21,9 @@ Zasada dzialania jest stosunkowo prosta. *Custom Update* uzywa pliku XML, w ktor
 *ipla.py*
  * _(source)_ plik znajduje sie tutaj: [http://jatrn.com/xbmc/sd-xbmc/ipla.py],
  * _(destination)_ ma byc skopiowany do `hosts/ipla.py`
-*stations.py*
- * _(source)_ kopiujemy pliki z katalogu wtyczki `plugin.video.polishtv.live/hosts/stations.py` do `c:\sd-xbmc\stations.py`. Z linij 54 i 55 usuwamy hash (#) aby je odkomentowac, zapisujemy plik i zamykamy.
- * _(destination)_ ma byc skopiowany do `hosts/stations.py`
+~~*stations.py*~~
+ * ~~_(source)_ kopiujemy pliki z katalogu wtyczki `plugin.video.polishtv.live/hosts/stations.py` do `c:\sd-xbmc\stations.py`. Z linij 54 i 55 usuwamy hash (#) aby je odkomentowac, zapisujemy plik i zamykamy.~~
+ * ~~_(destination)_ ma byc skopiowany do `hosts/stations.py`~~
 *default.py*
  * _(source)_ plik znajduje sie tutaj: [http://jatrn.com/xbmc/sd-xbmc/default.py],
  * _(destination)_ ma byc skopiowany do `default.py`  
@@ -40,14 +40,9 @@ Wiedzac gdzie znajduja sie nasze "zmodyfikowane" pliki, jak rowniez gdzie maja b
     <source>http://jatrn.com/xbmc/sd-xbmc/ipla.py</source>
     <destination>hosts/ipla.py</destination>
   </file>
-  <file>
-    <source>c:\sd-xbmc\stations.py</source>
-    <destination>hosts/stations.py</destination>
-  </file>
 </custom>
 }}}
 Tworzymy plik i zapisujemy go w jakiejs dogodnej lokacji, np. `c:\sd-xbmc\custom.xml`. Nastepnie wchodzimy do Ustawien wtyczki, w `Default/Custom Update` w polu `XML file path` wpisujemy lokalizacje naszego wcieszniej stworazonego pliku XML, czyli: `c:\sd-xbmc\custom.xml`
 Naciskamy `OK` by zaakceptowac zaminy. Wchodzimy do Ustawien jeszcze raz i naciskamy `Run Custom Update` i to tyle.
 
-A tak na koniec. Jesli nie chce wam sie bawic w towrzenie XML czy modyfikacje `stations.py`, a zalezy wam by miec IPLE, to pod adresem [http://jatrn.com/xbmc/sd-xbmc/custom.xml] znajduje sie gotowy XML. Nalezy wpisac ten adres w Ustawieniach wtyczki, nacisnac `OK` i `Run Custom Update` i po sprawie. Powodzenia! 
-
+A tak na koniec. Jesli nie chce wam sie bawic w towrzenie XML ~~czy modyfikacje `stations.py`~~, a zalezy wam by miec IPLE, to pod adresem [http://jatrn.com/xbmc/sd-xbmc/custom.xml] znajduje sie gotowy XML. Nalezy wpisac ten adres w Ustawieniach wtyczki, nacisnac `OK` i `Run Custom Update` i po sprawie. Powodzenia! 
