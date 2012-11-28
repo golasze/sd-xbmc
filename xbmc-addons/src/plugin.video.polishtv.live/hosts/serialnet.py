@@ -118,7 +118,7 @@ class SerialNet:
             nUrl = match[0]
             if version == 'false':
                 d = xbmcgui.Dialog()
-                item = d.select("WybÃ³r wersji", ["Napisy","Bez lektora i napisow"])
+                item = d.select("Wybór wersji", ["Napisy","Bez lektora i napisów"])
                 if item != '':
                     log.info(item)
                     if item == 0:
@@ -151,14 +151,14 @@ class SerialNet:
         ok=True
         if videoUrl == '':
             d = xbmcgui.Dialog()
-            d.ok('Nie znaleziono streamingu.', 'MoÅ¼e to chwilowa awaria.', 'SprÃ³buj ponownie za jakiÅ› czas')
+            d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
             return False
         try:
             xbmcPlayer = xbmc.Player()
             xbmcPlayer.play(videoUrl)
         except:
             d = xbmcgui.Dialog()
-            d.ok('BÅ‚Ä…d przy przetwarzaniu, lub wyczerpany limit czasowy oglÄ…dania.', 'Zarejestruj siÄ™ i opÅ‚aÄ‡ abonament.', 'Aby oglÄ…daÄ‡ za darmo sprÃ³buj ponownie za jakiÅ› czas')        
+            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
         return ok
 
     
@@ -184,8 +184,8 @@ class SerialNet:
             else:
                 d = xbmcgui.Dialog()
                 d.ok('Brak linku', 'SerialNet.pl - nie znaleziono linku')
-     
-                
+
+           
     def int2base(self, x, base):
         digs = string.digits + string.lowercase + string.uppercase
         if x < 0: sign = -1
