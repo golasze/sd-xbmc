@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import cookielib, os, string, StringIO
-import os, time, base64, logging, calendar
+import os, time, base64, logging, calendar, binascii
 import urllib, urllib2, re, sys, math
 import xbmcgui, xbmc, xbmcaddon, xbmcplugin
 
@@ -20,8 +20,6 @@ watchUrl = mainUrl + '/ogladaj/'
 
 version = ptv.getSetting('serialnet_wersja')
 
-HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
-
 class SerialNet:
     def __init__(self):
         log.info('Loading SerialNet')
@@ -29,7 +27,7 @@ class SerialNet:
         self.parser = Parser.Parser()
         self.cm = pCommon.common()
         
- 
+        
     def getSerialsTable(self):
         strTab = []
         outTab = []
@@ -120,20 +118,19 @@ class SerialNet:
             nUrl = match[0]
             if version == 'false':
                 d = xbmcgui.Dialog()
-                item = d.select("Wybór wersji", ["Napisy","Bez lektora i napisow"])
+                item = d.select("WybÃ³r wersji", ["Napisy","Bez lektora i napisow"])
                 if item != '':
                     log.info(item)
                     if item == 0:
                         nUrl = match[0] + '&wersja=napisy'
                     if item == 1:
                         nUrl = match[0] + '&wersja=oryginalny'
-                    
-            link = self.cm.requestData(nUrl)    
-            #log.info(link)
-            #var flm = escape('http://50.7.220.66/folder/432ee8003a064ecc0eb46abfa59a044a_8555.mp4');
-            match_watch = re.compile("var flm = escape\('(.+?)'\);").findall(link)
-            if len(match_watch) > 0:
-                videoUrl = match_watch[0]
+            
+            link = self.cm.requestData(nUrl)
+            match = re.search('eval\((.+?)\)\n',link)
+            if match:
+                js = 'eval(' + match.group(1) + ')'
+                videoUrl = self.decodeJS(js)
             else:
                 videoUrl = ''
             return videoUrl
@@ -154,14 +151,14 @@ class SerialNet:
         ok=True
         if videoUrl == '':
             d = xbmcgui.Dialog()
-            d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+            d.ok('Nie znaleziono streamingu.', 'MoÅ¼e to chwilowa awaria.', 'SprÃ³buj ponownie za jakiÅ› czas')
             return False
         try:
             xbmcPlayer = xbmc.Player()
             xbmcPlayer.play(videoUrl)
         except:
             d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+            d.ok('BÅ‚Ä…d przy przetwarzaniu, lub wyczerpany limit czasowy oglÄ…dania.', 'Zarejestruj siÄ™ i opÅ‚aÄ‡ abonament.', 'Aby oglÄ…daÄ‡ za darmo sprÃ³buj ponownie za jakiÅ› czas')        
         return ok
 
     
@@ -187,3 +184,40 @@ class SerialNet:
             else:
                 d = xbmcgui.Dialog()
                 d.ok('Brak linku', 'SerialNet.pl - nie znaleziono linku')
+     
+                
+    def int2base(self, x, base):
+        digs = string.digits + string.lowercase + string.uppercase
+        if x < 0: sign = -1
+        elif x==0: return '0'
+        else: sign = 1
+        x *= sign
+        digits = []
+        while x:
+            digits.append(digs[x % base])
+            x /= base
+        if sign < 0:
+            digits.append('-')
+        digits.reverse()
+        return ''.join(digits)
+
+
+    def unpack(self, p, a, c, k, e=None, d=None):
+        for i in xrange(c-1,-1,-1):
+            if k[i]:
+                p = re.sub('\\b'+self.int2base(i,a)+'\\b', k[i], p)
+        return p
+
+
+    def decodeJS(self, s):
+        ret = ''
+        if len(s) > 0:
+            js = 'unpack' + s[s.find('}(')+1:-1]
+            js = js.replace("unpack('",'''unpack("''').replace(");'",''');"''').replace("\\","/")
+            js = js.replace("//","/").replace("/'","'")
+            js = "self." + js
+
+            match = re.compile("\('(.+?)'").findall(eval(js))
+            if len(match) > 0:
+                ret = base64.b64decode(binascii.unhexlify(match[0].replace("/x","")))
+        return ret
