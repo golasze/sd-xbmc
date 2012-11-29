@@ -52,7 +52,7 @@
 <addon id="plugin.video.polishtv.live"
        name="Telewizja Polska (kanały, VOD, filmy, seriale)"
        version="0.1.0"
-       provider-name="SD teams">
+       provider-name="SD Team">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
     <import addon="script.module.elementtree" version="1.2.7" />
@@ -65,8 +65,10 @@
         <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary>Polish TV: Watch LIVE VIDEO STREAMING of International Cricket</summary>
-    <description>Favorite Cricket Channel in Poland.</description>
+    <summary>Telewizja Polska: Oglądaj telewizje na żywo, VOD, seriale z najpopularniejszych polskich serwisów wideo</summary>
+        <description>www.sd-xbmc.org
+    
+    Wtyczka umożliwiająca łatwy dostęp do najopularnijeszych polskich serwisów wideo. W jednym miejscu znajdziesz telewizjie na żywo, VOD i seriale. Wtyczka rownież pozwala nagrywanie jak i łatwa integrację z programem telewizyjnym.</description>
     <platform>all</platform>
   </extension>
 </addon>
