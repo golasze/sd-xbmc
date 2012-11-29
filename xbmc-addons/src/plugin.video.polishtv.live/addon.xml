@@ -18,7 +18,7 @@
     <summary>Telewizja Polska: Oglądaj telewizje na żywo, VOD, seriale z najpopularniejszych polskich serwisów wideo</summary>
     <description>www.sd-xbmc.org
     
-    Wtyczka umożliwiająca łatwy dostęp do najopularnijeszych polskich serwisów wideo. W jednym miejscu znajdziesz telewizjie na żywo, VOD i seriale. Wtyczka rownież pozwala nagrywanie jak i łatwa integrację z programem telewizyjnym.</description>
+Wtyczka umożliwiająca łatwy dostęp do najopularnijeszych polskich serwisów wideo. W jednym miejscu znajdziesz telewizjie na żywo, VOD i seriale. Wtyczka rownież pozwala na nagrywanie jak i łatwa integrację z programem telewizyjnym.</description>
     <platform>all</platform>
   </extension>
 </addon>
