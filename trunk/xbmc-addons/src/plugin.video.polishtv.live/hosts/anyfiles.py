@@ -11,51 +11,45 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, urlparser
+import pLog, settings, Parser, urlparser, pCommon
 
 log = pLog.pLog()
 
-mainUrl = 'http://video.anyfiles.pl'
+HOST = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
+SERVICENAME = 'anyfiles'
+MAINURL = 'http://video.anyfiles.pl'
+IMGURL = MAINURL + '/img/nlogo.png'
+NEW_LINK = MAINURL + '/najnowsze/0'
+HOT_LINK = MAINURL + '/najpopularniejsze/0'
 
-ANYFILES_MENU_TABLE = { 1: "Kategorie",
+SERVICE_MENU_TABLE = { 1: "Kategorie",
 			2: "Najnowsze",
 			3: "Popularne",
-			4: "Szukaj" }
+			4: "Szukaj",
+			5: "Historia Wyszukiwania"}
 			
-
-HOST = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
-
-NEW_LINK = mainUrl + '/najnowsze/0'
-HOT_LINK = mainUrl + '/najpopularniejsze/0'
 
 
 class AnyFiles:
   def __init__(self):
-    log.info('Loading AnyFiles')
+    log.info('Loading ' + SERVICENAME)
     self.settings = settings.TVSettings()
     self.parser = Parser.Parser()
     self.up = urlparser.urlparser()
- 
+    self.common = pCommon.common()
+    self.history = pCommon.history()
+    
  
   def setTable(self):
-    return ANYFILES_MENU_TABLE
+    return SERVICE_MENU_TABLE
     
     
   def getMenuTable(self):
     nTab = []
-    for num, val in ANYFILES_MENU_TABLE.items():
+    for num, val in SERVICE_MENU_TABLE.items():
       nTab.append(val)
     return nTab
-  
-        
-  def requestData(self, url):
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', HOST)
-    response = urllib2.urlopen(req)
-    data = response.read()
-    response.close()	
-    return data
-    
+   
     
   def searchInputText(self):
     text = None
@@ -69,7 +63,7 @@ class AnyFiles:
   def searchTab(self, text):
     strTab = []
     valTab = []
-    searchUrl = mainUrl + '/Search.jsp'
+    searchUrl = MAINURL + '/Search.jsp'
     values = { 'q': text, 'oe': 'polish' }
     headers = { 'User-Agent' : HOST }
     data = urllib.urlencode(values)
@@ -82,7 +76,7 @@ class AnyFiles:
       for i in range(len(match)):
 	value = match[i]
 	strTab.append(value[2])
-	strTab.append(mainUrl + value[1])
+	strTab.append(MAINURL + value[1])
 	strTab.append(value[0])	
 	valTab.append(strTab)
 	strTab = []
@@ -92,14 +86,14 @@ class AnyFiles:
   def getCategories(self):
     valTab = []
     strTab = []
-    link = self.requestData(mainUrl)
+    link = self.common.requestData(MAINURL)
     match = re.compile('<tr><td><a href="(.+?)" class="kat-box-title">.+?</a></td></tr>').findall(link)
     if len(match) > 0:
       for i in range(len(match)):	
 	c = match[i].split('/')
 	#cat = c[1].replace('+',' ')
 	strTab.append(c[1].replace('+',' '))
-	strTab.append(mainUrl + match[i])
+	strTab.append(MAINURL + match[i])
 	valTab.append(strTab)
 	strTab = []
     return valTab 
@@ -108,13 +102,13 @@ class AnyFiles:
   def getMovieTab(self, url):
     strTab = []
     valTab = []
-    link = self.requestData(url)
+    link = self.common.requestData(url)
     match = re.compile('src="(.+?)".+?(?:\n|\r\n?).+?(?:\n|\r\n?).+?(?:\n|\r\n?)<tr><td><a href="(.+?)" class="kat-box-name">(.+?)</a>', re.MULTILINE).findall(link)
     if len(match) > 0:
       for i in range(len(match)):
 	value = match[i]
 	strTab.append(value[2])
-	strTab.append(mainUrl + value[1])
+	strTab.append(MAINURL + value[1])
 	strTab.append(value[0])	
 	valTab.append(strTab)
 	strTab = []
@@ -126,9 +120,9 @@ class AnyFiles:
 	nextpage = (int(match.group(2))+1) * 20
 	strTab.append("pokaz wiecej")
 	if len(p) == 7:
-	  strTab.append(mainUrl + "/" + p[3] + "/" + p[4] + "/" + p[5] + "/" + str(nextpage))
+	  strTab.append(MAINURL + "/" + p[3] + "/" + p[4] + "/" + p[5] + "/" + str(nextpage))
 	else:
-	  strTab.append(mainUrl + "/" + p[3] + "/" + str(nextpage))	  
+	  strTab.append(MAINURL + "/" + p[3] + "/" + str(nextpage))	  
 	strTab.append("")
 	valTab.append(strTab)
     return valTab
@@ -141,9 +135,9 @@ class AnyFiles:
       url = value[1]
       iconimage = value[2]
       if title == 'pokaz wiecej':
-	self.add('anyfiles', title, 'movie', 'None', title, iconimage, url, True, False)
+	self.add(SERVICENAME, title, 'movie', 'None', title, iconimage, url, True, False)
       else:
-	self.add('anyfiles', 'playSelectedMovie', 'movie', 'None', title, iconimage, url, True, False)	
+	self.add(SERVICENAME, 'playSelectedMovie', 'movie', 'None', title, iconimage, url, True, False)	
     #zmien view na "Thumbnail"
     xbmcplugin.setContent(int(sys.argv[1]),'movies')
     xbmc.executebuiltin("Container.SetViewMode(500)")    
@@ -153,15 +147,22 @@ class AnyFiles:
   def listsAddDirMenu(self, table, name, category, page):
     for i in range(len(table)):
       if name == 'None':
-	self.add('anyfiles', table[i], 'None', 'None', 'None', 'None', 'None', True, False)
+	self.add(SERVICENAME, table[i], 'None', 'None', 'None', IMGURL, 'None', True, False)
       if name == 'category':
-	self.add('anyfiles', table[i][0], table[i][0], 'None', 'None', 'None', table[i][1], True, False)
+	self.add(SERVICENAME, table[i][0], table[i][0], 'None', 'None', 'None', table[i][1], True, False)
     #zmien view na "List"
     xbmcplugin.setContent(int(sys.argv[1]),'movies')
     xbmc.executebuiltin("Container.SetViewMode(502)")    	
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-
+  def listsHistory(self, table):
+    print str(table)
+    for i in range(len(table)):
+      print str(table[i])
+      if table[i] <> '':
+	self.add(SERVICENAME, table[i], 'history', 'None', 'None', IMGURL, 'None', True, False)
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
+    
   def add(self, service, name, category, page, title, iconimage, url, folder = True, isPlayable = True):
     u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name) + "&category=" + urllib.quote_plus(category) + "&page=" + urllib.quote_plus(page) + "&title=" + urllib.quote_plus(title) + "&url=" + urllib.quote_plus(url)
     #log.info(str(u))
@@ -202,6 +203,7 @@ class AnyFiles:
     title = title.replace("+", " ")
     category = category.replace("+", " ")
     page = page.replace("+", " ")
+    
     #log.info('nazwa: ' + name)
     #log.info('cat: ' + category)
     #log.info('page: ' + page)
@@ -226,7 +228,15 @@ class AnyFiles:
     if name == self.setTable()[4]:
       text = self.searchInputText()
       if text != None:
+	self.history.addHistoryItem(SERVICENAME, text)
 	self.listsAddLinkMovie(self.searchTab(text))
+    #Historia Wyszukiwania
+    if name == self.setTable()[5]:
+      t = self.history.loadHistoryFile(SERVICENAME)
+      self.listsHistory(t)
+    if category == 'history':
+      self.listsAddLinkMovie(self.searchTab(name))
+    
     #odtwarzaj video
     if name == 'playSelectedMovie':
       urlLink = self.up.getVideoLink(url)
