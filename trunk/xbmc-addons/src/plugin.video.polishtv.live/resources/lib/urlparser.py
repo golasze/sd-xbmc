@@ -34,12 +34,6 @@ chars_table = {
   'z': 'C'
 }
 
-#generates final link but XBMC doesnt want to play it
-#http://www.wootly.ch/?v=G79EEEE4
-
-#cannot figure out these ones:
-#http://dwn.so/v/DS301459CC
-#http://www.novamov.com/video/ec0a25241419e
 
 class urlparser:
   def __init__(self):
@@ -92,6 +86,8 @@ class urlparser:
 
     if host == 'www.putlocker.com':
         nUrl = self.parserPUTLOCKER(url)
+    if host == 'www.sockshare.com':
+        nUrl = self.parserSOCKSHARE(url)
     if host == 'megustavid.com':
         nUrl = self.parserMEGUSTAVID(url)
     if host == 'hd3d.cc':
@@ -112,14 +108,11 @@ class urlparser:
         nUrl = self.parserANYFILES(url)
     if host == 'www.videoweed.es' or host == 'www.videoweed.com' or host == 'videoweed.es' or host == 'videoweed.com':
         nUrl = self.parserVIDEOWEED(url)
-
-#    if host=='www.novamov.com':
-#       nUrl = self.parserNOVAMOV(url)
-#    if host=='dwn.so':
-#       nUrl = self.parserDWN(url)
-#    if host=='www.wootly.ch':
-#       nUrl = self.parserWOOTLY(url)
-
+    if host== 'www.novamov.com':
+        nUrl = self.parserNOVAMOV(url)
+    if host== 'www.nowvideo.eu':
+        nUrl = self.parserNOWVIDEO(url)
+	
     return nUrl
 
 #nUrl - "" ; brak obslugi hosta
@@ -393,4 +386,72 @@ class urlparser:
               return False
       else:
           return False
+	
+      
+  def parserNOVAMOV(self, url):
+      link = self.requestData(url)
+      match_file = re.compile('flashvars.file="(.+?)";').findall(link)
+      match_key = re.compile('flashvars.filekey="(.+?)";').findall(link)
+      if len(match_file) > 0 and len(match_key) > 0:
+          get_api_url = ('http://www.novamov.com/api/player.api.php?key=%s&user=undefined&codes=1&pass=undefined&file=%s') % (match_key[0], match_file[0])
+	  link_api = self.requestData(get_api_url)
+          match_url = re.compile('url=(.+?)&title').findall(link_api)
+          if len(match_url) > 0:
+              return match_url[0]
+          else:
+              return False
+
+  def parserNOWVIDEO(self, url):
+      link = self.requestData(url)
+      match_file = re.compile('flashvars.file="(.+?)";').findall(link)
+      match_key = re.compile('flashvars.filekey="(.+?)";').findall(link)
+      if len(match_file) > 0 and len(match_key) > 0:
+          get_api_url = ('http://www.nowvideo.eu/api/player.api.php?codes=1&key=%s&user=undefined&pass=undefined&file=%s') % (match_key[0], match_file[0])
+	  link_api = self.requestData(get_api_url)
+          match_url = re.compile('url=(.+?)&title').findall(link_api)
+          if len(match_url) > 0:
+              return match_url[0]
+          else:
+              return False
+
+
+  def parserSOCKSHARE(self,url):
+    link = self.requestData(url)    
+    r = re.search('value="(.+?)" name="fuck_you"', link)
+    if r:
+      if DEBUG: log.info("hash: " + r.group(1))
+      postdata = {'fuck_you' : r.group(1), 'confirm' : 'Close Ad and Watch as Free User'}
+      data = urllib.urlencode(postdata)
+      req = urllib2.Request(url,data)
+      req.add_header('User-Agent', HOST)
+      cj = cookielib.LWPCookieJar()
+      opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+      resp = opener.open(req)
+      link = resp.read()
+      resp.close()
+      match = re.compile("playlist: '(.+?)'").findall(link)
+      if len(match) > 0:
+        if DEBUG: log.info("get_file.php:" + match[0])
+        url = "http://www.sockshare.com" + match[0]
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', HOST)
+        resp = opener.open(req)
+        link = resp.read()
+        resp.close()
+        if DEBUG: log.info(link)
+        match = re.compile('</link><media:content url="(.+?)" type="video').findall(link)
+        if len(match) > 0:
+          url = match[0].replace('&amp;','&')
+          if DEBUG: log.info("final link: " + url)
+          return url
+        else:
+          return False
+      else:
+        return False
+    else:
+      return False
+
+
+
+
           
