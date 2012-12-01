@@ -45,6 +45,7 @@ class KinoPecetowiec:
     def setTable(self):
 	return SERVICE_MENU_TABLE
 
+
     def listsMainMenu(self, table):
         for num, val in table.items():
             self.addDir(SERVICE, 'main-menu', val, '', '', '', LOGOURL, True, False)
@@ -76,7 +77,7 @@ class KinoPecetowiec:
     def listsCategoriesMenu(self,url):
         table = self.getCategoryTab(url)
         for i in range(len(table)):
-          value = table[i]
+	  value = table[i]
           img = value[0]
           url = value[1]
           title = value[2]
@@ -129,35 +130,35 @@ class KinoPecetowiec:
     
     def getFilmTable(self,url):
         table = self.getFilmTab(url)
-        link = self.cm.requestData(url)
         for i in range(len(table)):
           value = table[i]
           imgtab = value[0]
           urltab = value[1]
           titletab = value[2]
           if titletab > 0:
-             self.addDir(SERVICE, 'movies', '', titletab, '', urltab, imgtab, True, False)   
-        match2 = re.compile('<a href="(.+?)">&raquo;</a> </div>').findall(link)
-        if len(match2) > 0:
-             nexturl = match2[0]
-             self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', nexturl, '', True, False) 
+             self.addDir(SERVICE, 'playSelectedMovie', '', titletab, '', urltab, imgtab, True, False)
+        
+	link = self.cm.requestData(url)	     
+        match = re.compile('<a href="(.+?)">&raquo;</a> </div>').findall(link)
+        if len(match) > 0:
+             self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', match[0], '', True, False) 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
     def getFilmTable2(self,url):
         table = self.getFilmTab2(url)
-        link = self.cm.requestData(url)
         for i in range(len(table)):
           value = table[i]
           imgtab2 = value[0]
           urltab2 = value[1]
           titletab2 = value[2]
           if titletab2 > 0:
-             self.addDir(SERVICE, 'movies', '', titletab2, '', urltab2, imgtab2, True, False)   
-        match2 = re.compile('class="pagingnav">.+?</span><a href="(.+?)">').findall(link)
-        if len(match2) > 0:
-             nexturl = match2[0]
-             self.addDir(SERVICE, 'submenu3', 'Najnowsze', 'Następna strona', '', nexturl, '', True, False) 
+             self.addDir(SERVICE, 'playSelectedMovie', '', titletab2, '', urltab2, imgtab2, True, False)   
+
+        link = self.cm.requestData(url)
+        match = re.compile('class="pagingnav">.+?</span><a href="(.+?)">').findall(link)
+        if len(match) > 0:
+             self.addDir(SERVICE, 'submenu3', 'Najnowsze', 'Następna strona', '', match[0], '', True, False) 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -169,90 +170,110 @@ class KinoPecetowiec:
           urltab3 = value[1]
           titletab3 = value[2]
           if titletab3 > 0:
-             self.addDir(SERVICE, 'movies', '', titletab3, '', urltab3, imgtab3, True, False)   
+             self.addDir(SERVICE, 'playSelectedMovie', '', titletab3, '', urltab3, imgtab3, True, False)   
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
+    def setLinkTable(self, host, url):
+        strTab = []
+	strTab.append(host)
+	strTab.append(url)
+	return strTab
+    
     def getHostTable(self,url):
+	valTab = []
         link = self.cm.requestData(url)
         
 	match = re.compile('<iframe src="http://www.putlocker.com/.+?/(.+?)".+?scrolling="no"></iframe>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
-                     self.addDir(SERVICE, 'playSelectedMovie', '', 'Putlocker', '', playURL + match[i], 'http://www.qooymirrors.com/image/cache/data/putlocker-228x228.jpg', True, False) 
+		valTab.append(self.setLinkTable('putlocker', playURL + match[i]))
         else:
             match = re.compile('http://www.putlocker.com/.+?/(.+?)\n').findall(link)
             if len(match) > 0:
-                    for i in range(len(match)):
-                         match[0]=re.sub('\r','',match[0])
-                         self.addDir(SERVICE, 'playSelectedMovie', '', 'Putlocker', '', playURL + match[i], 'http://www.qooymirrors.com/image/cache/data/putlocker-228x228.jpg', True, False)
+                for i in range(len(match)):
+		    valTab.append(self.setLinkTable('putlocker', playURL + match[i]))
         
 	match = re.compile('<iframe src="http://nextvideo.pl/(.+?)".+?scrolling="no"></iframe>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
-                     self.addDir(SERVICE, 'playSelectedMovie', '', 'Nextvideo', '', playURL2 + match[i], 'http://b.vimeocdn.com/ps/319/040/3190402_300.jpg', True, False)
+		valTab.append(self.setLinkTable('nextvideo', playURL2 + match[i]))
         else:
             match = re.compile('http://nextvideo.pl/(.+?)\n').findall(link)
             if len(match) > 0:
-                    for i in range(len(match)):
-                         match[0]=re.sub('\r','',match[0])
-                         self.addDir(SERVICE, 'playSelectedMovie', '', 'Nextvideo', '', playURL2 + match[i], 'http://b.vimeocdn.com/ps/319/040/3190402_300.jpg', True, False)
+                for i in range(len(match)):
+		    match[0]=re.sub('\r','',match[0])
+		    valTab.append(self.setLinkTable('nextvideo', playURL2 + match[i]))
         
 	match = re.compile('<iframe src="http://www.sockshare.com/(.+?)".+?scrolling="no"></iframe>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
-                     self.addDir(SERVICE, 'playSelectedMovie', '', 'Sockshare', '', playURL3 + match[i], 'http://www.qooymirrors.com/image/cache/data/sockshare-228x228.jpg', True, False)
+		valTab.append(self.setLinkTable('sockshare', playURL3 + match[i]))
         else:
             match = re.compile('http://www.sockshare.com/(.+?)\n').findall(link)
             if len(match) > 0:
-                    for i in range(len(match)):
-                         match[0]=re.sub('\r','',match[0])
-                         self.addDir(SERVICE, 'playSelectedMovie', '', 'Sockshare', '', playURL3 + match[i], 'http://www.qooymirrors.com/image/cache/data/sockshare-228x228.jpg', True, False)
+                for i in range(len(match)):
+                    match[0]=re.sub('\r','',match[0])
+		    valTab.append(self.setLinkTable('sockshare', playURL3 + match[i]))
         
 	match = re.compile('<iframe src="http://video.anyfiles.pl/(.+?)".+?scrolling="no"></iframe>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
-                     self.addDir(SERVICE, 'playSelectedMovie', '', 'AnyFiles', '', playURL4 + match[i], 'http://anyfiles.pl/anyfiles2.jpg', True, False)
+		valTab.append(self.setLinkTable('anyfiles', playURL4 + match[i]))
         else:
             match = re.compile('http://video.anyfiles.pl/(.+?)\n').findall(link)
             if len(match) > 0:
-                    for i in range(len(match)):
-                         match[0]=re.sub('\r','',match[0])
-                         self.addDir(SERVICE, 'playSelectedMovie', '', 'AnyFiles', '', playURL4 + match[i], 'http://anyfiles.pl/anyfiles2.jpg', True, False)
+                for i in range(len(match)):
+                    match[0]=re.sub('\r','',match[0])
+                    valTab.append(self.setLinkTable('anyfiles', playURL4 + match[i]))
         
 	match = re.compile('<iframe src="http://www.novamov.com/(.+?)".+?scrolling="no"></iframe>').findall(link)       
 	if len(match) > 0:
             for i in range(len(match)):
-                     self.addDir(SERVICE, 'playSelectedMovie', '', 'Novamov', '', playURL5 + match[i], 'http://www.p2pon.com/wp-content/uploads/2012/10/novamov_trans_refl_glow_01-300x2251.png', True, False)
+		valTab.append(self.setLinkTable('novamov', playURL5 + match[i]))
         else:
             match = re.compile('http://www.novamov.com/(.+?)\n').findall(link)
             if len(match) > 0:
-                    for i in range(len(match)):
-                         match[0]=re.sub('\r','',match[0])
-                         self.addDir(SERVICE, 'playSelectedMovie', '', 'Novamov', '', playURL5 + match[i], 'http://www.p2pon.com/wp-content/uploads/2012/10/novamov_trans_refl_glow_01-300x2251.png', True, False)
+                for i in range(len(match)):
+                    match[0]=re.sub('\r','',match[0])
+		    valTab.append(self.setLinkTable('novamov', playURL5 + match[i]))
         
 	match = re.compile('<iframe src="http://odsiebie.pl/(.+?)".+?scrolling="no"></iframe>').findall(link)        
 	if len(match) > 0:
             for i in range(len(match)):
-                     self.addDir(SERVICE, 'playSelectedMovie', '', 'OdSiebie', '', playURL6 + match[i], 'http://www.polskiprogram.pl/wp-content/uploads/2010/12/odsiebie_pl-150x150.png', True, False)
+                valTab.append(self.setLinkTable('odsiebie', playURL6 + match[i]))
         else:
             match = re.compile('http://odsiebie.pl/(.+?)\n').findall(link)
             if len(match) > 0:
-                    for i in range(len(match)):
-                         match[0]=re.sub('\r','',match[0])
-                         self.addDir(SERVICE, 'playSelectedMovie', '', 'OdSiebie', '', playURL6 + match[i], 'http://www.polskiprogram.pl/wp-content/uploads/2010/12/odsiebie_pl-150x150.png', True, False)
-        match = re.compile('<iframe src="http://www.nowvideo.eu/(.+?)".+?scrolling="no"></iframe>').findall(link)
-        
+                for i in range(len(match)):
+                    match[0]=re.sub('\r','',match[0])
+                    valTab.append(self.setLinkTable('odsiebie', playURL6 + match[i]))
+
+        match = re.compile('<iframe src="http://www.nowvideo.eu/(.+?)".+?scrolling="no"></iframe>').findall(link)       
 	if len(match) > 0:
             for i in range(len(match)):
-                     self.addDir(SERVICE, 'playSelectedMovie', '', 'Nowvideo', '', playURL7 + match[i], 'http://www.nowvideo.eu/images/logo.png', True, False)
+                valTab.append(self.setLinkTable('nowvideo', playURL7 + match[i]))
         else:
             match = re.compile('http://www.nowvideo.eu/(.+?)\n').findall(link)
             if len(match) > 0:
-                    for i in range(len(match)):
-                         match[0]=re.sub('\r','',match[0])
-                         self.addDir(SERVICE, 'playSelectedMovie', '', 'Nowvideo', '', playURL7 + match[i], 'http://www.nowvideo.eu/images/logo.png', True, False)
-        xbmcplugin.endOfDirectory(int(sys.argv[1])) 
+                for i in range(len(match)):
+		    match[0]=re.sub('\r','',match[0])
+                    valTab.append(self.setLinkTable('nowvideo', playURL7 + match[i]))
+        
+	d = xbmcgui.Dialog()
+        item = d.select("Wybór filmu", self.getItemTitles(valTab))
+        if item != '':
+	    videoID = str(valTab[item][1])
+	    log.info('mID: ' + videoID)
+            return videoID
+
+	
+    def getItemTitles(self, table):
+        out = []
+        for i in range(len(table)):
+            value = table[i]
+            out.append(value[0])
+        return out 
                 
 
     def searchInputText(self):
@@ -327,10 +348,10 @@ class KinoPecetowiec:
         page = self.parser.getParam(params, "page")
         icon = self.parser.getParam(params, "icon")
 	
-	#print str(name)
-	#print str(title)
-	#print str(category)
-	#print str (page)
+	log.info ('name: ' + str(name))
+	log.info ('title: ' + str(title))
+	log.info ('category: ' + str(category))
+	log.info ('page: ' + str(page))
 	
         if name == None:
             self.listsMainMenu(SERVICE_MENU_TABLE)
@@ -338,7 +359,7 @@ class KinoPecetowiec:
             self.listsCategoriesMenu(MAINURL + '/categories')	    
         elif name == 'main-menu' and category == self.setTable()[2]:
 	    self.getFilmTable2(MAINURL + '/videos')
-        elif name == 'main-menu' and category == self.setTable()[3]:
+	elif name == 'main-menu' and category == self.setTable()[3]:
 	    self.getSearchTable()
 	
 	#nastepna strona
@@ -347,14 +368,12 @@ class KinoPecetowiec:
 	    
         elif name == 'submenu':
             self.getFilmTable(page)	    
-	    
-        elif name == 'movies':
-            self.getHostTable(page)
-	    
+	    	    
         if name == 'playSelectedMovie':
-                linkVideo = self.up.getVideoLink(page)
-                if linkVideo != False:
-                    self.LOAD_AND_PLAY_VIDEO(linkVideo)
-                else:
-                    d = xbmcgui.Dialog()
-                    d.ok('Brak linku', 'KinoPecetowiec - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
+            url = self.getHostTable(page)
+            linkVideo = self.up.getVideoLink(url)
+            if linkVideo != False:
+                self.LOAD_AND_PLAY_VIDEO(linkVideo)
+            else:
+                d = xbmcgui.Dialog()
+                d.ok('Brak linku', 'KinoPecetowiec - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
