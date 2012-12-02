@@ -1,5 +1,9 @@
-Version 0.0.1
-Initial release
+Version 0.2.0
+- dodany serwis kino.pecetowiec.pl
+- naprawiona obsluga Wlacz TV,
+- naprawiona oblsuga SerialNet.
+
+Version 0.1.0
 
 Version 0.0.4
 - added iplex (need patch ffmpeg)
@@ -9,3 +13,8 @@ Version 0.0.4
 - fixed ekino
 - fixed iitv
 - disabled ipla
+
+Version 0.0.1
+Initial release
+
+
