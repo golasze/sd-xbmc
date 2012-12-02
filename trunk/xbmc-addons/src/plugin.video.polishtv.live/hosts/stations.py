@@ -74,6 +74,8 @@ MENU_TAB = [
             [ "Christus Vincit ", 4, "http://82.160.147.122/pustelnia" ],
             [ "EduSat", 0, "rtmp://178.73.10.66:1935/live/mpegts.stream" ],
             [ "iTV", 0, "mms://stream.mni.pl/ITV" ],
+            [ "TVBiznes", 1, "http://dcs-188-64-84-12.atmcdn.pl/streams/o2/TVBiznes/TVbiznes.livx playpath=TVbiznes swfUrl=http://cm2.atmitv.pl/ContentManager/swf/Player.swf pageUrl=http://www.tv.jardello.eu/08/5/index.php  live=true swfVfy=true" ],
+
             [ "Kosmica TV", 0, "rtmp://streamserver.smartcast.de/kosmicaber/kosmicaber.stream" ],
             [ "Pomerania TV", 5, "mms://pomerania.tv:8080/" ],
             [ "Telewizja sudecka", 5, "mms://82.139.8.249/sudecka" ],
