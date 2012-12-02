@@ -147,9 +147,9 @@ class AnyFiles:
   def listsAddDirMenu(self, table, name, category, page):
     for i in range(len(table)):
       if name == 'None':
-	self.add(SERVICENAME, table[i], 'None', 'None', 'None', IMGURL, 'None', True, False)
+	self.add(SERVICENAME, table[i], 'None', 'None', table[i], IMGURL, 'None', True, False)
       if name == 'category':
-	self.add(SERVICENAME, table[i][0], table[i][0], 'None', 'None', 'None', table[i][1], True, False)
+	self.add(SERVICENAME, table[i][0], table[i][0], 'None', table[i][0], 'None', table[i][1], True, False)
     #zmien view na "List"
     xbmcplugin.setContent(int(sys.argv[1]),'movies')
     xbmc.executebuiltin("Container.SetViewMode(502)")    	

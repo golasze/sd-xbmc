@@ -19,7 +19,7 @@ HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mand
 SERVICE = 'kinopecetowiec'
 MAINURL = 'http://www.kino.pecetowiec.pl'
 LOGOURL = MAINURL + '/images/logo-pecetowiec-filmy-online2.jpg'
-
+NEW_LINK = MAINURL + '/videos/basic/mr/'
 
 playURL = 'http://www.putlocker.com/embed/'
 playURL2 = 'http://nextvideo.pl/'
@@ -31,7 +31,8 @@ playURL7 = 'http://www.nowvideo.eu/'
 
 SERVICE_MENU_TABLE = {1: "Kategorie Filmowe",
 		      2: "Najnowsze",
-		      3: "Szukaj" }
+		      3: "Szukaj",
+		      }
 
 class KinoPecetowiec:
     def __init__(self):
@@ -144,8 +145,8 @@ class KinoPecetowiec:
              self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', match[0], '', True, False) 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-
-    def getFilmTable2(self,url):
+    #TABLE NAJNOWSZE
+    def getFilmTable2(self, url, page):
         table = self.getFilmTab2(url)
         for i in range(len(table)):
           value = table[i]
@@ -154,11 +155,12 @@ class KinoPecetowiec:
           titletab2 = value[2]
           if titletab2 > 0:
              self.addDir(SERVICE, 'playSelectedMovie', '', titletab2, '', urltab2, imgtab2, True, False)   
-
         link = self.cm.requestData(url)
-        match = re.compile('class="pagingnav">.+?</span><a href="(.+?)">').findall(link)
+
+        match = re.compile('<a .+?>\&raquo;</a>').findall(link)
         if len(match) > 0:
-             self.addDir(SERVICE, 'submenu3', 'Najnowsze', 'Następna strona', '', match[0], '', True, False) 
+	    page = str(int(page) + 1)
+            self.addDir(SERVICE, 'submenu3', SERVICE_MENU_TABLE[2], 'Następna strona', '', page, '', True, False) 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -289,6 +291,7 @@ class KinoPecetowiec:
         strTab = []
         valTab = []
         text = self.searchInputText()
+	self.history.addHistoryItem(SERVICENAME, text)
         values = {'search_id': text}
         headers = { 'User-Agent' : HOST }
         data = urllib.urlencode(values)
@@ -353,18 +356,23 @@ class KinoPecetowiec:
 	log.info ('category: ' + str(category))
 	log.info ('page: ' + str(page))
 	
+	#main menu	
         if name == None:
             self.listsMainMenu(SERVICE_MENU_TABLE)
+	
+	#kategorie filmowe    
         elif name == 'main-menu' and category == self.setTable()[1]:
             self.listsCategoriesMenu(MAINURL + '/categories')	    
-        elif name == 'main-menu' and category == self.setTable()[2]:
-	    self.getFilmTable2(MAINURL + '/videos')
+	
+	#najnowsze
+	elif category == self.setTable()[2]:
+	    if page=='': page = 1
+	    self.getFilmTable2(NEW_LINK + str(page), page)
+	
+	#szukaj
 	elif name == 'main-menu' and category == self.setTable()[3]:
 	    self.getSearchTable()
-	
-	#nastepna strona
-	elif category == 'Najnowsze' and title == 'Następna strona':
-	    self.getFilmTable2(page)
+
 	    
         elif name == 'submenu':
             self.getFilmTable(page)	    
