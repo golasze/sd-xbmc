@@ -1,92 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.moje.polskieradio"
-       name="Moje Polskie Radio"
-       version="0.0.2"
-       provider-name="SYSTEMS DESIGN - Plesken">
-  <requires>
-    <import addon="xbmc.python" version="1.0"/>
-    <import addon="script.module.simplejson" version="2.0.10" />
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>audio</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Moje Polskie Radio</summary>
-    <description>Moje Polskie Radio</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="plugin.bino3D.openelec" name="Bino 3D player"
-	version="0.0.1" provider-name="SYSTEMS DESIGN - Plesken">
-	<requires>
-		<import addon="xbmc.python" version="1.0" />
-	</requires>
-	<extension point="xbmc.python.pluginsource" library="default.py">
-		<provides>video</provides>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Bino 3D player</summary>
-		<description>Bino 3D player integrated with openelec</description>
-		<platform>OpenELEC - Linux</platform>
-	</extension>
-</addon>
-
-<addon id="plugin.multimedia.players" name="External Multimedia Players"
-	version="1.0.6" provider-name="SYSTEMS DESIGN - Plesken">
-	<requires>
-		<import addon="xbmc.python" version="1.0" />
-	</requires>
-	<extension point="xbmc.python.pluginsource" library="default.py">
-		<provides>video</provides>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>External Multimedia Players</summary>
-		<description>These players you can use to play 3D movies from NET and bluray from iso files, or unencrypted disc</description>
-		<platform>linux</platform>
-	</extension>
-</addon>
-
-<addon id="plugin.video.polishtv.live"
-       name="Telewizja Polska (kanały, VOD, filmy, seriale)"
-       version="0.1.0"
-       provider-name="SD Team">
-  <requires>
-    <import addon="xbmc.python" version="1.0"/>
-    <import addon="script.module.elementtree" version="1.2.7" />
-    <import addon="script.module.beautifulsoup" version="3.2.0" />
-    <import addon="script.module.parsedom" version="0.9.0" />
-    <import addon="script.module.simplejson" version="2.0.10" />
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Telewizja Polska: Oglądaj telewizje na żywo, VOD, seriale z najpopularniejszych polskich serwisów wideo</summary>
-        <description>www.sd-xbmc.org
-    
-Wtyczka umożliwiająca łatwy dostęp do najopularnijeszych polskich serwisów wideo. W jednym miejscu znajdziesz telewizjie na żywo, VOD i seriale. Wtyczka rownież pozwala na nagrywanie jak i łatwa integrację z programem telewizyjnym.</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="script.module.skingui"
-       name="skingui"
-       version="0.0.1"
-       provider-name="code.google.com/sd-xbmc">
-  <requires>
-    <import addon="xbmc.python" version="1.0"/>
-  </requires>
-  <extension point="xbmc.python.module"
-             library="lib" />
-  <extension point="xbmc.addon.metadata">
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="repository.systems-design.eu"
 		name="systems-design.eu Add-ons"
 		version="1.0.0"
@@ -106,5 +19,77 @@ Wtyczka umożliwiająca łatwy dostęp do najopularnijeszych polskich serwisów 
 		<summary lang="nl">Add-ons van systems-design.eu installeren</summary>
 		<summary lang="pl">Instaluj wtyczki z systems-design.eu</summary>
 	</extension>
+</addon>
+
+<addon id="plugin.moje.polskieradio"
+       name="Moje Polskie Radio"
+       version="0.0.2"
+       provider-name="SYSTEMS DESIGN - Plesken">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+    <import addon="script.module.simplejson" version="2.0.10" />
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>audio</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Moje Polskie Radio</summary>
+    <description>Moje Polskie Radio</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.multimedia.players" name="External Multimedia Players"
+	version="1.0.6" provider-name="SYSTEMS DESIGN - Plesken">
+	<requires>
+		<import addon="xbmc.python" version="1.0" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>External Multimedia Players</summary>
+		<description>These players you can use to play 3D movies from NET and bluray from iso files, or unencrypted disc</description>
+		<platform>linux</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.polishtv.live"
+       name="Telewizja Polska (kanały, VOD, filmy, seriale)"
+       version="0.2.0"
+       provider-name="SD Team">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+    <import addon="script.module.elementtree" version="1.2.7" />
+    <import addon="script.module.beautifulsoup" version="3.2.0" />
+    <import addon="script.module.parsedom" version="0.9.0" />
+    <import addon="script.module.simplejson" version="2.0.10" />
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Telewizja Polska: Oglądaj telewizje na żywo, VOD, seriale z najpopularniejszych polskich serwisów wideo</summary>
+    <description>www.sd-xbmc.org
+
+Wtyczka umożliwiająca łatwy dostęp do najopularnijeszych polskich serwisów wideo. W jednym miejscu znajdziesz telewizjie na żywo, VOD i seriale. Wtyczka rownież pozwala na nagrywanie jak i łatwa integrację z programem telewizyjnym.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="script.module.skingui"
+       name="skingui"
+       version="0.0.1"
+       provider-name="code.google.com/sd-xbmc">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.module"
+             library="lib" />
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+  </extension>
 </addon>
 </addons>

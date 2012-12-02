@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.polishtv.live"
        name="Telewizja Polska (kanały, VOD, filmy, seriale)"
-       version="0.1.0"
+       version="0.2.0"
        provider-name="SD Team">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
