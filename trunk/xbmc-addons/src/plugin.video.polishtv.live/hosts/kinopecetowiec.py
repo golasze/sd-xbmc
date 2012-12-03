@@ -19,6 +19,7 @@ HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mand
 SERVICE = 'kinopecetowiec'
 MAINURL = 'http://www.kino.pecetowiec.pl'
 LOGOURL = MAINURL + '/images/logo-pecetowiec-filmy-online2.jpg'
+IMGURL = MAINURL + '/chimg/'
 NEW_LINK = MAINURL + '/videos/basic/mr/'
 
 playURL = 'http://www.putlocker.com/embed/'
@@ -57,21 +58,15 @@ class KinoPecetowiec:
         strTab = []
         valTab = []
         data = self.cm.requestData(url)
-        match = re.compile('<img  src="(.+?)" width="164" height="220" border="0" alt=""/></a></div>').findall(data)
+        match = re.compile('<div class=".+?"><a href="http://www.kino.pecetowiec.pl/categories/(.+?)/.+?" title="(.+?)"><span').findall(data)
         if len(match) > 0:
-          img = match
-        else:
-          img = []
-        match = re.compile('<div class=".+?"><a href="(.+?)" title="(.+?)"><span').findall(data)
-        if len(match) > 0:
-          for i in range(len(match)):
+	  for i in range(len(match)):
             value = match[i]
-            strTab.append(img[i])
             strTab.append(value[0])
             strTab.append(value[1])	
             valTab.append(strTab)
             strTab = []
-	  valTab.sort(key = lambda x: x[2])
+	  valTab.sort(key = lambda x: x[1])
         return valTab
 
 
@@ -79,88 +74,50 @@ class KinoPecetowiec:
         table = self.getCategoryTab(url)
         for i in range(len(table)):
 	  value = table[i]
-          img = value[0]
-          url = value[1]
-          title = value[2]
+          img = IMGURL + value[0] + '.jpg'
+          title = value[1]
           if title > 0:
-             self.addDir(SERVICE, 'submenu', '', title, '', url, img, True, False)
+             self.addDir(SERVICE, 'category', value[0], title, '', '', img, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
-    def getFilmTab(self,url):   
+    def getFilmTab(self, url, category):
         strTab = []
         valTab = []
         data = self.cm.requestData(url)
-        match = re.compile('<img src="(.+?)" width="150" height="180" border="0" id="rotate').findall(data)
-        if len(match) > 0:
-          img = match
-        else:
-          img = []
-        match = re.compile('<div class=".+?"> <a href="(.+?)">(.+?)</a>').findall(data)
-        if len(match) > 0:
-          for i in range(len(match)):
-            value = match[i]
-            strTab.append(img[i])
-            strTab.append(value[0])
-            strTab.append(value[1])	
-            valTab.append(strTab)
-            strTab = []
-        return valTab
-
-
-    def getFilmTab2(self,url):   
-        strTab = []
-        valTab = []
-        data = self.cm.requestData(url)
-        match = re.compile('<img src="(.+?)" width="126"  height="160" id="rotate').findall(data)
-        if len(match) > 0:
-          img = match
-        else:
-          img = []
-        match = re.compile('<div class="video-title"><a href="(.+?)" title="(.+?)">').findall(data)
+	#Najnowsze
+	if category == self.setTable()[2]:
+	    match = re.compile('<div class="video-title"><a href="http://www.kino.pecetowiec.pl/video/(.+?)/(.+?)" title="(.+?)">').findall(data)
+	else:
+	#Kategorie
+	    match = re.compile('<div class="channel-details-thumb-box-texts"> <a href="http://www.kino.pecetowiec.pl/video/(.+?)/(.+?)">(.+?)</a><br/>').findall(data)
         if len(match) > 0:
           for i in range(len(match)):
             value = match[i]
-            strTab.append(img[i])
-            strTab.append(value[0])
-            strTab.append(value[1])	
+            strTab.append(MAINURL + '/thumb/1_' + value[0] +'.jpg')
+            strTab.append(MAINURL + '/video/' + value[0] + '/' + value[1])
+            strTab.append(value[2])	
             valTab.append(strTab)
             strTab = []
+	#pagination
+	match = re.compile('<a href="(.+?)">&raquo;</a>').findall(data)
+	if len(match) > 0:
+            strTab.append('')
+            strTab.append('')
+            strTab.append('Następna strona')	
+            valTab.append(strTab) 	    
         return valTab
-    
-    
-    def getFilmTable(self,url):
-        table = self.getFilmTab(url)
+
+   
+    def getFilmTable(self, url, category, page):
+        table = self.getFilmTab(url, category)
         for i in range(len(table)):
           value = table[i]
-          imgtab = value[0]
-          urltab = value[1]
-          titletab = value[2]
-          if titletab > 0:
-             self.addDir(SERVICE, 'playSelectedMovie', '', titletab, '', urltab, imgtab, True, False)
-        
-	link = self.cm.requestData(url)	     
-        match = re.compile('<a href="(.+?)">&raquo;</a> </div>').findall(link)
-        if len(match) > 0:
-             self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', match[0], '', True, False) 
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
-
-    #TABLE NAJNOWSZE
-    def getFilmTable2(self, url, page):
-        table = self.getFilmTab2(url)
-        for i in range(len(table)):
-          value = table[i]
-          imgtab2 = value[0]
-          urltab2 = value[1]
-          titletab2 = value[2]
-          if titletab2 > 0:
-             self.addDir(SERVICE, 'playSelectedMovie', '', titletab2, '', urltab2, imgtab2, True, False)   
-        link = self.cm.requestData(url)
-
-        match = re.compile('<a .+?>\&raquo;</a>').findall(link)
-        if len(match) > 0:
+	  if value[2] != 'Następna strona':
+	    self.addDir(SERVICE, 'playSelectedMovie', '', value[2], '', value[1], value[0], True, False)
+	  else:
 	    page = str(int(page) + 1)
-            self.addDir(SERVICE, 'submenu3', SERVICE_MENU_TABLE[2], 'Następna strona', '', page, '', True, False) 
+            self.addDir(SERVICE, 'category', category, value[2], '', page, '', True, False) 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -168,11 +125,8 @@ class KinoPecetowiec:
         table = self.searchTab()
         for i in range(len(table)):
           value = table[i]
-          imgtab3 = value[0]
-          urltab3 = value[1]
-          titletab3 = value[2]
-          if titletab3 > 0:
-             self.addDir(SERVICE, 'playSelectedMovie', '', titletab3, '', urltab3, imgtab3, True, False)   
+#         movielink = value[1]
+          self.addDir(SERVICE, 'playSelectedMovie', '', value[2], '', value[1], value[0], True, False)   
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -181,6 +135,7 @@ class KinoPecetowiec:
 	strTab.append(host)
 	strTab.append(url)
 	return strTab
+
     
     def getHostTable(self,url):
 	valTab = []
@@ -291,7 +246,6 @@ class KinoPecetowiec:
         strTab = []
         valTab = []
         text = self.searchInputText()
-	self.history.addHistoryItem(SERVICENAME, text)
         values = {'search_id': text}
         headers = { 'User-Agent' : HOST }
         data = urllib.urlencode(values)
@@ -315,8 +269,8 @@ class KinoPecetowiec:
         return valTab
 
 
-    def addDir(self, service, name, category, title, plot, link, iconimage, folder = True, isPlayable = True):
-        u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&page=" + urllib.quote_plus(link)
+    def addDir(self, service, name, category, title, plot, page, iconimage, folder = True, isPlayable = True):
+        u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&page=" + urllib.quote_plus(page)
         if name == 'main-menu':
             title = category
         if iconimage == '':
@@ -350,32 +304,30 @@ class KinoPecetowiec:
         category = self.parser.getParam(params, "category")
         page = self.parser.getParam(params, "page")
         icon = self.parser.getParam(params, "icon")
-	
+
 	log.info ('name: ' + str(name))
 	log.info ('title: ' + str(title))
 	log.info ('category: ' + str(category))
 	log.info ('page: ' + str(page))
+
+	if page=='': page = 1
 	
 	#main menu	
         if name == None:
-            self.listsMainMenu(SERVICE_MENU_TABLE)
-	
+            self.listsMainMenu(SERVICE_MENU_TABLE)	
 	#kategorie filmowe    
-        elif name == 'main-menu' and category == self.setTable()[1]:
-            self.listsCategoriesMenu(MAINURL + '/categories')	    
-	
+	elif category == self.setTable()[1]:
+	    self.listsCategoriesMenu(MAINURL + '/categories')	    
 	#najnowsze
 	elif category == self.setTable()[2]:
-	    if page=='': page = 1
-	    self.getFilmTable2(NEW_LINK + str(page), page)
-	
+	    self.getFilmTable(NEW_LINK + str(page), category, page)	
 	#szukaj
-	elif name == 'main-menu' and category == self.setTable()[3]:
+	elif category == self.setTable()[3]:
 	    self.getSearchTable()
-
-	    
-        elif name == 'submenu':
-            self.getFilmTable(page)	    
+	#lista tytulow w kategorii    
+	elif name == 'category':
+	    url = MAINURL + '/categories/' + category + '/' + str(page) + '/'
+	    self.getFilmTable(url, category, page)	    
 	    	    
         if name == 'playSelectedMovie':
             url = self.getHostTable(page)
@@ -384,4 +336,4 @@ class KinoPecetowiec:
                 self.LOAD_AND_PLAY_VIDEO(linkVideo)
             else:
                 d = xbmcgui.Dialog()
-                d.ok('Brak linku', 'KinoPecetowiec - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
+                d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
