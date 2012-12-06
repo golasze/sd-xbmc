@@ -18,18 +18,15 @@ Plik konfiguracyjny {{{advancedsettings.xml}}}  znajduje się w folderze z danym
  
 W przypadku braku pliku {{{advancedsettings.xml}}} we wskazanym folderze należy go samemu utworzyć.
 
-Wartością dodaną, w stosunku do włączania logowania bezpośrednio z XBMC, jest możliwość decydowania jak szczegółowe dane powinien nasz log zawierać.
-
-I tak poprzez parametr {{{loglevel}}} można ustawić jedną z wartości:
+Wartością dodaną, w stosunku do włączania logowania bezpośrednio z XBMC, jest możliwość decydowania jak szczegółowe dane powinien nasz log zawierać. I tak poprzez parametr {{{loglevel}}} można ustawić jedną z wartości:
 ||-1||brak logowania||
 ||0||normalne logowanie (ustawienie domyślne)||
 ||1||logowanie szczegółowe (debug)||
 ||2||jak (1) + informacja na ekranie o użyciu procesora, pamięci itp.||
 ||3||jak (2) + inormacja szczegółowa o zasobach SMB||
  
-Dodatkowo możliwe jest ustawienie atrybutu {{{hidden}}}, który decyduje czy opcja włączania / wyłączania logowania będzie widoczna w XBMC (_false_) czy też nie (_true_).
 
-Przykładowo, chcąc włączyć szczegółowe logowanie, bez wyświetlania  informacji na ekranie, oraz ukryć opcję logowania z menu XBMC, należałoby wpisać:
+Dodatkowo możliwe jest ustawienie atrybutu {{{hidden}}}, który decyduje czy opcja włączania / wyłączania logowania będzie widoczna w XBMC (_false_) czy też nie (_true_).Przykładowo, chcąc włączyć szczegółowe logowanie, bez wyświetlania  informacji na ekranie, oraz ukryć opcję logowania z menu XBMC, należałoby wpisać:
 
 <loglevel hide=true>1loglevel>
 
