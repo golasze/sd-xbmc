@@ -110,6 +110,8 @@ class history:
     
 
     def addHistoryItem(self, service, item):
+	if not os.path.isfile(HISTORYFILE):
+	    self.makeHistoryFile(service)
 	strTab = []
 	root = self.readHistoryFile()
 	#check if item already exists
