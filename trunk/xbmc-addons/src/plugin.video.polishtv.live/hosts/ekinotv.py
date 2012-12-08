@@ -557,15 +557,15 @@ class EkinoTV:
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
     
 
-  def LOAD_AND_PLAY_VIDEO(self, videoUrl):
+  def LOAD_AND_PLAY_VIDEO(self, videoUrl, title):
     ok=True
     if videoUrl == '':
       return False
+    thumbnail = xbmc.getInfoImage("ListItem.Thumb")
+    liz=xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
+    liz.setInfo( type="Video", infoLabels={ "Title": title } )
     try:
       xbmcPlayer = xbmc.Player()
-      title = ""
-      liz=xbmcgui.ListItem()
-      liz.setInfo( type="Video", infoLabels={ "Title": title } )
       xbmcPlayer.play(videoUrl, liz)
     except:
       d = xbmcgui.Dialog()
@@ -627,4 +627,4 @@ class EkinoTV:
 	urlLink = self.getPartURL(title, page)	  		
       if urlLink.startswith('http://'):
 	log.info("url: " + urlLink)
-	self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink))
+	self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink), title)
