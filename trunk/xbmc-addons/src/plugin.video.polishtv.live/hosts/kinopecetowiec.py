@@ -146,9 +146,9 @@ class KinoPecetowiec:
         return out 
 
     def listsHistory(self, table):
-	print str(table)
+#	print str(table)
 	for i in range(len(table)):
-	    print str(table[i])
+#	    print str(table[i])
 	    if table[i] <> '':
 		self.addDir(SERVICE, table[i], 'history', table[i], 'None', LOGOURL, 'None', True, False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -300,7 +300,7 @@ class KinoPecetowiec:
 	#Historia Wyszukiwania
 	elif category == self.setTable()[11]:
 	    t = self.history.loadHistoryFile(SERVICE)
-	    print str(t)
+#	    print str(t)
 	    self.listsHistory(t)
 	if category == 'history' and name != 'playSelectedMovie':
 	    self.getSearchTable(self.searchTab(name))	
