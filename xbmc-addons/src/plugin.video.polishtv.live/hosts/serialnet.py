@@ -119,20 +119,21 @@ class SerialNet:
             if version == 'false':
                 d = xbmcgui.Dialog()
                 item = d.select("Wybór wersji", ["Napisy","Bez lektora i napisów"])
-                if item != '':
-                    log.info(item)
+                if item != -1:
                     if item == 0:
                         nUrl = match[0] + '&wersja=napisy'
-                    if item == 1:
-                        nUrl = match[0] + '&wersja=oryginalny'
-            
-            link = self.cm.requestData(nUrl)
-            match = re.search('eval\((.+?)\)\n',link)
-            if match:
-                js = 'eval(' + match.group(1) + ')'
-                videoUrl = self.decodeJS(js)
-            else:
-                videoUrl = ''
+                    log.info("wersja: " + nUrl)
+                    link = self.cm.requestData(nUrl)
+                    print "link: " + link
+                    match = re.search('eval\((.+?)\)\n',link)
+                    if match:
+                        js = 'eval(' + match.group(1) + ')'
+                        videoUrl = self.decodeJS(js)
+                        log.info("decoded link: " + videoUrl)
+                    else:
+                        videoUrl = ''
+                else:        
+                    videoUrl = ''
             return videoUrl
         
 
