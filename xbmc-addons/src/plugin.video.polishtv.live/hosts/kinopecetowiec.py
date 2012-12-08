@@ -141,7 +141,7 @@ class KinoPecetowiec:
         out = []
         for i in range(len(table)):
             value = table[i]
-            title = value[0].replace('www', '').replace('com', '').replace('.', '').replace('pl', '')
+            title = value[0].replace('www', '').replace('com', '').replace('.', '').replace('pl', '').replace('eu', '')
             out.append(title)
         return out 
 
@@ -239,7 +239,8 @@ class KinoPecetowiec:
             d = xbmcgui.Dialog()
             d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
             return False
-        liz=xbmcgui.ListItem(title)
+        thumbnail = xbmc.getInfoImage("ListItem.Thumb")
+        liz=xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
         liz.setInfo( type="Video", infoLabels={ "Title": title } )
         try:
             xbmcPlayer = xbmc.Player()

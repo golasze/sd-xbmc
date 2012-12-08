@@ -152,15 +152,18 @@ class BestPlayer:
         liz.setInfo( type="Video", infoLabels={ "Title": title, "Plot": plot } )
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
       
-    def LOAD_AND_PLAY_VIDEO(self, videoUrl):
+    def LOAD_AND_PLAY_VIDEO(self, videoUrl, title):
         ok=True
         if videoUrl == '':
             d = xbmcgui.Dialog()
             d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
             return False
+        thumbnail = xbmc.getInfoImage("ListItem.Thumb")
+        liz=xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
+        liz.setInfo( type="Video", infoLabels={ "Title": title } )
         try:
             xbmcPlayer = xbmc.Player()
-            xbmcPlayer.play(videoUrl)
+            xbmcPlayer.play(videoUrl, liz)
         except:
             d = xbmcgui.Dialog()
             d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
@@ -198,7 +201,7 @@ class BestPlayer:
             if ID != '':
                 linkVideo = self.up.getVideoLink(ID)
                 if linkVideo != False:
-                    self.LOAD_AND_PLAY_VIDEO(linkVideo)
+                    self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
             else:
                 d = xbmcgui.Dialog()
                 d.ok('Brak linku', 'Maxvideo - tymczasowo wyczerpałeś limit ilości uruchamianych seriali.', 'Zapraszamy za godzinę.')
