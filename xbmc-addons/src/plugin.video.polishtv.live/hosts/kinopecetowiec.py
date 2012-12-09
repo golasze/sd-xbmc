@@ -141,8 +141,8 @@ class KinoPecetowiec:
         out = []
         for i in range(len(table)):
             value = table[i]
-            title = value[0].replace('www', '').replace('com', '').replace('.', '').replace('pl', '').replace('eu', '')
-            out.append(title)
+           # title = value[0].replace('www', '').replace('com', '').replace('.', '').replace('pl', '').replace('eu', '')
+            out.append(value[0])
         return out 
 
     def listsHistory(self, table):
