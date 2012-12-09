@@ -13,7 +13,7 @@ Wchodzimy  w _system => wtyczki => włączone wtyczki => wtyczki programów => T
 Klikamy ustaw, jako źródło ustawiamy XMLTV, następnie ściągamy na dysk którąś z wersji EPG:
 
 ||[http://db.tt/ABX5BUx3]|| wersja na 3 dni + opisy  około 5Mb posegregowane tematycznie||
-||[http://db.tt/HSRgGwSx3]|| wersja na 3 dni + opisy  około 5Mb posegregowane tematycznie dla strefy czasowej UTC||
+||[http://db.tt/HSRgGwSx]|| wersja na 3 dni + opisy  około 5Mb posegregowane tematycznie dla strefy czasowej UTC||
 ||[http://jatrn.com/xbmc/epg_weebtv.xml]|| wersja na 48 godzin dla weeb.tv||
 ||[http://jatrn.com/xbmc/epg_weebtv_CST.xml]|| wersja na 48 godzin dla weeb.tv dla strefy czasowej CST||
 ||[http://jatrn.com/xbmc/epg_weebtv_EST.xml]|| wersja na 48 godzin dla weeb.tv dla strefy czasowej EST||
