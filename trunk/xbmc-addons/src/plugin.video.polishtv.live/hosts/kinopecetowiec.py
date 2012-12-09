@@ -209,7 +209,7 @@ class KinoPecetowiec:
 	    if len(match2) > 0:
 		for i in range(len(match2)):
 		    match2[i] = 'http://' + match2[i]
-		    valTab.append(self.setLinkTable(self.up.getHostName(match2[i]), match2[i]))
+		    valTab.append(self.setLinkTable(self.up.getHostName(match2[i], True), match2[i]))
 	    valTab.sort(key = lambda x: x[0])
 	
 	d = xbmcgui.Dialog()
