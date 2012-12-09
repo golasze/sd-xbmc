@@ -62,11 +62,15 @@ class urlparser:
       return string_out
 
 
-  def getHostName(self, url):
+  def getHostName(self, url, nameOnly = False):
     hostName = ''       
     match = re.search('http://(.+?)/',url)
     if match:
       hostName = match.group(1)
+      
+      if (nameOnly):
+	n = hostName.split('.')
+	hostName = n[-2]
     return hostName
 
 
