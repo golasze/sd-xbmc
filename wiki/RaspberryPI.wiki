@@ -16,8 +16,10 @@ O ile użytkownicy Linux'a bez problemu sobie poradzą, dla użytkowników Windo
 
 Możemy to zrobić na dwa sposoby:
   * Ściągnąć wtyczkę z adresu: http://sd-xbmc.googlecode.com/files/repository.sd-addons.eu.zip zapisać ją lokalnie oraz użyć _WinSCP_, aby przenieść ją na Raspberry
-  * Zalogować się do Raspberry korzystając z _Putty_ i wykorzystać protokół SSH, i zdalnie wywołać komendę _wget http://sd-xbmc.googlecode.com/files/repository.sd-addons.eu.zip _
-
+  * Zalogować się do Raspberry korzystając z _Putty_ i wykorzystać protokół SSH, i zdalnie wywołać komendę 
+{{{
+wget http://sd-xbmc.googlecode.com/files/repository.sd-addons.eu.zip
+}}}
 W obydwu przypadkach należy pamiętać, aby zalogować się na użytkownika, na którym działa XBMC, w większości będzie to _root_, ale np. w XBian'ie jest to użytkownik _xbian_. W przeciwnym razie XBMC nie będzie w stanie odczytać umieszczonego pliku.
 
 Po umieszczeniu pliku na dysku, dalej postępujemy jak ze standardową instalacją w XBMC.
@@ -38,7 +40,7 @@ Serwisy, które przetestowałem to:
   * Włącz.tv
   * Weeb.tv
 
-Wszystkie działają poprawnie w temacie odtwarzania (aby uruchomić, niektóre z nich musiałem dokonać pewnych poprawek w samej obsłusze API, błędy te zapewne zostaną poprawione w najbliższej aktualizacji).
+Wszystkie działają poprawnie w temacie odtwarzania (aby uruchomić, niektóre z nich musiałem dokonać pewnych poprawek w samej obsłudze API, błędy te zapewne zostaną poprawione w najbliższej aktualizacji).
 
 Dodatkowo również nie miałem problemu ze skorzystanie źródeł wideo z:
   * MaxVideo
