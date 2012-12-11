@@ -210,6 +210,14 @@ MENU_TAB = [
             [ "Zakopane Gubałówka, widok na Giewont", 8,"rtmp://vod.wowza.astrosa.pl/rtplive/:camera10.stream" ],
             [ "Zwardoń, wyciąg- Duży Rachowiec", 8,"rtmp://vod.wowza.astrosa.pl/rtplive/:camera45.stream" ],
             [ "Świnoujście Plaża", 8,"rtmp://vod.wowza.astrosa.pl/rtplive/:camera41.stream" ],
+            [ "Trzebinia placyk obok wieży multimedialnej i wylot ul. Narutowicza", 8,"http://89.231.239.50:7098/video2.mjpg" ],
+            [ "Trzebinia otoczenie wieży multimedialnej", 8,"http://89.231.239.50:7097/video2.mjpg" ],
+            [ "Trzebinia widok na fontannę", 8,"http://89.231.239.50:7095/video2.mjpg" ],
+            [ "Trzebinia Rynek", 8,"http://89.231.239.50:7096/video2.mjpg" ],
+            [ "Kraków Wawel i zakole Wisły", 8,"rtmp://h264.webcamera.pl/krakow_cam_4c3e37/krakow_cam_4c3e37.stream" ],
+            [ "Kraków Podziemia Rynku Głównego", 8,"rtmp://h264.webcamera.pl/krakow_cam_c44608/krakow_cam_c44608.stream" ],
+            [ "Kraków Grodzka", 8,"rtmp://h264.webcamera.pl/krakow_cam_702b61/krakow_cam_702b61.stream" ],
+            [ "Kraków Widok z ulicy Brackiej", 8,"rtmp://h264.webcamera.pl/krakow_cam_9a3b91/krakow_cam_9a3b91.stream" ],
 
               ]
 
