@@ -27,7 +27,7 @@ CATEGORY_TAB = [
 
 #           [title, category_id, videoUrl]
 MENU_TAB = [  
-#           [ "test", 0, "rtmp://cp118140.live.edgefcs.net/live/TSAtelemadridsat@47720" ],
+            [ "TVN stream2", 0, "rtmp://94.23.39.164/satlive/tvn playpath=tvn swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-127.htm  live=true swfVfy=true" ],
             [ "ATM Rozrywka", 0, "rtmp://creyden.popler.tv:80/rtplive?play=123452/fdg4324" ],
             [ "TVP2", 0, "rtmp://94.23.39.164/satlive/tvp2 playpath=tvp2 swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-131.htm  live=true swfVfy=true" ],
             [ "TVN", 0, "rtmp://75.126.203.130/stream/JardelloTV3333?id=59199" ],
