@@ -1,6 +1,6 @@
 <strings>
-    <!-- Default settings -->
-    <string id="55100">Domyślne</string>
+    <!-- Global settings -->
+    <string id="55100">Ogólne</string>
     <string id="55101">Nagrywanie</string>
     <string id="55102">Ścieżka do rtmp</string>
     <string id="55103">Katalog nagrywanych programów</string>
@@ -15,7 +15,7 @@
     <string id="55001">Ustawienie logowania do serwisu płatnego</string>
     <string id="55002">Użytkownik:</string>
     <string id="55003">Hasło:</string>
-    <string id="55004">Włącz logowanie</string>
+    <!--<string id="55004">Włącz logowanie</string>-->
     <!--<string id="55005">Ustawienie IP streamingu</string>-->
     <string id="55005">Ustawienie jakości streamingu</string>
     <string id="55007">EPG</string>
@@ -23,6 +23,8 @@
     <string id="55009">Wysoka jakość (jeśli dostępna)</string>
     <string id="55010">Nagrywanie</string>
     <string id="55011">Włącz pytanie o nagranie</string>
+    <string id="55012">Kanaly</string>
+    <string id="55013">Sortuj wedlug</string>
     
     <!-- TVN settings -->
     <string id="55200">TVN</string>

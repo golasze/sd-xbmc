@@ -24,6 +24,8 @@
 		<setting id="weebtv_rec" type="bool" label="55011" default="false" />
 		<setting type="lsep" label="55007" />
 		<setting id="weebtv_strm" type="folder" label="55008" default="None" />
+		<setting type="lsep" label="55012" />
+		<setting id="weebtv_sort" type="labelenum" label="55013" values="Alphabetical|Now Viewed|Most Viewed" default="Alphabetical" />
     </category>
     <category label="55200">
         <setting id="tvn_perpage" type="labelenum" label="55201" values="10|20|30|40|50" default="50" />
