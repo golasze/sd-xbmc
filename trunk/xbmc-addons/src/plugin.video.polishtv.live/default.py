@@ -22,7 +22,6 @@ import ekinotv, iitvinfo, anyfiles, serialnet, bestplayer, kinopecetowiec
 
 log = pLog.pLog()
 
-
 TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
                     101: "Włącz TV [wyświetl kanały]",
                     102: "Stacje TV [strumienie]",

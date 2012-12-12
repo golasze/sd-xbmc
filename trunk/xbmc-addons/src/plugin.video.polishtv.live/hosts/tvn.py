@@ -17,7 +17,7 @@ except ImportError:
     import sha
     sha1 = sha.new
 
-import pLog, settings, Parser
+import pLog, settings, Parser, Navigation
 
 log = pLog.pLog()
 HANDLE = int(sys.argv[1])
@@ -41,6 +41,7 @@ platform = ptv.getSetting('tvn_platform')
 quality = ptv.getSetting('tvn_quality')
 quality_manual = ptv.getSetting('tvn_quality_manual')
 #samsung_quality = __settings__.getSetting('tvn_samsung_quality')
+dstpath = ""
 
 
 class tvn:
@@ -61,6 +62,7 @@ class tvn:
     def __init__(self):
         log.info("Starting TVN Player")
         self.parser = Parser.Parser()
+        self.navigation = Navigation.VideoNav()
         if quality_manual == 'true':
             ptv.setSetting('tvn_quality_temp', '')
         elif quality_manual == 'false':
@@ -108,6 +110,8 @@ class tvn:
             "TVShowTitle" : prop['TVShowTitle'],
             "Episode" : prop['episode']
         } )
+        cm = self.navigation.addVideoContextMenuItems({ 'service': 'tvn', 'title': prop['title'], 'url': urllib.quote_plus(url), 'path': dstpath })
+        liz.addContextMenuItems(cm, replaceItems=True)
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False,totalItems=listsize)
         return ok
 
@@ -243,6 +247,10 @@ class tvn:
         self.mode = str(self.parser.getParam(params, "mode"))
         self.page = self.parser.getParam(params, "page")
         self.season = self.parser.getParam(params, "season")
+        self.action = self.parser.getParam(params, "action")
+        self.service = self.parser.getParam(params, "service")
+        self.path = self.parser.getParam(params, "path")
+        
         if not self.page:
             self.page = 0
         else:
@@ -260,6 +268,12 @@ class tvn:
             self.listsCategories()
         elif self.name != 'None' and self.category != '':
             self.listsCategories()
+   
+        if self.service != '' and self.action == 'download' and self.url != '':
+            import downloader
+            dwnl = downloader.Downloader()
+            dwnl.getFile({ 'title': self.title, 'url': urllib.unquote_plus(self.url), 'path': dstpath })
+             
 
     def getVideoUrl(self, category, id):
         method = 'getItem'
