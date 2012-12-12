@@ -34,6 +34,7 @@ dstpath = ptv.getSetting('default_dstpath')
 timedelta_h = ptv.getSetting('default_timedelta_hours')
 timedelta_m = ptv.getSetting('default_timedelta_minutes')
 strmdir = ptv.getSetting('weebtv_strm')
+sortby = ptv.getSetting('weebtv_sort')
 
 VIDEO_MENU = [ "Nagrywanie", "Odtwarzanie", "Zaprogramowanie nagrania" ]
 
@@ -474,8 +475,11 @@ class WeebTV:
         if not os.path.isdir(self.recdir):
             os.mkdir(self.recdir)
         if action == None:
+			sortopt = 'online-alphabetical';
+			if sortby == 'Now Viewed': sortopt = 'online-now-viewed';	
+			elif sortby == 'Most Viewed': sortopt = 'online-most-viewed';				
 			show = Channels()
-			show.ChannelsList(apiUrl + "&option=online-alphabetical")
+			show.ChannelsList(apiUrl + "&option=" + sortopt)
         elif action == 1:
 			s.setViewMode('other')
 			if cid > 0 and title != "":

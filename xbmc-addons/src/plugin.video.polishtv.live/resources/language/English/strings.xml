@@ -1,6 +1,6 @@
 <strings>
     <!-- Default settings -->
-    <string id="55100">Default</string>
+    <string id="55100">Global</string>
     <string id="55101">Recording</string>
     <string id="55102">RTMP app path</string>
     <string id="55103">Recorded channels path</string>
@@ -12,17 +12,19 @@
     
     <!-- Weeb TV settings -->
     <string id="55000">Weeb TV</string>
-    <string id="55001">Ustawienie logowania do serwisu płatnego</string>
-    <string id="55002">Użytkownik:</string>
-    <string id="55003">Hasło:</string>
-    <string id="55004">Włącz logowanie</string>
+    <string id="55001">Login settings for premium content</string>
+    <string id="55002">Username:</string>
+    <string id="55003">Password:</string>
+    <!--<string id="55004">Włącz logowanie</string>-->
     <!--<string id="55005">Ustawienie IP streamingu</string>-->
-    <string id="55005">Ustawienie jakości streamingu</string>
+    <string id="55005">Stream Quality</string>
     <string id="55007">EPG</string>
     <string id="55008">Choose directory for STRM files</string>
     <string id="55009">High quality (if available)</string>
     <string id="55010">Record</string>
     <string id="55011">Enable record question</string>
+    <string id="55012">Channels</string>
+    <string id="55013">Sort channels by</string>
     
     <!-- TVN settings -->
     <string id="55200">TVN</string>
@@ -38,7 +40,7 @@
 
     <!-- IPLEX settings -->
     <string id="55400">IPLEX</string>
-    <string id="55401">Display adult content</string>
+    <string id="55401">Show adult content</string>
     
     <!-- Ekino TV settings -->
     <string id="55500">EkinoTV</string>
