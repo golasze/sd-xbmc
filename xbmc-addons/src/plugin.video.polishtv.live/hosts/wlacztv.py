@@ -13,7 +13,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, pCommon
+import pLog, settings, Parser, pCommon, Navigation
 
 log = pLog.pLog()
 cj = cookielib.LWPCookieJar()
@@ -46,6 +46,7 @@ class Channels:
         log.info("Loading wlacz.tv")
         self.parser = Parser.Parser()
         self.common = pCommon.common()
+        self.navigation = Navigation.RecordNav()
 
     def dec(self, string):
         json_ustr = json.dumps(string, ensure_ascii=False)
@@ -102,6 +103,8 @@ class Channels:
         u = "%s?service=%s&title=%s&key=%s&icon=%s" % (sys.argv[0], service, title, key, urllib.quote_plus(icon))
         liz = xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage = icon)
         liz.setInfo(type="Video", infoLabels={ "Title": title, })
+        cm = self.navigation.addVideoContextMenuItems({ 'service': service, 'title': title, 'item': key, 'path': dstpath })
+        liz.addContextMenuItems(cm, replaceItems=True)
         xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = False)
         if strmdir != 'None':
             if not os.path.isdir(strmdir):

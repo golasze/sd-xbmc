@@ -78,4 +78,11 @@
     <!-- SerialNet settings -->
     <string id="55700">SerialNet</string>
     <string id="55701">Wylacz pytanie o wersje video</string>
+    
+    <!-- Navigations -->
+    <string id="55800">Odtwórz</string>
+    <string id="55801">Ściągnij</string>
+    <string id="55802">Nagraj</string>
+    <string id="55803">Zaprogramuj nagranie</string>
+    <string id="55804">Informacje</string>
 </strings>
