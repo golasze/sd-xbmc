@@ -22,7 +22,6 @@ class Downloader:
         pass
     
     def getFile(self, opts = {}):
-        print 'AAAA tutaj: ' + self.fileName(opts['title'])
         title = self.fileName(opts['title'])
         params = { 'url': opts['url'], 'download_path': opts['path'] }
         downloader.download(title, params)

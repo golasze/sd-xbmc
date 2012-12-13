@@ -43,10 +43,13 @@
         <setting id="iplex_adult" type="bool" label="55401" default="false" />
     </category>
     <category label="55500">
-	<setting id="ekinotv_login" type="text" label="55503" default="" />
-	<setting id="ekinotv_password" type="text" label="55504" option="hidden" default="" />
+    	<setting type="lsep" label="55505" />
+		<setting id="ekinotv_login" type="text" label="55503" default="" />
+		<setting id="ekinotv_password" type="text" label="55504" option="hidden" default="" />
         <setting id="ekinotv_sort" type="labelenum" label="55501" values="ocena|popularnosc|data dodania|tytul" default="data dodania" />
         <setting id="ekinotv_sortorder" type="labelenum" label="55502" values="malejaco|rosnaco" default="malejaco" />
+        <setting type="lsep" label="55506" />
+        <setting id="ekinotv_path" type="folder" label="55507" default="None" />
     </category>
     <category label="55600">
     	<setting type="lsep" label="55601"/>

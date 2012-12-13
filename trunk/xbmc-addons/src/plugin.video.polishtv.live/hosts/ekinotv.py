@@ -12,7 +12,7 @@ BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "ekinotv.cookie"
 
-import pLog, settings, Parser, urlparser
+import pLog, settings, Parser, urlparser, Navigation
 
 log = pLog.pLog()
 cj = cookielib.LWPCookieJar()
@@ -24,6 +24,7 @@ sortby = ptv.getSetting('ekinotv_sort')
 sortorder = ptv.getSetting('ekinotv_sortorder')
 username = ptv.getSetting('ekinotv_login')
 password = ptv.getSetting('ekinotv_password')
+dstpath = ptv.getSetting('ekinotv_path')
 
 
 EKINO_MENU_TABLE = {
@@ -48,6 +49,7 @@ class EkinoTV:
     self.settings = settings.TVSettings()
     self.parser = Parser.Parser()
     self.up = urlparser.urlparser()
+    self.navigation = Navigation.VideoNav()
   
   
   def postData(self, url, postval = {}):
@@ -553,6 +555,9 @@ class EkinoTV:
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     if isPlayable:
       liz.setProperty("IsPlayable", "true")
+    if dstpath != "None" or not dstpath and name == 'playSelectedMovie':
+        cm = self.navigation.addVideoContextMenuItems({ 'service': 'ekinotv', 'title': urllib.quote_plus(title), 'url': urllib.quote_plus(category + ":" + page), 'path': dstpath })
+        liz.addContextMenuItems(cm, replaceItems=False)
     liz.setInfo('video', metadata )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
     
@@ -579,6 +584,11 @@ class EkinoTV:
     title = str(self.parser.getParam(params, "title"))
     category = str(self.parser.getParam(params, "category"))
     page = str(self.parser.getParam(params, "page"))
+    action = str(self.parser.getParam(params, "action"))
+    url = str(self.parser.getParam(params, "url"))
+    service = str(self.parser.getParam(params, "service"))
+    vtitle = str(self.parser.getParam(params, "vtitle"))
+    
     name = name.replace("+", " ")
     title = title.replace("+", " ")
     category = category.replace("+", " ")
@@ -622,9 +632,22 @@ class EkinoTV:
     if name == 'playSelectedMovie':
       urlLink = ''
       if title != 'None' and category == 'movie':
-	urlLink = self.getMovieURL(self.searchTab(title), title)
+          urlLink = self.getMovieURL(self.searchTab(title), title)
       elif title != 'None' and category == 'serial' and page != 'None':
-	urlLink = self.getPartURL(title, page)	  		
+          urlLink = self.getPartURL(title, page)	  		
       if urlLink.startswith('http://'):
-	log.info("url: " + urlLink)
-	self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink), title)
+          log.info("url: " + urlLink)
+          self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink), title)
+    
+    if service == 'ekinotv' and action == 'download' and url != '':
+        urlLink = ''
+        log.info('url: ' + url + ', title: ' + vtitle)
+        if urllib.unquote_plus(url).split(":")[0] == 'movie':
+            urlLink = self.getMovieURL(self.searchTab(urllib.unquote_plus(vtitle)), urllib.unquote_plus(vtitle))
+        elif urllib.unquote_plus(url).split(":")[0] == 'serial':
+            urlLink = self.getPartURL(urllib.unquote_plus(vtitle), urllib.unquote_plus(url).split(":")[1])
+        if urlLink.startswith('http://'):
+            log.info('link: ' + self.videoMovieLink(urlLink) + ', title: ' + urllib.unquote_plus(vtitle))
+            import downloader
+            dwnl = downloader.Downloader()
+            dwnl.getFile({ 'title': urllib.unquote_plus(vtitle), 'url': self.videoMovieLink(urlLink), 'path': dstpath })
