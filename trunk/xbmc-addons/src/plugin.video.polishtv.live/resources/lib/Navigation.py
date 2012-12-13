@@ -15,8 +15,8 @@ class VideoNav:
     def addVideoContextMenuItems(self, params={}):
         path = ""
         cm = []
-        cm.append((t(55800), "XBMC.RunPlugin(%s?service=%s&path=%s&action=play&url=%s)" % (sys.argv[0], params['service'], params['path'], params['url'])))
-        cm.append((t(55801), "XBMC.RunPlugin(%s?service=%s&path=%s&action=download&url=%s)" % (sys.argv[0], params['service'], params['path'], params['url'])))
+        #cm.append((t(55800), "XBMC.RunPlugin(%s?service=%s&path=%s&action=play&url=%s&vtitle=%s)" % (sys.argv[0], params['service'], params['path'], params['url'], params['title'])))
+        cm.append((t(55801), "XBMC.RunPlugin(%s?service=%s&path=%s&action=download&url=%s&vtitle=%s)" % (sys.argv[0], params['service'], params['path'], params['url'], params['title'])))
         cm.append((t(55804), "XBMC.Action(Info)",))
         return cm
 

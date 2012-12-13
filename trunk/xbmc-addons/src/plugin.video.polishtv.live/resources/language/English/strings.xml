@@ -32,7 +32,9 @@
     <string id="55202">Platform</string>
     <string id="55203">Quality</string>
     <string id="55204">Choose custom quality</string>
-    <!--<string id="55205">Samsung TV quality</string>-->
+    <string id="55205">Global settings</string>
+    <string id="55206">Download settings</string>
+    <string id="55207">Path to download files</string>
 
     <!-- TVP settings -->
     <string id="55300">TVP</string>
