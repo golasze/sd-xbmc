@@ -50,6 +50,9 @@
     <string id="55502">Order by</string>
     <string id="55503">Username:</string>
     <string id="55504">Password:</string>
+    <string id="55505">Global settigs</string>
+    <string id="55506">Download settings</string>
+    <string id="55507">Path to download</string>
     
     <!-- Wlacz TV settings -->
     <string id="55600">WlaczTV</string>
