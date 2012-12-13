@@ -41,7 +41,7 @@ platform = ptv.getSetting('tvn_platform')
 quality = ptv.getSetting('tvn_quality')
 quality_manual = ptv.getSetting('tvn_quality_manual')
 #samsung_quality = __settings__.getSetting('tvn_samsung_quality')
-dstpath = ""
+dstpath = ptv.getSetting('tvn_path')
 
 
 class tvn:
@@ -98,7 +98,7 @@ class tvn:
             prop['TVShowTitle'] = ''
         if not 'episode' in prop:
             prop['episode'] = 0
-
+                   
         liz=xbmcgui.ListItem(prop['title'], iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setProperty("IsPlayable", "true")
         liz.setInfo( type="Video", infoLabels={
@@ -110,8 +110,10 @@ class tvn:
             "TVShowTitle" : prop['TVShowTitle'],
             "Episode" : prop['episode']
         } )
-        cm = self.navigation.addVideoContextMenuItems({ 'service': 'tvn', 'title': prop['title'], 'url': urllib.quote_plus(url), 'path': dstpath })
-        liz.addContextMenuItems(cm, replaceItems=True)
+        
+        if dstpath != "None" or not dstpath:
+            cm = self.navigation.addVideoContextMenuItems({ 'service': 'tvn', 'title': urllib.quote_plus(prop['title']), 'url': urllib.quote_plus(url), 'path': dstpath })
+            liz.addContextMenuItems(cm, replaceItems=False)
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False,totalItems=listsize)
         return ok
 
@@ -250,6 +252,7 @@ class tvn:
         self.action = self.parser.getParam(params, "action")
         self.service = self.parser.getParam(params, "service")
         self.path = self.parser.getParam(params, "path")
+        self.vtitle = self.parser.getParam(params, "vtitle")
         
         if not self.page:
             self.page = 0
@@ -272,8 +275,8 @@ class tvn:
         if self.service != '' and self.action == 'download' and self.url != '':
             import downloader
             dwnl = downloader.Downloader()
-            dwnl.getFile({ 'title': self.title, 'url': urllib.unquote_plus(self.url), 'path': dstpath })
-             
+            dwnl.getFile({ 'title': urllib.unquote_plus(self.vtitle), 'url': urllib.unquote_plus(self.url), 'path': dstpath })
+
 
     def getVideoUrl(self, category, id):
         method = 'getItem'
