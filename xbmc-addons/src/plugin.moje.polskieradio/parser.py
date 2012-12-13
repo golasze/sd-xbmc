@@ -74,11 +74,11 @@ class Parser:
             if title != '' and stream != '' and playPath != '':
                 rtmpTab = stream.split(playPath)
                 rtmp = rtmpTab[0]
-                rtmp += ' swfUrl=' + swfUrl
+                #rtmp += ' swfUrl=' + swfUrl
                 #rtmp += ' pageUrl=' + pageUrl
                 rtmp += ' playpath=' + playPath
-                rtmp += ' swfVfy=true'
-                rtmp += ' live=true'
+                #rtmp += ' swfVfy=true'
+                #rtmp += ' live=true'
                 self.addLink(title, image, rtmp, desc, category)
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))        
