@@ -96,4 +96,6 @@
     <string id="55900">Connecting Error</string>
     <string id="55901">The content is forbidden</string>
     <string id="55902">Couldn't connect to network</string>
+    <string id="55903">API Error</string>
+    <string id="55904">No JSON Object could be decoded</string>
 </strings>

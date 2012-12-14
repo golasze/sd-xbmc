@@ -96,4 +96,6 @@
     <string id="55900">Błąd połączenia</string>
     <string id="55901">Zawartość została zablokowana</string>
     <string id="55902">Brak połączenia z siecią</string>
+    <string id="55903">Błąd API</string>
+    <string id="55904">Brak obiektu JSON do zdekodowania</string>
 </strings>
