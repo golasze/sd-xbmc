@@ -11,10 +11,11 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, urlparser
+import pLog, settings, Parser, urlparser, pCommon
 
 log = pLog.pLog()
 
+SERVICE = 'iitvinfo'
 mainUrl = 'http://iitv.info'
 watchUrl = mainUrl + '/ogladaj/'
 imageUrl = mainUrl + '/gfx/'
@@ -27,9 +28,15 @@ class iiTVInfo:
         self.settings = settings.TVSettings()
         self.parser = Parser.Parser()
         self.up = urlparser.urlparser()
+        self.cm = pCommon.common()
+
+    def listsABCMenu(self, table):
+        for i in range(len(table)):
+            self.addDir(SERVICE, 'abc-menu', table[i], table[i], '', '', True, False)
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
         
-    def getSerialsTable(self):
+    def getSerialsTable(self, letter):
         strTab = []
         outTab = []
         req = urllib2.Request(mainUrl)
@@ -37,21 +44,21 @@ class iiTVInfo:
         response = urllib2.urlopen(req)
         link = response.read()
         response.close()
-        
-        #<li class="serial_menu no_promoted" style="display:none"><a href="/zakochana-zlosnica/">10 Things I Hate About You</a><br /><a class="sub_name" href="/zakochana-zlosnica/">Zakochana złośnica</a></li>
-        #<li class="serial_menu no_promoted" style="display:none"><a href="/100-questions/">100 Questions</a></li>
-        #<li class="serial_menu " style="display:block"><a href="/2-broke-girls/">2 Broke Girls</a><br /><a class="sub_name" href="/2-broke-girls/">Dwie spłukane dziewczyny</a></li>
-        
         match = re.compile('<li class="serial_menu.+?" style="display:.+?"><a href="(.+?)">(.+?)</a>').findall(link)
         if len(match) > 0:
+            addItem = False
             for i in range(len(match)):
                 if not '<b>' in match[i][1]:
-                    strTab.append(match[i][1])
-                    strTab.append(match[i][0])
-                    outTab.append(strTab)
-                    strTab = []
+                    if (ord(letter[0]) < 65) and (ord(match[i][1][0]) < 65 or ord(match[i][1][0]) > 91): addItem = True
+                    if (letter == match[i][1][0].upper()): addItem = True
+                    if (addItem):
+                        strTab.append(match[i][1])
+                        strTab.append(match[i][0])
+                        outTab.append(strTab)
+                        strTab = []
+                        addItem = False
         outTab.sort(key = lambda x: x[0])
-        return outTab        
+        return outTab         
     
     
     def getImage(self,url):
@@ -59,13 +66,13 @@ class iiTVInfo:
         return imageLink
     
     
-    def showSerialTitles(self):
-        tab = self.getSerialsTable()
+    def showSerialTitles(self, letter):
+        tab = self.getSerialsTable(letter)
         if len(tab) > 0:
             for i in range(len(tab)):
                 #log.info(tab[i][1])
                 imageLink = self.getImage(tab[i][1])
-                self.addDir('iitvinfo', 'serial-title', 'None', tab[i][0], tab[i][1], imageLink, True, False)
+                self.addDir(SERVICE, 'serial-title', 'None', tab[i][0], tab[i][1], imageLink, True, False)
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
 
@@ -82,7 +89,7 @@ class iiTVInfo:
         if len(match) > 0:
             for i in range(len(match)):
                 if 'Sezon' in match[i]:
-                    self.addDir('iitvinfo', 'serial-season', 'None', match[i], url, imageLink, True, False)
+                    self.addDir(SERVICE, 'serial-season', 'None', match[i], url, imageLink, True, False)
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -112,7 +119,7 @@ class iiTVInfo:
                         if match_parts[i][2] == '' or match_parts[i][2] == ' ':
                             title = match_parts[i][1]
                         nUrl = url + match_parts[i][0]
-                        self.addDir('iitvinfo', 'playSelectedMovie', 'None', title, nUrl, imageLink, True, False)
+                        self.addDir(SERVICE, 'playSelectedMovie', 'None', title, nUrl, imageLink, True, False)
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
             
 
@@ -157,8 +164,6 @@ class iiTVInfo:
             response = urllib2.urlopen(req)
             link = response.read()
             response.close()
-            #<div class="watch_link" id="l_60835"> <a href="http://video.anyfiles.pl/10+Things+I+Hate+About+You+S01E20+pl/Kino+i+TV/video/13068" target="_blank">http://video.anyfiles.pl/10+Things+I+Hate+About+You+S01E20+pl/Kino+i+TV/video/13068</a>
-            #[0]link, [1]name
             match_watch = re.compile('<div class="watch_link" id=".+?"> <a href="(.+?)" target="_blank">http://(.+?)/.+?</a>').findall(link)
             if len(match_watch) > 0:
                 valTab = []
@@ -217,7 +222,9 @@ class iiTVInfo:
         page = self.parser.getParam(params, "page")    
         
         if name == None:
-            self.showSerialTitles()
+            self.listsABCMenu(self.cm.makeABCList())
+        if name == 'abc-menu':
+            self.showSerialTitles(category)
         elif name == 'serial-title':
             self.showSeason(page)
         elif name == 'serial-season' and title != None and page != None:    
@@ -229,7 +236,6 @@ class iiTVInfo:
             ID = ''
             ID = self.getVideoID(nUrl)
             if ID != '':
-                #linkVideo = self.up.getHost(ID)
                 linkVideo = self.up.getVideoLink(ID)
                 if linkVideo != False:
                     self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
