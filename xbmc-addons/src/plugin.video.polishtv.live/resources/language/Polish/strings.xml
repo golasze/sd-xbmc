@@ -3,12 +3,13 @@
     <string id="55100">Ogólne</string>
     <string id="55101">Nagrywanie</string>
     <string id="55102">Ścieżka do rtmp</string>
-    <string id="55103">Katalog nagrywanych programów</string>
+    <string id="55103">Katalog ściąganych/nagrywanych filmów/programów</string>
     <string id="55104">Przesunięcie czasowe (w godzinach)</string>
     <string id="55105">Przesunięcie czasowe (w minutach)</string>
     <string id="55106">Custom Update</string>
     <string id="55107">Ścieżka do XML</string>
     <string id="55108">Uruchom Custom Update</string>
+    <string id="55109">Włącz debug pluginu</string>
     
     <!-- Weeb TV settings -->
     <string id="55000">Weeb TV</string>

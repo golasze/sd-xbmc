@@ -83,6 +83,11 @@ class common:
             return True
         except ValueError:
             return False
+
+    def checkDir(self, path):
+        if not os.path.isdir(path):
+            os.mkdir(path)
+            
 	
 class history:
     def __init__(self):
@@ -172,3 +177,4 @@ class history:
 	    item = ET.Element('search')
 	    child.append(item)
 	self.writeHistoryFile(root)
+

@@ -6,7 +6,8 @@
 		<setting id="default_dstpath" type="folder" label="55103" default="" />
 		<setting id="default_timedelta_hours" type="text" label="55104" default="0" />
 		<setting id="default_timedelta_minutes" type="text" label="55105" default="0" />
-	        <setting type="lsep" label="55106"/>
+		<setting id="default_debug" type="bool" label="55109" default="false" />
+	    <setting type="lsep" label="55106"/>
 		<setting id="default_customupdate" type="text" label="55107" default="" />
 		<setting id="default_runupdate" type="action" label="55108" action="RunScript($CWD/resources/lib/custom.py)"/>
 	</category>
@@ -33,9 +34,9 @@
         <setting id="tvn_platform" type="labelenum" label="55202" values="Mobile (Android)|Samsung TV" default="Samsung TV" />
         <setting id="tvn_quality_manual" type="bool" label="55204" default="false" />
 		<setting id="tvn_quality" type="labelenum" label="55203" values="Maksymalna|HD|Bardzo wysoka|Wysoka|Standard|Średnia|Niska|Bardzo niska" default="Maksymalna" visible="eq(-1,false)" />        <setting id="tvn_quality_temp" type="labelenum" label="" values="" default="" visible="false" />
-		<setting type="lsep" label="55206" />
-		<setting id="tvn_path" type="folder" label="55207" default="None" />
-    </category>
+		<!--<setting type="lsep" label="55206" />
+		<setting id="tvn_path" type="folder" label="55207" default="None" />-->    
+	</category>
     <category label="55300">
         <setting id="tvp_perpage" type="labelenum" label="55301" values="10|20|30|40|50" default="50" />
     </category>
@@ -48,8 +49,8 @@
 		<setting id="ekinotv_password" type="text" label="55504" option="hidden" default="" />
         <setting id="ekinotv_sort" type="labelenum" label="55501" values="ocena|popularnosc|data dodania|tytul" default="data dodania" />
         <setting id="ekinotv_sortorder" type="labelenum" label="55502" values="malejaco|rosnaco" default="malejaco" />
-        <setting type="lsep" label="55506" />
-        <setting id="ekinotv_path" type="folder" label="55507" default="None" />
+        <!--<setting type="lsep" label="55506" />
+        <setting id="ekinotv_path" type="folder" label="55507" default="None" />-->
     </category>
     <category label="55600">
     	<setting type="lsep" label="55601"/>
