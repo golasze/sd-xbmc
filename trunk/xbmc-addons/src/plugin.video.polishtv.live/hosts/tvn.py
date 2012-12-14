@@ -17,7 +17,7 @@ except ImportError:
     import sha
     sha1 = sha.new
 
-import pLog, settings, Parser, Navigation, pCommon
+import pLog, settings, Parser, Navigation, pCommon, Errors
 
 log = pLog.pLog()
 HANDLE = int(sys.argv[1])
@@ -67,6 +67,7 @@ class tvn:
         self.parser = Parser.Parser()
         self.navigation = Navigation.VideoNav()
         self.dir = pCommon.common()
+        self.exception = Errors.Exception()
         if quality_manual == 'true':
             ptv.setSetting('tvn_quality_temp', '')
         elif quality_manual == 'false':
@@ -144,7 +145,12 @@ class tvn:
             log.info('TVN - listCategories() -> link: ' + self.contentHost + self.startUrl + urlQuery)
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
-        response = urllib2.urlopen(req)
+        response = ''
+        try:
+            response = urllib2.urlopen(req)
+        except Exception, exception:
+            self.exception.getError(str(exception))
+            exit()
         xmlDoc = ET.parse(response).getroot()
         categories = xmlDoc.findall(method + "/" + groupName + "/row")
         countItemNode = xmlDoc.find(method + "/count_items")
@@ -298,7 +304,12 @@ class tvn:
             log.info('TVN - getVideoUrl() -> link: ' + self.contentHost + self.startUrl + urlQuery)
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
-        response = urllib2.urlopen(req)
+        response = ''
+        try:
+            response = urllib2.urlopen(req)
+        except Exception, exception:
+            self.exception.getError(str(exception))
+            exit()
         #response = urllib2.urlopen(self.contentHost + self.startUrl + urlQuery)
         xmlDoc = ET.parse(response).getroot()
         runtime = xmlDoc.find(method + "/" + groupName + "/run_time")

@@ -91,4 +91,9 @@
     <string id="55802">Record</string>
     <string id="55803">Set recording</string>
     <string id="55804">Informations</string>
+    
+    <!-- Errors -->
+    <string id="55900">Connecting Error</string>
+    <string id="55901">The content is forbidden</string>
+    <string id="55902">Couldn't connect to network</string>
 </strings>
