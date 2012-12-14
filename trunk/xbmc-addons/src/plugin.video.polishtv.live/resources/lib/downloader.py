@@ -3,12 +3,17 @@ import re, os, sys
 import urllib, urllib2, re, sys
 import xbmcaddon
 
+import pLog
+log = pLog.pLog()
+
 import SimpleDownloader as downl
 downloader = downl.SimpleDownloader()
 
 scriptID   = sys.modules[ "__main__" ].scriptID
 t = sys.modules[ "__main__" ].language
 ptv = xbmcaddon.Addon(scriptID)
+
+dbg = ptv.getSetting('default_debug')
 
 INVALID_CHARS = "\\/:*?\"<>|"
 
@@ -24,6 +29,10 @@ class Downloader:
     def getFile(self, opts = {}):
         title = self.fileName(opts['title'])
         params = { 'url': opts['url'], 'download_path': opts['path'] }
+        if dbg == 'true':
+            log.info('Downloader - getFile() -> Download path: ' + opt['path'])
+            log.info('Downloader - getFile() -> URL: ' + opt['url'])
+            log.info('Downloader - getFile() -> Title: ' + opt['title'])
         downloader.download(title, params)
         #downloader.download(self.fileName(opts['title']), params, async = False)
         

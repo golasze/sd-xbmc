@@ -17,7 +17,7 @@ except ImportError:
     import sha
     sha1 = sha.new
 
-import pLog, settings, Parser, Navigation
+import pLog, settings, Parser, Navigation, pCommon
 
 log = pLog.pLog()
 HANDLE = int(sys.argv[1])
@@ -25,6 +25,8 @@ HANDLE = int(sys.argv[1])
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
+
+SERVICE = 'tvn'
 
 qualities = [
             'HD',
@@ -41,7 +43,8 @@ platform = ptv.getSetting('tvn_platform')
 quality = ptv.getSetting('tvn_quality')
 quality_manual = ptv.getSetting('tvn_quality_manual')
 #samsung_quality = __settings__.getSetting('tvn_samsung_quality')
-dstpath = ptv.getSetting('tvn_path')
+dstpath = ptv.getSetting('default_dstpath')
+dbg = ptv.getSetting('default_debug')
 
 
 class tvn:
@@ -63,11 +66,12 @@ class tvn:
         log.info("Starting TVN Player")
         self.parser = Parser.Parser()
         self.navigation = Navigation.VideoNav()
+        self.dir = pCommon.common()
         if quality_manual == 'true':
             ptv.setSetting('tvn_quality_temp', '')
         elif quality_manual == 'false':
             ptv.setSetting('tvn_quality_temp', quality)
-               
+        
 
     def addDir(self,name,id,mode,category,iconimage,videoUrl='',listsize=0,season=0):
         u = sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&category="+urllib.quote_plus(category)+"&id="+urllib.quote_plus(id)
@@ -112,7 +116,7 @@ class tvn:
         } )
         
         if dstpath != "None" or not dstpath:
-            cm = self.navigation.addVideoContextMenuItems({ 'service': 'tvn', 'title': urllib.quote_plus(prop['title']), 'url': urllib.quote_plus(url), 'path': dstpath })
+            cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(prop['title']), 'url': urllib.quote_plus(url), 'path': os.path.join(dstpath, SERVICE) })
             liz.addContextMenuItems(cm, replaceItems=False)
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False,totalItems=listsize)
         return ok
@@ -136,6 +140,8 @@ class tvn:
             urlQuery = '&m=' + method
 
 
+        if dbg == 'true':
+            log.info('TVN - listCategories() -> link: ' + self.contentHost + self.startUrl + urlQuery)
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
         response = urllib2.urlopen(req)
@@ -272,21 +278,28 @@ class tvn:
         elif self.name != 'None' and self.category != '':
             self.listsCategories()
    
-        if self.service != '' and self.action == 'download' and self.url != '':
+        if self.service == SERVICE and self.action == 'download' and self.url != '':
+            self.dir.checkDir(os.path.join(dstpath, SERVICE))
+            if dbg == 'true':
+                log.info('TVN - handleService -> Download path: ' + self.path)
+                log.info('TVN - handleService -> Title: ' + urllib.unquote_plus(self.vtitle))
+                log.info('TVN - handleService -> URL: ' + urllib.unquote_plus(self.url))
             import downloader
             dwnl = downloader.Downloader()
-            dwnl.getFile({ 'title': urllib.unquote_plus(self.vtitle), 'url': urllib.unquote_plus(self.url), 'path': dstpath })
+            dwnl.getFile({ 'title': urllib.unquote_plus(self.vtitle), 'url': urllib.unquote_plus(self.url), 'path': self.path })
 
 
     def getVideoUrl(self, category, id):
         method = 'getItem'
         groupName = 'item'
         urlQuery = '&type=%s&id=%s&limit=%s&page=1&sort=newest&m=%s' % (category, id, str(PAGE_LIMIT), method)
-        urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
-        #print self.contentHost+self.startUrl + urlQuery
+        #urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
+        if dbg == 'true':
+            log.info('TVN - getVideoUrl() -> link: ' + self.contentHost + self.startUrl + urlQuery)
         req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
         req.add_header('User-Agent', self.contentUserAgent)
         response = urllib2.urlopen(req)
+        #response = urllib2.urlopen(self.contentHost + self.startUrl + urlQuery)
         xmlDoc = ET.parse(response).getroot()
         runtime = xmlDoc.find(method + "/" + groupName + "/run_time")
         videoTime = 0
@@ -314,6 +327,8 @@ class tvn:
             videoUrls.append(strTab)
             strTab = []
         rankSorted = sorted(videoUrls)
+        if dbg == 'true':
+            log.info('TVN - getVideoUrl -> video tab: ' + str(rankSorted))
         videoUrl = ''
         if len(rankSorted) > 0:
             quality_temp = ptv.getSetting('tvn_quality_temp')
@@ -380,6 +395,8 @@ class tvn:
         iconUrl = ''
         if len(thumbnails) > 0:
             icon = thumbnails[0].find('url').text.encode('utf-8')
+            if dbg == 'true':
+                log.info('TVN - getIconUrl() -> url: ' + self.mediaHost + self.mediaMainUrl + icon + '?quality=70&dstw=290&dsth=187&type=1')
             iconUrl = self.mediaHost + self.mediaMainUrl + icon + '?quality=70&dstw=290&dsth=187&type=1'
         return iconUrl
     
