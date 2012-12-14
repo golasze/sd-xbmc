@@ -69,7 +69,7 @@ MENU_TAB = [
             [ "ESKA TV", 3, "rtmp://46.105.112.212:1935/live playpath=mpegts.stream swfUrl=http://www.eska.tv/thrdparty/flowplayer/flowplayer.rtmp-3.1.4.swf pageUrl=http://www.eska.tv/player  live=true swfVfy=true" ],
             [ "Rebel.tv", 3, "rtmp://gdansk.popler.tv:80/publishlive?play=123452/rebeltv playpath=rebeltv swfUrl=http://www.popler.tv/player/flowplayer.cluster.swf pageUrl=http://www.megawypas.pl/readarticle.php?article_id=405  live=true swfVfy=true" ],
             [ "4Fun TV", 3, "rtmp://creyden.popler.tv:80/publishlive?play=123452/4funtv playpath=4funtv swfUrl=http://www.popler.tv/player/flowplayer.cluster.swf pageUrl=http://www.megawypas.pl/readarticle.php?article_id=55  live=true swfVfy=true" ],
-            [ "NEXT Music", 3, "rtmp://vod.wowza.astrosa.pl/rtplive/:music_540p.stream" ],
+            [ "NEXT Music", 3, "rtmp://vod.wowza.astrosa.pl:80/rtplive/:music_540p.stream" ],
             [ "Deluxe Music", 3, "rtmp://flash.cdn.deluxemusic.tv/deluxemusic.tv-live/web_850.stream" ],
             [ "TV Disco", 3, "rtmp://gdansk.popler.tv:80/publishlive?play=123452/tvdisco playpath=tvdisco swfUrl=http://www.popler.tv/player/flowplayer.cluster.swf pageUrl=http://www.megawypas.pl/readarticle.php?article_id=55  live=true swfVfy=true" ],
             [ "Polo TV", 3, "rtmp://stream1.polotv.com.pl/polotv/stream1" ],
