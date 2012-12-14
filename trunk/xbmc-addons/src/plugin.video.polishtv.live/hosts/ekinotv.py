@@ -53,6 +53,7 @@ class EkinoTV:
     self.up = urlparser.urlparser()
     self.navigation = Navigation.VideoNav()
     self.dir = pCommon.common()
+    self.chars = pCommon.Chars()
   
   
   def postData(self, url, postval = {}):
@@ -559,7 +560,7 @@ class EkinoTV:
     if isPlayable:
       liz.setProperty("IsPlayable", "true")
     if dstpath != "None" or not dstpath and name == 'playSelectedMovie':
-        cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(title.encode('UTF-8')), 'url': urllib.quote_plus(category.encode('UTF-8') + ":" + page.encode('UTF-8')), 'path': os.path.join(dstpath, SERVICE) })
+        cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(title), 'url': urllib.quote_plus(category + ":" + page), 'path': os.path.join(dstpath, SERVICE) })
         liz.addContextMenuItems(cm, replaceItems=False)
     liz.setInfo('video', metadata )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
@@ -656,13 +657,13 @@ class EkinoTV:
         m_title = ''
         if dbg == 'true':
             log.info('EKINOTV - handleService()[download][0] -> url: ' + url)
-            log.info('EKINOTV - handleService()[download][0] -> title: ' + vtitle.encode('UTF-8'))
+            log.info('EKINOTV - handleService()[download][0] -> title: ' + vtitle)
             log.info('EKINOTV - handleService()[download][0] -> path: ' + path)
         if urllib.unquote_plus(url).split(":")[0] == 'movie':
-            m_title = urllib.unquote_plus(vtitle).encode('UTF-8')
+            m_title = urllib.unquote_plus(vtitle)
             urlLink = self.getMovieURL(self.searchTab(urllib.unquote_plus(vtitle)), urllib.unquote_plus(vtitle))
         elif urllib.unquote_plus(url).split(":")[0] == 'serial':
-            m_title = urllib.unquote_plus(url).encode('UTF-8').split(":")[1] + ' - ' + urllib.unquote_plus(vtitle.encode('UTF-8'))
+            m_title = urllib.unquote_plus(url).split(":")[1] + ' - ' + urllib.unquote_plus(vtitle)
             urlLink = self.getPartURL(urllib.unquote_plus(vtitle), urllib.unquote_plus(url).split(":")[1])
         if urlLink.startswith('http://'):
             videoUrl = self.videoMovieLink(urlLink)
@@ -673,6 +674,9 @@ class EkinoTV:
                 log.info('EKINOTV - handleService()[download][1] -> urlLink: ' + urlLink)
                 log.info('EKINOTV - handleService()[download][1] -> videoUrl: ' + videoUrl)
             if videoUrl.startswith('http://'):
+                mm_title = self.chars.replaceChars(m_title)
+                if dbg == 'true':
+                    log.info('EKINOTV - handleService()[download][1] -> replace title: ' + mm_title)
                 import downloader
                 dwnl = downloader.Downloader()
-                dwnl.getFile({ 'title': m_title, 'url': videoUrl, 'path': path })
+                dwnl.getFile({ 'title': mm_title.decode('utf-8'), 'url': videoUrl, 'path': path })
