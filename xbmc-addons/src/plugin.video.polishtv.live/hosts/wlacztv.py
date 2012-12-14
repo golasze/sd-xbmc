@@ -13,7 +13,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, pCommon, Navigation
+import pLog, settings, Parser, pCommon, Navigation, Errors
 
 log = pLog.pLog()
 cj = cookielib.LWPCookieJar()
@@ -37,6 +37,7 @@ dstpath = ptv.getSetting('default_dstpath')
 timedelta_h = ptv.getSetting('default_timedelta_hours')
 timedelta_m = ptv.getSetting('default_timedelta_minutes')
 strmdir = ptv.getSetting('wlacztv_strm')
+path = ''
 
 VIDEO_MENU = [ t(55611).encode("utf-8"), t(55613).encode("utf-8"), t(55614).encode("utf-8") ]
 
@@ -47,6 +48,7 @@ class Channels:
         self.parser = Parser.Parser()
         self.common = pCommon.common()
         self.navigation = Navigation.RecordNav()
+        self.exception = Errors.Exception()
 
     def dec(self, string):
         json_ustr = json.dumps(string, ensure_ascii=False)
@@ -74,11 +76,19 @@ class Channels:
         else:
             post = { 'username': login, 'password': password }
             self.checkDirCookie()
-            self.common.saveURLToFileCookieData(loginUrl, COOKIEFILE, post)
+            try:
+                self.common.saveURLToFileCookieData(loginUrl, COOKIEFILE, post)
+            except Exception, exception:
+                self.exception.getError(str(exception))
+                exit()
     
     def channelsList(self, url):
-        raw_json = self.common.getURLFromFileCookieData(url, COOKIEFILE)
-        result_json = json.loads(raw_json)
+        try:
+            raw_json = self.common.getURLFromFileCookieData(url, COOKIEFILE)
+            result_json = json.loads(raw_json)
+        except Exception, exception:
+            self.exception.getError(str(exception))
+            exit()
         for o in result_json:
             title = self.dec(o['name']).replace("\"", "")
             #url = self.dec(o['uri']).replace("\"", "")
@@ -94,7 +104,11 @@ class Channels:
     def getChannelRTMPLink(self, key, title, icon):
         post = { 'key': key }
         #log.info('rtmp: ' + str(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post)))
-        rtmp_json = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
+        try:
+            rtmp_json = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
+        except Exception, exception:
+            self.exception.getError(str(exception))
+            exit()
         #tcurl = rtmp_json['rtmp_server'] + '/wlacztv/' + rtmp_json['playPath']
         rtmp = rtmp_json['rtmp_server'] + "/" + rtmp_json['app'] + '?wlacztv_session_token=' + rtmp_json['token']
         return { 'title': title, 'icon': icon, 'key': key, 'rtmp': rtmp, 'playpath': rtmp_json['playPath'] }
