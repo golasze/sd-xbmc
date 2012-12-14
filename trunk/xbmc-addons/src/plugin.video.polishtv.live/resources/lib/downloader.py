@@ -30,9 +30,9 @@ class Downloader:
         title = self.fileName(opts['title'])
         params = { 'url': opts['url'], 'download_path': opts['path'] }
         if dbg == 'true':
-            log.info('Downloader - getFile() -> Download path: ' + opt['path'])
-            log.info('Downloader - getFile() -> URL: ' + opt['url'])
-            log.info('Downloader - getFile() -> Title: ' + opt['title'])
+            log.info('Downloader - getFile() -> Download path: ' + opts['path'])
+            log.info('Downloader - getFile() -> URL: ' + opts['url'])
+            log.info('Downloader - getFile() -> Title: ' + title)
         downloader.download(title, params)
         #downloader.download(self.fileName(opts['title']), params, async = False)
         
