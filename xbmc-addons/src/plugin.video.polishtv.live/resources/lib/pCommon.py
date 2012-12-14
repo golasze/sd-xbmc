@@ -13,6 +13,34 @@ HISTORYFILE = ptv.getAddonInfo('path') + os.path.sep + "searchhistory.xml"
 
 cj = cookielib.LWPCookieJar()
 
+CHARS = [
+    [ ' ', '_' ],
+    [ ',', '-' ],
+    [ '!', '_' ],
+    [ '?', '_' ],
+    [ ':', '_' ],
+    [ '/', '-' ],
+    [ 'ą', 'a' ],
+    [ 'Ą', 'A' ],
+    [ 'ę', 'e' ],
+    [ 'Ę', 'E' ],
+    [ 'ć', 'c' ],
+    [ 'Ć', 'C' ],
+    [ 'ł', 'l' ],
+    [ 'Ł', 'L' ],
+    [ 'ń', 'n' ],
+    [ 'Ń', 'N' ],
+    [ 'ó', 'o' ],
+    [ 'Ó', 'O' ],
+    [ 'ś', 's' ],
+    [ 'Ś', 'S' ],
+    [ 'ż', 'z' ],
+    [ 'Ż', 'Z' ],
+    [ 'ź', 'z' ],
+    [ 'Ź', 'Z' ],
+]
+
+
 class common:
     def __init__(self):
         pass
@@ -178,3 +206,25 @@ class history:
 	    child.append(item)
 	self.writeHistoryFile(root)
 
+
+class Chars:
+    def __init__(self):
+        pass
+    
+    def setCHARS(self):
+        return CHARS
+    
+    def replaceString(self, array, string):
+        out = string
+        for i in range(len(array)):
+            out = string.replace(array[i][0], array[i][1])
+            string = out
+        return out    
+    
+    def replaceChars(self, string):
+        out = string
+        for i in range(len(CHARS)):
+            out = string.replace(CHARS[i][0], CHARS[i][1])
+            string = out
+        return out        
+    

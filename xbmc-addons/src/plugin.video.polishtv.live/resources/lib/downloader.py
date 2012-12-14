@@ -17,10 +17,6 @@ dbg = ptv.getSetting('default_debug')
 
 INVALID_CHARS = "\\/:*?\"<>|"
 
-CHARS = [
-    [ ' ', '_' ],
-    [ ',', '-' ]
-]
 
 class Downloader:
     def __init__(self):
@@ -38,11 +34,4 @@ class Downloader:
         
     def fileName(self, title):
         filename = "%s-[%s].mp4" % (''.join(c for c in title if c not in INVALID_CHARS), 0)
-        return self.replaceString(filename)
-    
-    def replaceString(self, string):
-        out = string
-        for i in range(len(CHARS)):
-            out = string.replace(CHARS[i][0], CHARS[i][1])
-            string = out
-        return out
+        return filename
