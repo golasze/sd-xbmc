@@ -559,7 +559,7 @@ class EkinoTV:
     if isPlayable:
       liz.setProperty("IsPlayable", "true")
     if dstpath != "None" or not dstpath and name == 'playSelectedMovie':
-        cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(title), 'url': urllib.quote_plus(category + ":" + page), 'path': os.path.join(dstpath, SERVICE) })
+        cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(title.encode('UTF-8')), 'url': urllib.quote_plus(category.encode('UTF-8') + ":" + page.encode('UTF-8')), 'path': os.path.join(dstpath, SERVICE) })
         liz.addContextMenuItems(cm, replaceItems=False)
     liz.setInfo('video', metadata )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
@@ -599,11 +599,11 @@ class EkinoTV:
     page = page.replace("+", " ")
   	
     if dbg == 'true':
-        log.info('EKINOTV - handleService()[main][0] -> name: ' + name)
-        log.info('EKINOTV - handleService()[main][0] -> title: ' + title)
-        log.info('EKINOTV - handleService()[main][0] -> category: ' + category)
-        log.info('EKINOTV - handleService()[main][0] -> page: ' + page)
-        log.info('EKINOTV - handleService()[main][0] -> action: ' + action)
+        log.info('EKINOTV - handleService()[main][0] -> name: ' + name.encode('UTF-8'))
+        log.info('EKINOTV - handleService()[main][0] -> title: ' + title.encode('UTF-8'))
+        log.info('EKINOTV - handleService()[main][0] -> category: ' + category.encode('UTF-8'))
+        log.info('EKINOTV - handleService()[main][0] -> page: ' + page.encode('UTF-8'))
+        log.info('EKINOTV - handleService()[main][0] -> action: ' + action.encode('UTF-8'))
     
     if name == 'None':
       self.requestLoginData()
@@ -656,13 +656,13 @@ class EkinoTV:
         m_title = ''
         if dbg == 'true':
             log.info('EKINOTV - handleService()[download][0] -> url: ' + url)
-            log.info('EKINOTV - handleService()[download][0] -> title: ' + vtitle)
+            log.info('EKINOTV - handleService()[download][0] -> title: ' + vtitle.encode('UTF-8'))
             log.info('EKINOTV - handleService()[download][0] -> path: ' + path)
         if urllib.unquote_plus(url).split(":")[0] == 'movie':
-            m_title = urllib.unquote_plus(vtitle)
+            m_title = urllib.unquote_plus(vtitle).encode('UTF-8')
             urlLink = self.getMovieURL(self.searchTab(urllib.unquote_plus(vtitle)), urllib.unquote_plus(vtitle))
         elif urllib.unquote_plus(url).split(":")[0] == 'serial':
-            m_title = urllib.unquote_plus(url).split(":")[1] + ' - ' + urllib.unquote_plus(vtitle)
+            m_title = urllib.unquote_plus(url).encode('UTF-8').split(":")[1] + ' - ' + urllib.unquote_plus(vtitle.encode('UTF-8'))
             urlLink = self.getPartURL(urllib.unquote_plus(vtitle), urllib.unquote_plus(url).split(":")[1])
         if urlLink.startswith('http://'):
             videoUrl = self.videoMovieLink(urlLink)
