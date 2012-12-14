@@ -12,19 +12,21 @@ BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "ekinotv.cookie"
 
-import pLog, settings, Parser, urlparser, Navigation
+import pLog, settings, Parser, urlparser, Navigation, pCommon
 
 log = pLog.pLog()
 cj = cookielib.LWPCookieJar()
 
 mainUrl = 'http://www.ekino.tv'
 
+SERVICE = 'ekinotv'
 
 sortby = ptv.getSetting('ekinotv_sort')
 sortorder = ptv.getSetting('ekinotv_sortorder')
 username = ptv.getSetting('ekinotv_login')
 password = ptv.getSetting('ekinotv_password')
-dstpath = ptv.getSetting('ekinotv_path')
+dstpath = ptv.getSetting('default_dstpath')
+dbg = ptv.getSetting('default_debug')
 
 
 EKINO_MENU_TABLE = {
@@ -50,6 +52,7 @@ class EkinoTV:
     self.parser = Parser.Parser()
     self.up = urlparser.urlparser()
     self.navigation = Navigation.VideoNav()
+    self.dir = pCommon.common()
   
   
   def postData(self, url, postval = {}):
@@ -506,7 +509,7 @@ class EkinoTV:
       iconimage = value[0]
       if title!='nastepna':
 	dict = self.videoMetadata(value[2][0],value[2][1])
-	self.add('ekinotv', 'playSelectedMovie', 'movie', 'None', title, iconimage, dict, True, False)
+	self.add(SERVICE, 'playSelectedMovie', 'movie', 'None', title, iconimage, dict, True, False)
       else:
 	expr1 = value[3].split(',')
 	category = expr1[1]
@@ -515,7 +518,7 @@ class EkinoTV:
 	else:
 	  expr2 = expr1[3].split('.')
 	page = expr2[0]    
-	self.add('ekinotv', title, category, page, 'None', 'None', self.videoMetadata(), True, False)
+	self.add(SERVICE, title, category, page, 'None', 'None', self.videoMetadata(), True, False)
     #zmien view na "Media Info 2"
     xbmcplugin.setContent(int(sys.argv[1]),'movies')
     xbmc.executebuiltin("Container.SetViewMode(503)")
@@ -525,20 +528,20 @@ class EkinoTV:
   def listsAddLinkSerial(self, table, category):
     for i in range(len(table)):
       title = table[i]
-      self.add('ekinotv', 'playSelectedMovie', 'serial', category, title, '', self.videoMetadata(), True, False)
+      self.add(SERVICE, 'playSelectedMovie', 'serial', category, title, '', self.videoMetadata(), True, False)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
   def listsAddDirMenu(self, table, name, category, page):
     for i in range(len(table)):
       if name == 'None':
-	self.add('ekinotv', table[i], 'None', 'None', 'None', 'None', self.videoMetadata(), True, False)
+	self.add(SERVICE, table[i], 'None', 'None', 'None', 'None', self.videoMetadata(), True, False)
       elif category == 'None' and name != 'None':
-	self.add('ekinotv', name, table[i], 'None', 'None', 'None', self.videoMetadata(), True, False)
+	self.add(SERVICE, name, table[i], 'None', 'None', 'None', self.videoMetadata(), True, False)
       elif name != 'None' and category != 'None' and page == 'None':
-	self.add('ekinotv', name, category, table[i], 'None', 'None', self.videoMetadata(), True, False)
+	self.add(SERVICE, name, category, table[i], 'None', 'None', self.videoMetadata(), True, False)
       elif name != 'None' and category != 'None' and page != 'None':
-	self.add('ekinotv', name, category, page, table[i], 'None', self.videoMetadata(), True, False)
+	self.add(SERVICE, name, category, page, table[i], 'None', self.videoMetadata(), True, False)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -556,7 +559,7 @@ class EkinoTV:
     if isPlayable:
       liz.setProperty("IsPlayable", "true")
     if dstpath != "None" or not dstpath and name == 'playSelectedMovie':
-        cm = self.navigation.addVideoContextMenuItems({ 'service': 'ekinotv', 'title': urllib.quote_plus(title), 'url': urllib.quote_plus(category + ":" + page), 'path': dstpath })
+        cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(title), 'url': urllib.quote_plus(category + ":" + page), 'path': os.path.join(dstpath, SERVICE) })
         liz.addContextMenuItems(cm, replaceItems=False)
     liz.setInfo('video', metadata )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
@@ -588,12 +591,20 @@ class EkinoTV:
     url = str(self.parser.getParam(params, "url"))
     service = str(self.parser.getParam(params, "service"))
     vtitle = str(self.parser.getParam(params, "vtitle"))
+    path = str(self.parser.getParam(params, "path"))
     
     name = name.replace("+", " ")
     title = title.replace("+", " ")
     category = category.replace("+", " ")
     page = page.replace("+", " ")
   	
+    if dbg == 'true':
+        log.info('EKINOTV - handleService()[main][0] -> name: ' + name)
+        log.info('EKINOTV - handleService()[main][0] -> title: ' + title)
+        log.info('EKINOTV - handleService()[main][0] -> category: ' + category)
+        log.info('EKINOTV - handleService()[main][0] -> page: ' + page)
+        log.info('EKINOTV - handleService()[main][0] -> action: ' + action)
+    
     if name == 'None':
       self.requestLoginData()
       self.listsAddDirMenu(self.getMenuTable(), 'None', 'None', 'None')
@@ -639,15 +650,29 @@ class EkinoTV:
           log.info("url: " + urlLink)
           self.LOAD_AND_PLAY_VIDEO(self.videoMovieLink(urlLink), title)
     
-    if service == 'ekinotv' and action == 'download' and url != '':
+    if service == SERVICE and action == 'download' and url != '':
+        self.dir.checkDir(os.path.join(dstpath, SERVICE))
         urlLink = ''
-        log.info('url: ' + url + ', title: ' + vtitle)
+        m_title = ''
+        if dbg == 'true':
+            log.info('EKINOTV - handleService()[download][0] -> url: ' + url)
+            log.info('EKINOTV - handleService()[download][0] -> title: ' + vtitle)
+            log.info('EKINOTV - handleService()[download][0] -> path: ' + path)
         if urllib.unquote_plus(url).split(":")[0] == 'movie':
+            m_title = urllib.unquote_plus(vtitle)
             urlLink = self.getMovieURL(self.searchTab(urllib.unquote_plus(vtitle)), urllib.unquote_plus(vtitle))
         elif urllib.unquote_plus(url).split(":")[0] == 'serial':
+            m_title = urllib.unquote_plus(url).split(":")[1] + ' - ' + urllib.unquote_plus(vtitle)
             urlLink = self.getPartURL(urllib.unquote_plus(vtitle), urllib.unquote_plus(url).split(":")[1])
         if urlLink.startswith('http://'):
-            log.info('link: ' + self.videoMovieLink(urlLink) + ', title: ' + urllib.unquote_plus(vtitle))
-            import downloader
-            dwnl = downloader.Downloader()
-            dwnl.getFile({ 'title': urllib.unquote_plus(vtitle), 'url': self.videoMovieLink(urlLink), 'path': dstpath })
+            videoUrl = self.videoMovieLink(urlLink)
+            if dbg == 'true':
+                log.info('EKINOTV - handleService()[download][1] -> url: ' + urllib.unquote_plus(url).split(":")[0] + ', ' + urllib.unquote_plus(url).split(":")[1])
+                log.info('EKINOTV - handleService()[download][1] -> title: ' + m_title)
+                log.info('EKINOTV - handleService()[download][1] -> path: ' + path)
+                log.info('EKINOTV - handleService()[download][1] -> urlLink: ' + urlLink)
+                log.info('EKINOTV - handleService()[download][1] -> videoUrl: ' + videoUrl)
+            if videoUrl.startswith('http://'):
+                import downloader
+                dwnl = downloader.Downloader()
+                dwnl.getFile({ 'title': m_title, 'url': videoUrl, 'path': path })
