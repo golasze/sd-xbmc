@@ -15,6 +15,7 @@ import pLog, settings, Parser, pCommon
 
 log = pLog.pLog()
 
+SERVICE = 'serialnet'
 mainUrl = 'http://serialnet.pl'
 watchUrl = mainUrl + '/ogladaj/'
 
@@ -22,65 +23,68 @@ version = ptv.getSetting('serialnet_wersja')
 
 class SerialNet:
     def __init__(self):
-        log.info('Loading SerialNet')
+        log.info('Loading ' + SERVICE)
         self.settings = settings.TVSettings()
         self.parser = Parser.Parser()
         self.cm = pCommon.common()
+               
         
+    def listsABCMenu(self, table):
+        for i in range(len(table)):
+            self.addDir(SERVICE, 'abc-menu', table[i], table[i], '', '', '', True, False)
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
         
-    def getSerialsTable(self):
+    def getSerialsTable(self, letter):
         strTab = []
         outTab = []
         link = self.cm.requestData(mainUrl)
-        #<li><a href="http://serialnet.pl/serial/1-1023/10-things-i-hate-about-you">10 Things I Hate About You <
         match = re.compile('<li><a href="http://serialnet.pl/serial/(.+?)">(.+?)<').findall(link)
         if len(match) > 0:
+            addItem = False
             for i in range(len(match)):
-                strTab.append(match[i][1])
-                strTab.append('http://serialnet.pl/serial/' + match[i][0])
-                outTab.append(strTab)
-                strTab = []
+                if (ord(letter[0]) < 65) and (ord(match[i][1][0]) < 65 or ord(match[i][1][0]) > 91): addItem = True
+                if (letter == match[i][1][0].upper()): addItem = True
+                if (addItem):
+                    strTab.append(match[i][1])
+                    strTab.append('http://serialnet.pl/serial/' + match[i][0])
+                    outTab.append(strTab)
+                    strTab = []
+                    addItem = False
         outTab.sort(key = lambda x: x[0])
         return outTab        
     
 
     def getInfo(self,data):
         outTab = []       
-        #<meta property="og:image" content="http://static.serialnet.pl/thumbs/zakochana-zlosnica.jpg"/>
         match = re.compile('<meta property="og:image" content="(.+?)"/>').findall(data)
-        if len(match) > 0:
-            imageLink = match[0]
-        else:
-            imageLink = ''
+        if len(match) > 0: imageLink = match[0]
+        else: imageLink = ''
         outTab.append(imageLink)
-
         d = data.replace("<br/>","").replace("\n","")
         match = re.compile('<p><fb:like href=.+?</p><strong>(.+?)</strong></p></div>').findall(d)
-        if len(match) > 0:
-            desc = match[0]
-        else:
-            desc = ''
+        if len(match) > 0: desc = match[0]
+        else: desc = ''
         outTab.append(desc)
         return outTab
     
 
-    def showSerialTitles(self):
-        tab = self.getSerialsTable()
+    def showSerialTitles(self, letter):
+        tab = self.getSerialsTable(letter)
         if len(tab) > 0:
             for i in range(len(tab)):
-                self.addDir('serialnet', 'serial-title', 'None', tab[i][0], '', tab[i][1], '', True, False)
+                self.addDir(SERVICE, 'serial-title', 'None', tab[i][0], '', tab[i][1], '', True, False)
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
 
     def showSeason(self, url):  
         link = self.cm.requestData(url)       
         info = self.getInfo(link)
-        #<h3>Sezon 1</h3></div>
         match = re.compile('<div style=".+?"><h3>(.+?)</h3></div>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
                 if 'Sezon' in match[i]:
-                    self.addDir('serialnet', 'serial-season', 'None', match[i], info[1], url, info[0], True, False)
+                    self.addDir(SERVICE, 'serial-season', 'None', match[i], info[1], url, info[0], True, False)
             #zmien view na "Media Info 2"
             xbmcplugin.setContent(int(sys.argv[1]),'tvshows')
             xbmc.executebuiltin("Container.SetViewMode(503)")
@@ -93,8 +97,6 @@ class SerialNet:
         tTab = title.split(' ')
         num = tTab[1]        
         s = "sezon-" + str(num)               
-        #href="http://serialnet.pl/ogladaj/1-20/10-things-i-hate-about-you-sezon-1-odcinek-20"><b>Odcinek: 20 : Revolution</b>
-                                                                                              #<b>Odcinek: 1</b>
         match = re.compile('href="(.+?)' + s + '(.+?)"><b>Odcinek:(.+?)</b>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
@@ -103,7 +105,7 @@ class SerialNet:
                     episode = 'Odcinek ' + oTab[0] + ' - ' + oTab[1]
                 else:
                     episode = 'Odcinek ' + oTab[0]
-                self.addDir('serialnet', 'playSelectedMovie', 'None', episode, info[1], match[i][0] + s + match[i][1], info[0], True, False)
+                self.addDir(SERVICE, 'playSelectedMovie', 'None', episode, info[1], match[i][0] + s + match[i][1], info[0], True, False)
             #zmien view na "Media Info 2"
             xbmcplugin.setContent(int(sys.argv[1]),'tvshows')
             xbmc.executebuiltin("Container.SetViewMode(503)")    
@@ -111,6 +113,7 @@ class SerialNet:
             
 
     def getVideoUrl(self, url):
+        videoUrl = ''
         link = self.cm.requestData(url)       
         #<iframe id="framep" class="radi" src="http://serialnet.pl/play.php?t=1-18"
         match = re.compile('<iframe id="framep" class="radi" src="(.+?)"').findall(link)
@@ -119,22 +122,17 @@ class SerialNet:
             if version == 'false':
                 d = xbmcgui.Dialog()
                 item = d.select("Wybór wersji", ["Napisy","Bez lektora i napisów"])
-                if item != -1:
-                    if item == 0:
-                        nUrl = match[0] + '&wersja=napisy'
-                    log.info("wersja: " + nUrl)
-                    link = self.cm.requestData(nUrl)
-                    print "link: " + link
-                    match = re.search('eval\((.+?)\)\n',link)
-                    if match:
-                        js = 'eval(' + match.group(1) + ')'
-                        videoUrl = self.decodeJS(js)
-                        log.info("decoded link: " + videoUrl)
-                    else:
-                        videoUrl = ''
-                else:        
-                    videoUrl = ''
-            return videoUrl
+                if item == -1: return videoUrl
+                elif item == 0: nUrl = match[0] + '&wersja=napisy'
+            log.info("wersja: " + nUrl)
+            link = self.cm.requestData(nUrl)
+            print "link: " + link
+            match = re.search('eval\((.+?)\)\n',link)
+            if match:
+                js = 'eval(' + match.group(1) + ')'
+                videoUrl = self.decodeJS(js)
+                log.info("decoded link: " + videoUrl)
+        return videoUrl
         
 
     def addDir(self, service, name, category, title, plot, link, iconimage, folder = True, isPlayable = True):
@@ -173,8 +171,18 @@ class SerialNet:
         category = self.parser.getParam(params, "category")
         page = self.parser.getParam(params, "page")    
         
+#       log.info ('name: ' + str(name))
+#	log.info ('title: ' + str(title))
+#	log.info ('category: ' + str(category))
+#	log.info ('page: ' + str(page))
+        
+        #main menu
         if name == None:
-            self.showSerialTitles()
+            self.listsABCMenu(self.cm.makeABCList())
+        #A-Z
+        if name == 'abc-menu':
+            self.showSerialTitles(category)   
+        
         elif name == 'serial-title':
             self.showSeason(page)
         elif name == 'serial-season' and title != None and page != None:    
@@ -182,7 +190,7 @@ class SerialNet:
         if name == 'playSelectedMovie':
             log.info('video url: ' + page)
             videoUrl = self.getVideoUrl(page)
-            print videoUrl
+            log.info('final link: ' + videoUrl)
             if videoUrl != '':
                 self.LOAD_AND_PLAY_VIDEO(videoUrl, title)
             else:
