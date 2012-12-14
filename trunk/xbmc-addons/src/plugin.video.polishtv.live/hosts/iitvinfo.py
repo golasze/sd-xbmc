@@ -127,8 +127,8 @@ class iiTVInfo:
         out = []
         for i in range(len(table)):
             value = table[i]
-            title = value[0].replace('cc', '').replace('com', '').replace('.', '').replace('pl', '').replace('eu', '')
-            out.append(title)
+            #title = value[0].replace('cc', '').replace('com', '').replace('.', '').replace('pl', '').replace('eu', '')
+            out.append(value[0])
         return out
 
 
@@ -164,25 +164,26 @@ class iiTVInfo:
             response = urllib2.urlopen(req)
             link = response.read()
             response.close()
-            match_watch = re.compile('<div class="watch_link" id=".+?"> <a href="(.+?)" target="_blank">http://(.+?)/.+?</a>').findall(link)
+            match_watch = re.compile('<div class="watch_link" id=".+?"> <a href="(.+?)" target="_blank">').findall(link)
+#            match_watch = re.compile('<div class="watch_link" id=".+?"> <a href="(.+?)" target="_blank">http://(.+?)/.+?</a>').findall(link)
             if len(match_watch) > 0:
                 valTab = []
                 strTab = []
                 a = 1
                 for i in range(len(match_watch)):
-                    strTab.append(str(a) + ". " + match_watch[i][1])
-                    strTab.append(match_watch[i][0])
+                    strTab.append(str(a) + ". " + self.up.getHostName(match_watch[i], True))
+                    strTab.append(match_watch[i])
                     valTab.append(strTab)
                     strTab = []
                     a = a + 1
                 log.info("lista: " + str(valTab))
                 d = xbmcgui.Dialog()
                 item = d.select("Wybór filmu", self.getItemTitles(valTab))
-                if item != '':
+                if item != -1:
                     videoID = str(valTab[item][1])
                     log.info('mID: ' + videoID)
                     return videoID
-        return false
+        return False
         
 
     def addDir(self, service, name, category, title, link, iconimage, folder = True, isPlayable = True):
@@ -235,10 +236,12 @@ class iiTVInfo:
             linkVideo = ''
             ID = ''
             ID = self.getVideoID(nUrl)
-            if ID != '':
-                linkVideo = self.up.getVideoLink(ID)
-                if linkVideo != False:
-                    self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
-            else:
-                d = xbmcgui.Dialog()
-                d.ok('Brak linku', 'iiTV.info - tymczasowo wyczerpałeś limit ilości uruchamianych seriali.', 'Zapraszamy za godzinę.')
+            print str (ID)
+            if (ID!=False):
+                if ID != '':
+                    linkVideo = self.up.getVideoLink(ID)
+                    if linkVideo != False:
+                        self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
+                else:
+                    d = xbmcgui.Dialog()
+                    d.ok('Brak linku', 'iiTV.info - tymczasowo wyczerpałeś limit ilości uruchamianych seriali.', 'Zapraszamy za godzinę.')
