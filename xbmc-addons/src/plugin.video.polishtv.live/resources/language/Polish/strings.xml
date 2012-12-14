@@ -91,4 +91,9 @@
     <string id="55802">Nagraj</string>
     <string id="55803">Zaprogramuj nagranie</string>
     <string id="55804">Informacje</string>
+    
+    <!-- Errors -->
+    <string id="55900">Błąd połączenia</string>
+    <string id="55901">Zawartość została zablokowana</string>
+    <string id="55902">Brak połączenia z siecią</string>
 </strings>
