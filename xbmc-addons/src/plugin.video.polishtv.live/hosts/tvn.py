@@ -57,6 +57,7 @@ class tvn:
     startUrl = '/api/?platform=Mobile&terminal=Android&format=xml&v=2.0&authKey=' + authKey
     contentUserAgent = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
     if platform == 'Samsung TV':
+        authKey = 'ba786b315508f0920eca1c34d65534cd'
         startUrl = '/api/?platform=ConnectedTV&terminal=Samsung&format=xml&v=2.0&authKey=' + authKey
         contentUserAgent = 'Mozilla/5.0 (SmartHub; SMART-TV; U; Linux/SmartTV; Maple2012) AppleWebKit/534.7 (KHTML, like Gecko) SmartTV Safari/534.7'
     mediaMainUrl = '/scale/o2/tvn/web-content/m/'
