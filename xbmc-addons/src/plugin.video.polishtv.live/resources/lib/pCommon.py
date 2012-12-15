@@ -8,7 +8,7 @@ scriptID = sys.modules[ "__main__" ].scriptID
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
-HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.28'
+HOST = 'Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefox/17.0'
 HISTORYFILE = ptv.getAddonInfo('path') + os.path.sep + "searchhistory.xml"
 
 cj = cookielib.LWPCookieJar()
