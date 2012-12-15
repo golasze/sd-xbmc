@@ -105,6 +105,14 @@ class common:
         response.close()
         cj.save(COOKIEFILE)
         return data
+
+    def getURLRequestData(self, url):
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', HOST)
+        response = urllib2.urlopen(req)
+        data = response.read()
+        response.close()
+        return data 
         
     def makeABCList(self):
         strTab = []
