@@ -2,7 +2,7 @@
 <addon id="plugin.moje.polskieradio"
        name="Moje Polskie Radio"
        version="0.0.2"
-       provider-name="SYSTEMS DESIGN - Plesken">
+       provider-name="SD-xbmc - Plesken">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
     <import addon="script.module.simplejson" version="2.0.10" />
