@@ -347,6 +347,7 @@ class urlparser:
 
   def parserMAXVIDEO(self, url):
       self.servset = sets.getSettings('maxvideo')
+      self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
       self.COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "maxvideo.cookie" 
       self.cm.saveURLToFileCookieData('http://maxvideo.pl/api/login.php',self.COOKIEFILE, {'login' : self.servset['maxvideo_login'], 'password' : self.servset['maxvideo_password'] })
       videoHash = url.split('/')[-1]
