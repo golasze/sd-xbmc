@@ -1,12 +1,32 @@
 # -*- coding: utf-8 -*-
-import re, os, sys, cookielib
+import re, os, sys, cookielib, random
 import urllib, urllib2, re, sys, math
 import elementtree.ElementTree as ET
 import xbmcaddon
 
+import pLog
+
+log = pLog.pLog()
+
 scriptID = sys.modules[ "__main__" ].scriptID
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
+
+HOST_TABLE = { 100: 'Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefox/17.0',
+	       101: 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11',
+	       102: 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.11',
+	       103: 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1',
+	       104: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:19.0) Gecko/20121213 Firefox/19.0',
+	       105: 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:17.0) Gecko/20100101 Firefox/17.0',
+	       106: 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11',
+	       107: 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+	       108: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.17 (KHTML, like Gecko) Version/6.0.2 Safari/536.26.17',
+	       109: 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)',
+	       110: 'Opera/9.80 (Windows NT 5.1; U; en) Presto/2.10.289 Version/12.01',
+	       111: 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)',
+	       112: 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)',
+	       113: 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)',
+	    }
 
 HOST = 'Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefox/17.0'
 HISTORYFILE = ptv.getAddonInfo('path') + os.path.sep + "searchhistory.xml"
@@ -47,7 +67,7 @@ class common:
     
     def requestData(self, url):
         req = urllib2.Request(url)
-        req.add_header('User-Agent', HOST)
+        req.add_header('User-Agent', self.getRandomHost())
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
         response = opener.open(req)
         data = response.read()
@@ -116,11 +136,18 @@ class common:
         if not os.path.isdir(path):
             os.mkdir(path)
             
+    
+    def getRandomHost(self):
+	host_id = random.choice(HOST_TABLE.keys())
+	log.info("host ID: " + str(host_id))
+	host = HOST_TABLE[host_id]
+	return host
+	    
+	    
 	
 class history:
     def __init__(self):
         pass
-    
     
     def readHistoryFile(self):
 	file = open(HISTORYFILE, 'r')
