@@ -11,22 +11,24 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, pCommon
-
-log = pLog.pLog()
+import pLog, settings, Parser, pCommon, Errors, Navigation, downloader
 
 SERVICE = 'serialnet'
+log = pLog.pLog()
+sets = settings.TVSettings()
+servset = sets.getSettings(SERVICE)
+
 mainUrl = 'http://serialnet.pl'
 watchUrl = mainUrl + '/ogladaj/'
-
-version = ptv.getSetting('serialnet_wersja')
 
 class SerialNet:
     def __init__(self):
         log.info('Loading ' + SERVICE)
-        self.settings = settings.TVSettings()
+        #self.settings = settings.TVSettings()
+        self.exception = Errors.Exception()
         self.parser = Parser.Parser()
         self.cm = pCommon.common()
+        self.navigation = Navigation.VideoNav()
                
         
     def listsABCMenu(self, table):
@@ -113,13 +115,19 @@ class SerialNet:
             
 
     def getVideoUrl(self, url):
+        print str(servset)
+        
         videoUrl = ''
-        link = self.cm.requestData(url)       
+        try:
+            link = self.cm.requestData(url)
+        except Exception, exception:
+            self.exception.getError(str(exception))
+            exit()
         #<iframe id="framep" class="radi" src="http://serialnet.pl/play.php?t=1-18"
         match = re.compile('<iframe id="framep" class="radi" src="(.+?)"').findall(link)
         if len(match) > 0:
             nUrl = match[0]
-            if version == 'false':
+            if servset[SERVICE + '_wersja'] == 'false':
                 d = xbmcgui.Dialog()
                 item = d.select("Wybór wersji", ["Napisy","Bez lektora i napisów"])
                 if item == -1: return videoUrl
@@ -127,9 +135,10 @@ class SerialNet:
             log.info("wersja: " + nUrl)
             link = self.cm.requestData(nUrl)
             print "link: " + link
-            match = re.search('eval\((.+?)\)\n',link)
-            if match:
-                js = 'eval(' + match.group(1) + ')'
+            
+            match = re.compile('eval\((.+?),0,{}\)\)',re.DOTALL).findall(link)
+            if len(match) > 0:
+                js = 'eval(' + match[0] + ',0,{}))'
                 videoUrl = self.decodeJS(js)
                 log.info("decoded link: " + videoUrl)
         return videoUrl
