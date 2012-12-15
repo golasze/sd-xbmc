@@ -160,7 +160,7 @@ class AnyFiles:
     for i in range(len(table)):
       print str(table[i])
       if table[i] <> '':
-	self.add(SERVICENAME, table[i], 'history', 'None', 'None', IMGURL, 'None', True, False)
+	self.add(SERVICENAME, table[i], 'history', 'None', table[i], IMGURL, 'None', True, False)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
   def add(self, service, name, category, page, title, iconimage, url, folder = True, isPlayable = True):
