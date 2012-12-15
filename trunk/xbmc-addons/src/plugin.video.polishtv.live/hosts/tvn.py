@@ -53,11 +53,13 @@ class tvn:
     __moduleSettings__ =  settings.TVSettings()
     contentHost = 'http://tvnplayer.pl'
     mediaHost = 'http://redir.atmcdn.pl'
-    startUrl = '/api/?platform=Mobile&terminal=Android&format=xml'
-    if platform == 'Samsung TV':
-        startUrl = '/api/?platform=ConnectedTV&terminal=Samsung&format=xml'
-    mediaMainUrl = '/scale/o2/tvn/web-content/m/'
+    authKey = 'b4bc971840de63d105b3166403aa1bea'
+    startUrl = '/api/?platform=Mobile&terminal=Android&format=xml&v=2.0&authKey=' + authKey
     contentUserAgent = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
+    if platform == 'Samsung TV':
+        startUrl = '/api/?platform=ConnectedTV&terminal=Samsung&format=xml&v=2.0&authKey=' + authKey
+        contentUserAgent = 'Mozilla/5.0 (SmartHub; SMART-TV; U; Linux/SmartTV; Maple2012) AppleWebKit/534.7 (KHTML, like Gecko) SmartTV Safari/534.7'
+    mediaMainUrl = '/scale/o2/tvn/web-content/m/'
     mediaUserAgent = 'Dalvik/1.2.0 (Linux; U; Android 2.2.1; GT-I5700 Build/FRG83)'
     contentUser='atm'
     contentPass='atm_json'
