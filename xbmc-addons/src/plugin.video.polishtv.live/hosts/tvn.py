@@ -69,7 +69,7 @@ class tvn:
         log.info("Starting TVN Player")
         self.parser = Parser.Parser()
         self.navigation = Navigation.VideoNav()
-        self.dir = pCommon.common()
+        self.common = pCommon.common()
         self.exception = Errors.Exception()
         if quality_manual == 'true':
             ptv.setSetting('tvn_quality_temp', '')
@@ -288,7 +288,7 @@ class tvn:
             self.listsCategories()
    
         if self.service == SERVICE and self.action == 'download' and self.url != '':
-            self.dir.checkDir(os.path.join(dstpath, SERVICE))
+            self.common.checkDir(os.path.join(dstpath, SERVICE))
             if dbg == 'true':
                 log.info('TVN - handleService -> Download path: ' + self.path)
                 log.info('TVN - handleService -> Title: ' + urllib.unquote_plus(self.vtitle))
@@ -349,7 +349,11 @@ class tvn:
             if platform == 'Mobile (Android)':
                 videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, quality_temp))
             elif platform == 'Samsung TV':
-                videoUrl = self.getUrlFromTab(rankSorted, quality_temp)
+                tempVideoUrl = self.getUrlFromTab(rankSorted, quality_temp)
+                videoUrl = self.common.getURLRequestData(tempVideoUrl)
+                if dbg == 'true':
+                    log.info('TVN - getVideoUrl() -> temporary videoUrl: ' + tempVideoUrl)
+                    log.info('TVN - getVideoUrl() -> videoUrl: ' + videoUrl)
         return [videoUrl, videoTime, videoPlot]
 
     def generateToken(self, url):
@@ -445,4 +449,6 @@ class tvn:
                 if nkey == k:
                     out = v
                     break
-        return out 
+        return out
+
+        
