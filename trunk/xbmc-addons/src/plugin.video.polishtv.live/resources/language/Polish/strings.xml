@@ -98,4 +98,10 @@
     <string id="55902">Brak połączenia z siecią</string>
     <string id="55903">Błąd API</string>
     <string id="55904">Brak obiektu JSON do zdekodowania</string>
+    
+    <!-- Maxvideo settings -->
+    <string id="56000">Maxvideo</string>
+    <string id="56001">Ustawienia główne</string>
+    <string id="56002">Użytkownik:</string>
+    <string id="56003">Hasło:</string>
 </strings>

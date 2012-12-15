@@ -7,11 +7,11 @@
 		<setting id="default_timedelta_hours" type="text" label="55104" default="0" />
 		<setting id="default_timedelta_minutes" type="text" label="55105" default="0" />
 		<setting id="default_debug" type="bool" label="55109" default="false" />
-	    <setting type="lsep" label="55106"/>
+		<setting type="lsep" label="55106"/>
 		<setting id="default_customupdate" type="text" label="55107" default="" />
 		<setting id="default_runupdate" type="action" label="55108" action="RunScript($CWD/resources/lib/custom.py)"/>
 	</category>
-    <category label="55000">
+	<category label="55000">
 		<setting type="sep"/>
 		<setting type="lsep" label="55001"/>
 		<setting id="weebtv_login" type="text" label="55002" default="" />
@@ -27,41 +27,46 @@
 		<setting id="weebtv_strm" type="folder" label="55008" default="None" />
 		<setting type="lsep" label="55012" />
 		<setting id="weebtv_sort" type="labelenum" label="55013" values="Alphabetical|Now Viewed|Most Viewed" default="Alphabetical" />
-    </category>
-    <category label="55200">
-    	<setting type="lsep" label="55205" />
-        <setting id="tvn_perpage" type="labelenum" label="55201" values="10|20|30|40|50" default="50" />
-        <setting id="tvn_platform" type="labelenum" label="55202" values="Mobile (Android)|Samsung TV" default="Samsung TV" />
-        <setting id="tvn_quality_manual" type="bool" label="55204" default="false" />
+	</category>
+	<category label="55200">
+		<setting type="lsep" label="55205" />
+		<setting id="tvn_perpage" type="labelenum" label="55201" values="10|20|30|40|50" default="50" />
+		<setting id="tvn_platform" type="labelenum" label="55202" values="Mobile (Android)|Samsung TV" default="Samsung TV" />
+		<setting id="tvn_quality_manual" type="bool" label="55204" default="false" />
 		<setting id="tvn_quality" type="labelenum" label="55203" values="Maksymalna|HD|Bardzo wysoka|Wysoka|Standard|Średnia|Niska|Bardzo niska" default="Maksymalna" visible="eq(-1,false)" />        <setting id="tvn_quality_temp" type="labelenum" label="" values="" default="" visible="false" />
 		<!--<setting type="lsep" label="55206" />
 		<setting id="tvn_path" type="folder" label="55207" default="None" />-->    
 	</category>
-    <category label="55300">
-        <setting id="tvp_perpage" type="labelenum" label="55301" values="10|20|30|40|50" default="50" />
-    </category>
-    <category label="55400">
-        <setting id="iplex_adult" type="bool" label="55401" default="false" />
-    </category>
-    <category label="55500">
-    	<setting type="lsep" label="55505" />
+	<category label="55300">
+		<setting id="tvp_perpage" type="labelenum" label="55301" values="10|20|30|40|50" default="50" />
+	</category>
+	<category label="55400">
+		<setting id="iplex_adult" type="bool" label="55401" default="false" />
+	</category>
+	<category label="55500">
+		<setting type="lsep" label="55505" />
 		<setting id="ekinotv_login" type="text" label="55503" default="" />
 		<setting id="ekinotv_password" type="text" label="55504" option="hidden" default="" />
-        <setting id="ekinotv_sort" type="labelenum" label="55501" values="ocena|popularnosc|data dodania|tytul" default="data dodania" />
-        <setting id="ekinotv_sortorder" type="labelenum" label="55502" values="malejaco|rosnaco" default="malejaco" />
-        <!--<setting type="lsep" label="55506" />
-        <setting id="ekinotv_path" type="folder" label="55507" default="None" />-->
-    </category>
-    <category label="55600">
-    	<setting type="lsep" label="55601"/>
-        <setting id="wlacztv_login" type="text" label="55602" default="" />
-        <setting id="wlacztv_pass" type="text" label="55603" option="hidden" default="" />
-        <setting type="lsep" label="55611"/>
-        <setting id="wlacztv_rec" type="bool" label="55612" default="false" />
+		<setting id="ekinotv_sort" type="labelenum" label="55501" values="ocena|popularnosc|data dodania|tytul" default="data dodania" />
+		<setting id="ekinotv_sortorder" type="labelenum" label="55502" values="malejaco|rosnaco" default="malejaco" />
+		<!--<setting type="lsep" label="55506" />
+		<setting id="ekinotv_path" type="folder" label="55507" default="None" />-->
+	</category>
+	<category label="55600">
+		<setting type="lsep" label="55601"/>
+		<setting id="wlacztv_login" type="text" label="55602" default="" />
+		<setting id="wlacztv_pass" type="text" label="55603" option="hidden" default="" />
+		<setting type="lsep" label="55611"/>
+		<setting id="wlacztv_rec" type="bool" label="55612" default="false" />
 		<setting type="lsep" label="55007" />
 		<setting id="wlacztv_strm" type="folder" label="55008" default="None" />
-    </category>
-    <category label="55700">
-	<setting id="serialnet_wersja" type="bool" label="55701" default="true" />
-    </category>
+	</category>
+	<category label="55700">
+		<setting id="serialnet_wersja" type="bool" label="55701" default="true" />
+	</category>
+		<category label="56000">
+		<setting type="lsep" label="56001" />
+		<setting id="maxvideo_login" type="text" label="56002" default="" />
+		<setting id="maxvideo_password" type="text" label="56003" option="hidden" default="" />
+	</category>
 </settings>
