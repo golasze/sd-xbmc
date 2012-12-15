@@ -350,7 +350,11 @@ class tvn:
                 videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, quality_temp))
             elif platform == 'Samsung TV':
                 tempVideoUrl = self.getUrlFromTab(rankSorted, quality_temp)
-                videoUrl = self.common.getURLRequestData(tempVideoUrl)
+                try:
+                    videoUrl = self.common.getURLRequestData(tempVideoUrl)
+                except Exception, exception:
+                    self.exception.getError(str(exception))
+                    exit()
                 if dbg == 'true':
                     log.info('TVN - getVideoUrl() -> temporary videoUrl: ' + tempVideoUrl)
                     log.info('TVN - getVideoUrl() -> videoUrl: ' + videoUrl)
