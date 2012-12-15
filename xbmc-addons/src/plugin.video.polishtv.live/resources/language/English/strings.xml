@@ -98,4 +98,10 @@
     <string id="55902">Couldn't connect to network</string>
     <string id="55903">API Error</string>
     <string id="55904">No JSON Object could be decoded</string>
+    
+    <!-- Maxvideo settings -->
+    <string id="56000">Maxvideo</string>
+    <string id="56001">Global settigs</string>
+    <string id="56002">Username:</string>
+    <string id="56003">Password:</string>
 </strings>

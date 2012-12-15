@@ -15,9 +15,11 @@ import pLog, settings, Parser, urlparser, pCommon
 
 log = pLog.pLog()
 
+SERVICE = 'bestplayer'
+
 mainUrl = 'http://bestplayer.tv/'
 mainUrl2 = 'http://bestplayer.tv/filmy/'
-mainUrl3 = 'http://bestplayer.tv/top100/'
+TOP_LINK = mainUrl + 'top100/'
 logoUrl = mainUrl + 'images/logo.png'
 first = '-strona-1.html'
 
@@ -40,7 +42,7 @@ class BestPlayer:
 
     def listsMainMenu(self, table):
         for num, val in table.items():
-            self.addDir('bestplayer', 'main-menu', val, '', '', '', logoUrl, True, False)
+            self.addDir(SERVICE, 'main-menu', val, '', '', '', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def listsCategoriesMenu2(self):
@@ -48,7 +50,7 @@ class BestPlayer:
         match = re.compile('<a href="(.+?)z-lektorem.html" title="Filmy(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
-             self.addDir('bestplayer', 'submenu', '', match[i][2], '', mainUrl + match[i][0] + 'z-lektorem-strona-1.html', logoUrl, True, False)
+             self.addDir(SERVICE, 'submenu', '', match[i][2], '', mainUrl + match[i][0] + 'z-lektorem-strona-1.html', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))    
 
     def listsCategoriesMenu3(self):
@@ -56,7 +58,7 @@ class BestPlayer:
         match = re.compile('<a href="(.+?)z-napisami.html" title="Filmy.+?"><span class="float-left">(.+?)</span><span').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
-             self.addDir('bestplayer', 'submenu', '', match[i][1], '', mainUrl + match[i][0] + 'z-napisami-strona-1.html', logoUrl, True, False)
+             self.addDir(SERVICE, 'submenu', '', match[i][1], '', mainUrl + match[i][0] + 'z-napisami-strona-1.html', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def listsCategoriesMenu4(self):
@@ -64,7 +66,7 @@ class BestPlayer:
         match = re.compile('<a href="(.+?)premiery.html" title="Filmy(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
-             self.addDir('bestplayer', 'submenu', '', match[i][2], '', mainUrl + match[i][0] + 'premiery-strona-1.html', logoUrl, True, False)
+             self.addDir(SERVICE, 'submenu', '', match[i][2], '', mainUrl + match[i][0] + 'premiery-strona-1.html', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def listsCategoriesMenu5(self):
@@ -72,7 +74,7 @@ class BestPlayer:
         match = re.compile('<a href="filmy/rok(.+?).html" title="(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(link)
         if len(match) > 0:
             for i in range(len(match)):
-             self.addDir('bestplayer', 'submenu', '', match[i][1], '', mainUrl + 'filmy/rok' + match[i][0] + '-strona-1.html', logoUrl, True, False)
+             self.addDir(SERVICE, 'submenu', '', match[i][1], '', mainUrl + 'filmy/rok' + match[i][0] + '-strona-1.html', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1])) 
      
     def getFilmTable(self,url):
@@ -81,11 +83,11 @@ class BestPlayer:
         match = re.compile('<a href="(.+?)" title=""><img src="(.+?)" width.+?/></a>\n.+?<div style.+?star.png" />\n.+?<div>Opini:.+?\n.+?\n.+?\n.+?<h2><a href=".+?">(.+?)</a></h2>\n.+?Kategorie:.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc" >(.+?)\n.+?').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
-             self.addDir('bestplayer', 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
+             self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
         match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(link)
         if len(match2) > 0:
              nexturl = match2[0]
-             self.addDir('bestplayer', 'submenu', '', 'Następna strona', '', mainUrl + nexturl, '', True, False)     
+             self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', mainUrl + nexturl, '', True, False)     
         xbmcplugin.setContent(int(sys.argv[1]),'movies')
         xbmc.executebuiltin("Container.SetViewMode(503)")
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -96,7 +98,7 @@ class BestPlayer:
         match = re.compile('<a class=".+?"  href="(.+?)" title=""><img src="(.+?)" height=.+?/></a>\n.+?<div class="trigger.+?".+?star.png" />\n.+?<div class="trigger.+?".+?\n.+?<div class="trigger.+?".+?\n.+?\n.+?<div class="fr".+?\n.+?<h2><a href=".+?">(.+?)</a></h2>\n.+?Kategorie.+?\n.+?\n.+?<div class=".+?" class="p5 film-dsc".+?">(.+?)\n.+?<a class="trigger.+?"').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
-             self.addDir('bestplayer', 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)       
+             self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)       
         xbmcplugin.setContent(int(sys.argv[1]),'movies')
         xbmc.executebuiltin("Container.SetViewMode(503)")
         xbmcplugin.endOfDirectory(int(sys.argv[1]))    
@@ -123,11 +125,11 @@ class BestPlayer:
         match = re.compile('<div class="movie-cover fl">\n.+?<a href="(.+?)" title=""><img src="(.+?)" width="150" height="200" alt="okladka" /></a>\n.+?<div.+?png" />\n.+?<div>O.+?\n.+?\n.+?<div.+?px">\n.+?<h2><a.+?>(.+?)</a></h2>\n.+?Kat.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc" >(.+?)\n.+?<div style="margin-top: 10px;">').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
-             self.addDir('bestplayer', 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
+             self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
         match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(link)
         if len(match2) > 0:
              nexturl = match2[0]
-             self.addDir('bestplayer', 'submenu', '', 'Następna strona', '', mainUrl + nexturl, '', True, False)     
+             self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', mainUrl + nexturl, '', True, False)     
         xbmcplugin.setContent(int(sys.argv[1]),'movies')
         xbmc.executebuiltin("Container.SetViewMode(503)")
         xbmcplugin.endOfDirectory(int(sys.argv[1]))   
@@ -185,7 +187,7 @@ class BestPlayer:
         elif name == 'main-menu' and category == "Premiery":
             self.listsCategoriesMenu4()
         elif name == 'main-menu' and category == "TOP":
-            self.getFilmTable2(mainUrl3)    
+            self.getFilmTable2(TOP_LINK)    
         elif name == 'main-menu' and category == 'Data wydania':
             self.listsCategoriesMenu5()
         elif name == 'main-menu' and category == 'Szukaj':
