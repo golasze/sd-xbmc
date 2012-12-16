@@ -98,6 +98,9 @@
     <string id="55902">Couldn't connect to network</string>
     <string id="55903">API Error</string>
     <string id="55904">No JSON Object could be decoded</string>
+    <string id="55905">Object has no attribute</string>
+    <string id="55906">Description:</string>
+    <string id="55907">Couldn't open url. Time out!</string>
     
     <!-- Maxvideo settings -->
     <string id="56000">Maxvideo</string>
