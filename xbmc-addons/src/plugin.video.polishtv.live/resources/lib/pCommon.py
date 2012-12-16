@@ -9,7 +9,7 @@ method getURLRequestData(params):
 	params['load_cookie'] - True, or False. Load cookie
 	params['url'] - Url address
 	params['use_post'] - True, or False. Use post method.
-	params['post_data'] - Post data
+	post_data - Post data
 	params['return_data'] - True, or False. Return response read data.
 	
 	If you want to get data from url use this method (for default host):
@@ -24,12 +24,26 @@ method getURLRequestData(params):
 	data = { 'url': <your url>, 'use_host': True, 'host': <your own user-agent define>, use_cookie': False, 'use_post': False, 'return_data': True }
 	response = self.getURLRequestData(data)
 
+	If you want to save cookie file:
+	data = { 'url': <your url>, 'use_host': True, 'host': <your own user-agent define>, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': <path to cookie file>, 'use_post': True, 'return_data': True }
+	response = self.getURLRequestData(data, post_data)
+
+	If you want to load cookie file:
+	data = { 'url': <your url>, 'use_host': True, 'host': <your own user-agent define>, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': <path to cookie file>, 'use_post': True, 'return_data': True }
+	response = self.getURLRequestData(data, post_data)
+
+	If you want to load cookie file without post:
+	data = { 'url': <your url>, 'use_host': True, 'host': <your own user-agent define>, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': <path to cookie file>, 'use_post': False, 'return_data': True }
+	response = self.getURLRequestData(data)
+	
+	and etc...
 '''
 
 import re, os, sys, cookielib, random
 import urllib, urllib2, re, sys, math
 import elementtree.ElementTree as ET
 import xbmcaddon
+import simplejson as json
 
 import pLog
 
@@ -135,7 +149,7 @@ class common:
         cj.save(COOKIEFILE)
         return data
 
-    def getURLRequestData(self, params = {}):
+    def getURLRequestData(self, params = {}, post_data = {}):
     	host = HOST
     	response = None
     	req = None
@@ -150,9 +164,12 @@ class common:
 				cj.load(params['cookiefile'])
 			if params['use_post']:
 				headers = { 'User-Agent' : host }
-				dataPost = urllib.urlencode(params['post_data'])
+				if dbg == 'true':
+					log.info('pCommon - getURLRequestData() -> post data: ' + str(post_data))
+				dataPost = urllib.urlencode(post_data)
 				req = urllib2.Request(params['url'], dataPost, headers)
 			else:
+				req = urllib2.Request(params['url'])
 				req.add_header('User-Agent', host)
 			response = opener.open(req)
 			if not params['return_data']:

@@ -18,14 +18,17 @@ import pLog, settings, Parser, pCommon, Navigation, Errors
 log = pLog.pLog()
 cj = cookielib.LWPCookieJar()
 
+SERVICE = 'wlacztv'
+
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 #mainUrl = "http://www.wlacz.tv"
 #mainChannels = mainUrl + "/kanaly"
-mainUrl = 'http://www.polandlive.tv'
+mainUrl = 'http://www.wlacz.tv'
 playerUrl = mainUrl + '/api/setPlayer'
 channelsUrl = mainUrl + '/api/online_channels'
 loginUrl = mainUrl + '/api/login'
 isLoggedUrl = mainUrl + '/api/is_logged'
+dbg = ptv.getSetting('default_debug')
 
 COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "wlacztv.cookie" 
 
@@ -60,8 +63,16 @@ class Channels:
             
     
     def isLogged(self):
-        content_json = self.common.getURLFromFileCookieData(isLoggedUrl, COOKIEFILE)
+        query_data = { 'url': isLoggedUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': False, 'return_data': True }
+        try:
+            content_json = self.common.getURLRequestData(query_data)
+        except Exception, exception:
+            self.exception.getError(str(exception))
+            exit()
+        #content_json = self.common.getURLFromFileCookieData(isLoggedUrl, COOKIEFILE)
         result_json = json.loads(content_json)
+        if dbg == 'true':
+            log.info('WLACZ.TV - isLogged() -> json: ' + str(result_json))
         res = self.dec(result_json['logged_in']).replace("\"", "")
         if res == 'true':
             return True
@@ -75,26 +86,33 @@ class Channels:
             exit()
         else:
             post = { 'username': login, 'password': password }
+            query_data = { 'url': loginUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True }
             self.checkDirCookie()
             try:
-                self.common.saveURLToFileCookieData(loginUrl, COOKIEFILE, post)
+                #self.common.saveURLToFileCookieData(loginUrl, COOKIEFILE, post)
+                self.common.getURLRequestData(query_data, post)
             except Exception, exception:
                 self.exception.getError(str(exception))
                 exit()
     
     def channelsList(self, url):
+        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': True, 'save_cookie': False, 'load_cookie': True, 'cookiefile': COOKIEFILE, 'use_post': False, 'return_data': True }
         try:
-            raw_json = self.common.getURLFromFileCookieData(url, COOKIEFILE)
+            raw_json = self.common.getURLRequestData(query_data)
+            #raw_json = self.common.getURLFromFileCookieData(url, COOKIEFILE)
             result_json = json.loads(raw_json)
         except Exception, exception:
             self.exception.getError(str(exception))
             exit()
+        if dbg == 'true':
+            log.info('WLACZ.TV - channelsList() -> json: ' + str(result_json))
         for o in result_json:
             title = self.dec(o['name']).replace("\"", "")
             #url = self.dec(o['uri']).replace("\"", "")
-            icon = self.dec(o['image']).replace("\"", "")
+            #icon = self.dec(o['image']).replace("\"", "") 
             key = self.dec(o['key']).replace("\"", "")
-            self.addChannel('wlacztv', title, key, icon)
+            icon = mainUrl + '/thumbs/' + key + '.stream.jpg'
+            self.addChannel(SERVICE, title, key, icon)
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_UNSORTED)
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
@@ -103,12 +121,16 @@ class Channels:
     
     def getChannelRTMPLink(self, key, title, icon):
         post = { 'key': key }
+        query_data = { 'url': playerUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True }
         #log.info('rtmp: ' + str(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post)))
         try:
-            rtmp_json = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
+            #rtmp_json = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
+            rtmp_json = json.loads(self.common.getURLRequestData(query_data, post))
         except Exception, exception:
             self.exception.getError(str(exception))
             exit()
+        if dbg == 'true':
+            log.info('WLACZ.TV - getChannelRTMPLink() -> rtmp json: ' + str(rtmp_json))
         #tcurl = rtmp_json['rtmp_server'] + '/wlacztv/' + rtmp_json['playPath']
         rtmp = rtmp_json['rtmp_server'] + "/" + rtmp_json['app'] + '?wlacztv_session_token=' + rtmp_json['token']
         return { 'title': title, 'icon': icon, 'key': key, 'rtmp': rtmp, 'playpath': rtmp_json['playPath'] }
@@ -240,7 +262,7 @@ class Record:
         e_End = self.input(nTime, t(55623).encode("utf-8"))
         setTime = self.SetTime(s_Date, s_Start, e_Date, e_End)
         nameRec = title.replace(" ", "_") + "_" + s_Date + "." + s_Start.replace(":", ".")
-        opts = { 'service': 'wlacztv', 'key': key, 'login_url': login_url, 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'url': url, 'login': login, 'password': password, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m }
+        opts = { 'service': SERVICE, 'key': key, 'login_url': login_url, 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'url': url, 'login': login, 'password': password, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m }
         self.saveFile(opts)
         xbmc.executebuiltin('AlarmClock(' + str(nameRec) + ', "RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(nameRec) + '.json)", ' + str(setTime[0]) + '))')
         
