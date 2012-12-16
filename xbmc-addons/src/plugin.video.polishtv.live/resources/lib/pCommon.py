@@ -1,4 +1,31 @@
 # -*- coding: utf-8 -*-
+'''
+method getURLRequestData(params):
+	params['use_host'] - True or False. If false the method can use global HOST
+	params['host'] -  Use when params['outside_host'] is setting on True. Enter a own host
+	params['use_cookie'] - True, or False. Enable using cookie
+	params['cookiefile'] - Set cookie file
+	params['save_cookie'] - True, or False. Save cookie to file
+	params['load_cookie'] - True, or False. Load cookie
+	params['url'] - Url address
+	params['use_post'] - True, or False. Use post method.
+	params['post_data'] - Post data
+	params['return_data'] - True, or False. Return response read data.
+	
+	If you want to get data from url use this method (for default host):
+	data = { 'url': <your url>, 'use_host': False, use_cookie': False, 'use_post': False, 'return_data': True }
+	response = self.getURLRequestData(data)
+	
+	If you want to get XML, or JSON data then:
+	data = { 'url': <your url>, 'use_host': False, use_cookie': False, 'use_post': False, 'return_data': False }
+	response = self.getURLRequestData(data)
+
+	If you want to get data with different user-agent then:
+	data = { 'url': <your url>, 'use_host': True, 'host': <your own user-agent define>, use_cookie': False, 'use_post': False, 'return_data': True }
+	response = self.getURLRequestData(data)
+
+'''
+
 import re, os, sys, cookielib, random
 import urllib, urllib2, re, sys, math
 import elementtree.ElementTree as ET
@@ -11,6 +38,8 @@ log = pLog.pLog()
 scriptID = sys.modules[ "__main__" ].scriptID
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
+
+dbg = ptv.getSetting('default_debug')
 
 HOST_TABLE = { 100: 'Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefox/17.0',
 	       101: 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11',
@@ -106,14 +135,42 @@ class common:
         cj.save(COOKIEFILE)
         return data
 
-    def getURLRequestData(self, url):
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', HOST)
-        response = urllib2.urlopen(req)
-        data = response.read()
-        response.close()
-        return data 
-        
+    def getURLRequestData(self, params = {}):
+    	host = HOST
+    	response = None
+    	req = None
+    	out_data = None
+    	if dbg == 'true':
+    		log.info('pCommon - getURLRequestData() -> params: ' + str(params))
+        if params['use_host']:
+        	host = params['host']
+        if params['use_cookie']:
+			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+			if params['load_cookie']:
+				cj.load(params['cookiefile'])
+			if params['use_post']:
+				headers = { 'User-Agent' : host }
+				dataPost = urllib.urlencode(params['post_data'])
+				req = urllib2.Request(params['url'], dataPost, headers)
+			else:
+				req.add_header('User-Agent', host)
+			response = opener.open(req)
+			if not params['return_data']:
+				out_data = response
+        else:
+        	req = urllib2.Request(params['url'])
+        	req.add_header('User-Agent', host)
+        	response = urllib2.urlopen(req)
+        	if not params['return_data']:
+        		out_data = response
+        if params['return_data']:
+	        data = response.read()
+	        out_data = data
+	        response.close()
+        if params['use_cookie'] and params['save_cookie']:
+        	cj.save(params['cookiefile'])
+        return out_data 
+               
     def makeABCList(self):
         strTab = []
         strTab.append('0 - 9');
