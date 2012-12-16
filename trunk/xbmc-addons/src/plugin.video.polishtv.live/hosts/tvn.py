@@ -6,6 +6,7 @@ import elementtree.ElementTree as ET
 from xml.dom.minidom import parseString
 from time import strftime,strptime, localtime
 from datetime import date
+import traceback
 
 import crypto.cipher.aes_cbc
 import crypto.cipher.base
@@ -154,6 +155,7 @@ class tvn:
             #response = urllib2.urlopen(req)
             response = self.common.getURLRequestData({ 'url': self.contentHost + self.startUrl + urlQuery, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': False })
         except Exception, exception:
+            traceback.print_exc()
             self.exception.getError(str(exception))
             exit()
         xmlDoc = ET.parse(response).getroot()
@@ -310,6 +312,7 @@ class tvn:
         try:
             response = self.common.getURLRequestData({ 'url': self.contentHost + self.startUrl + urlQuery, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': False })
         except Exception, exception:
+            traceback.print_exc()
             self.exception.getError(str(exception))
             exit()
         #response = urllib2.urlopen(self.contentHost + self.startUrl + urlQuery)
@@ -352,6 +355,7 @@ class tvn:
                 try:
                     videoUrl = self.common.getURLRequestData({ 'url': tempVideoUrl, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': True })
                 except Exception, exception:
+                    traceback.print_exc()
                     self.exception.getError(str(exception))
                     exit()
                 if dbg == 'true':
