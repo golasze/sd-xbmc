@@ -57,6 +57,7 @@ class tvn:
     startUrl = '/api/?platform=Mobile&terminal=Android&format=xml&v=2.0&authKey=' + authKey
     contentUserAgent = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
     if platform == 'Samsung TV':
+        contentHost = 'https://api.tvnplayer.pl'
         authKey = 'ba786b315508f0920eca1c34d65534cd'
         startUrl = '/api/?platform=ConnectedTV&terminal=Samsung&format=xml&v=2.0&authKey=' + authKey
         contentUserAgent = 'Mozilla/5.0 (SmartHub; SMART-TV; U; Linux/SmartTV; Maple2012) AppleWebKit/534.7 (KHTML, like Gecko) SmartTV Safari/534.7'
@@ -146,11 +147,12 @@ class tvn:
 
         if dbg == 'true':
             log.info('TVN - listCategories() -> link: ' + self.contentHost + self.startUrl + urlQuery)
-        req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
-        req.add_header('User-Agent', self.contentUserAgent)
-        response = ''
+        #req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
+        #req.add_header('User-Agent', self.contentUserAgent)
+        #response = ''
         try:
-            response = urllib2.urlopen(req)
+            #response = urllib2.urlopen(req)
+            response = self.common.getURLRequestData({ 'url': self.contentHost + self.startUrl + urlQuery, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': False })
         except Exception, exception:
             self.exception.getError(str(exception))
             exit()
@@ -305,11 +307,8 @@ class tvn:
         #urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
         if dbg == 'true':
             log.info('TVN - getVideoUrl() -> link: ' + self.contentHost + self.startUrl + urlQuery)
-        req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
-        req.add_header('User-Agent', self.contentUserAgent)
-        response = ''
         try:
-            response = urllib2.urlopen(req)
+            response = self.common.getURLRequestData({ 'url': self.contentHost + self.startUrl + urlQuery, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': False })
         except Exception, exception:
             self.exception.getError(str(exception))
             exit()
@@ -351,7 +350,7 @@ class tvn:
             elif platform == 'Samsung TV':
                 tempVideoUrl = self.getUrlFromTab(rankSorted, quality_temp)
                 try:
-                    videoUrl = self.common.getURLRequestData(tempVideoUrl)
+                    videoUrl = self.common.getURLRequestData({ 'url': tempVideoUrl, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': True })
                 except Exception, exception:
                     self.exception.getError(str(exception))
                     exit()
