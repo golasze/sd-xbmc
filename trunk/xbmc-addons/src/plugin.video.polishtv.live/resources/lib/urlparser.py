@@ -2,7 +2,7 @@
 import cookielib, os, string, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
-import xbmcaddon, simplejson
+import xbmcaddon, xbmc, simplejson
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -352,30 +352,19 @@ class urlparser:
       self.cm.saveURLToFileCookieData('http://maxvideo.pl/api/login.php',self.COOKIEFILE, {'login' : self.servset['maxvideo_login'], 'password' : self.servset['maxvideo_password'] })
       videoHash = url.split('/')[-1]
       data = self.cm.postURLFromFileCookieData('http://maxvideo.pl/api/get_link.php',self.COOKIEFILE,{'v' : videoHash})
+      
       result = simplejson.loads(data)
-      videoUrl = result['ok']      
+      if (result['premium']):
+	premium_until = result['premium_until']
+	premium_until = premium_until.split(' ')
+	notification = '(Zalogowany,Premium maxvideo.pl aktywne do ' + premium_until[0] + ',10000)'
+      else:
+	notification = '(Niezalogowany, Oplac konto maxvideo.pl by w pelni korzystac z serwisu,30000)'
+      xbmc.executebuiltin("XBMC.Notification" + notification +'"')
+
+      videoUrl = result['ok']
       return videoUrl
-      
- #     link = self.requestData(url)
- #     if DEBUG: log.info(link)
- #     #eval(unescape('%76%61%72%20%6C%6E%6B%20%3D%20%75%6E%65%73%63%61%70%65%28%63%68%65%63%6B%6C%6E%74%28%75%6E%65%73%63%61%70%65%28%27%25%32%35%36%38%25%32%35%37%34%25%32%35%37%34%25%32%35%37%30%25%32%35%33%66%25%32%35%32%61%25%32%35%32%61%25%32%35%37%33%25%32%35%33%31%25%32%35%32%45%25%32%35%36%78%25%32%35%36%31%25%32%35%37%38%25%32%35%37%36%25%32%35%36%39%25%32%35%36%34%25%32%35%36%35%25%32%35%36%61%25%32%35%32%45%25%32%35%37%30%25%32%35%36%7A%25%32%35%32%61%25%32%35%37%33%25%32%35%37%34%25%32%35%37%32%25%32%35%36%35%25%32%35%36%31%25%32%35%36%78%25%32%35%32%61%25%32%35%33%33%25%32%35%36%34%25%32%35%33%39%25%32%35%33%37%25%32%35%33%31%25%32%35%33%35%25%32%35%36%32%25%32%35%36%31%25%32%35%33%36%25%32%35%33%31%25%32%35%33%31%25%32%35%33%32%25%32%35%33%34%25%32%35%33%33%25%32%35%36%31%25%32%35%36%33%25%32%35%33%33%25%32%35%33%39%25%32%35%36%32%25%32%35%33%39%25%32%35%33%30%25%32%35%33%36%25%32%35%33%39%25%32%35%33%33%25%32%35%33%35%25%32%35%33%39%25%32%35%33%37%25%32%35%36%33%25%32%35%33%39%25%32%35%36%36%25%32%35%36%33%25%32%35%36%34%25%32%35%33%37%25%32%35%33%38%25%32%35%33%37%25%32%35%36%33%25%32%35%33%31%25%32%35%36%35%25%32%35%33%39%25%32%35%36%35%25%32%35%33%34%25%32%35%33%32%25%32%35%33%39%25%32%35%36%34%25%32%35%33%38%25%32%35%36%34%25%32%35%33%35%25%32%35%36%31%25%32%35%36%32%25%32%35%36%36%25%32%35%33%32%25%32%35%33%33%25%32%35%33%34%25%32%35%33%39%25%32%35%36%31%25%32%35%33%31%25%32%35%36%31%25%32%35%36%32%25%32%35%33%33%25%32%35%36%31%25%32%35%33%31%25%32%35%36%36%25%32%35%33%34%25%32%35%36%31%25%32%35%32%61%25%32%35%36%36%25%32%35%36%39%25%32%35%36%7A%25%32%35%36%35%25%32%35%32%45%25%32%35%36%36%25%32%35%36%7A%25%32%35%37%36%27%29%29%29%3B'));
- #     match1 = re.compile('eval\(unescape\((.+?)\)\)').findall(link)
- #     if len(match1) > 0:
- #         str1 = urllib.unquote(match1[0])
- #        if 'var lnk' in str1:
- #            tab = str1.split(" = ")
- #             match2 = re.compile('unescape\(checklnt\(unescape\((.+?)\)\)\)').findall(tab[1])
- #             if len(match2) > 0:
- #                 txt1 = match2[0].replace("'", "")
- #                 if DEBUG: log.info("final link: " + urllib.unquote(self.createString(urllib.unquote(txt1))))
- #                 return urllib.unquote(self.createString(urllib.unquote(txt1)))
- #             else:
- #                 return False
- #         else:
- #             return False  
- #     else:
- #         return False
-      
+           
       
   def parserNEXTVIDEO(self, url):
       link = self.requestData(url)
