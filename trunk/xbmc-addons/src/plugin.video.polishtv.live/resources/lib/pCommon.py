@@ -154,6 +154,8 @@ class common:
     	response = None
     	req = None
     	out_data = None
+    	opener = None
+    	headers = { 'User-Agent' : host }
     	if dbg == 'true':
     		log.info('pCommon - getURLRequestData() -> params: ' + str(params))
         if params['use_host']:
@@ -162,28 +164,25 @@ class common:
 			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 			if params['load_cookie']:
 				cj.load(params['cookiefile'])
-			if params['use_post']:
-				headers = { 'User-Agent' : host }
-				if dbg == 'true':
-					log.info('pCommon - getURLRequestData() -> post data: ' + str(post_data))
-				dataPost = urllib.urlencode(post_data)
-				req = urllib2.Request(params['url'], dataPost, headers)
-			else:
-				req = urllib2.Request(params['url'])
-				req.add_header('User-Agent', host)
-			response = opener.open(req)
-			if not params['return_data']:
-				out_data = response
+        if params['use_post']:
+	        headers = { 'User-Agent' : host }
+	        if dbg == 'true':
+	        	log.info('pCommon - getURLRequestData() -> post data: ' + str(post_data))
+	        dataPost = urllib.urlencode(post_data)
+	        req = urllib2.Request(params['url'], dataPost, headers)
+        if not params['use_post']:
+            req = urllib2.Request(params['url'])
+            req.add_header('User-Agent', host)
+        if params['use_cookie']:
+            response = opener.open(req)
         else:
-        	req = urllib2.Request(params['url'])
-        	req.add_header('User-Agent', host)
-        	response = urllib2.urlopen(req)
-        	if not params['return_data']:
-        		out_data = response
+            response = urllib2.urlopen(req)
+        if not params['return_data']:
+            out_data = response
         if params['return_data']:
-	        data = response.read()
-	        out_data = data
-	        response.close()
+            data = response.read()
+            out_data = data
+            response.close()
         if params['use_cookie'] and params['save_cookie']:
         	cj.save(params['cookiefile'])
         return out_data 
