@@ -5,6 +5,7 @@ import xbmcgui, xbmc, xbmcaddon, xbmcplugin
 import datetime
 import time
 import simplejson as json
+import traceback
 
 scriptID   = sys.modules[ "__main__" ].scriptID
 t = sys.modules[ "__main__" ].language
@@ -67,6 +68,7 @@ class Channels:
         try:
             content_json = self.common.getURLRequestData(query_data)
         except Exception, exception:
+            traceback.print_exc()
             self.exception.getError(str(exception))
             exit()
         #content_json = self.common.getURLFromFileCookieData(isLoggedUrl, COOKIEFILE)
@@ -92,6 +94,7 @@ class Channels:
                 #self.common.saveURLToFileCookieData(loginUrl, COOKIEFILE, post)
                 self.common.getURLRequestData(query_data, post)
             except Exception, exception:
+                traceback.print_exc()
                 self.exception.getError(str(exception))
                 exit()
     
@@ -102,6 +105,7 @@ class Channels:
             #raw_json = self.common.getURLFromFileCookieData(url, COOKIEFILE)
             result_json = json.loads(raw_json)
         except Exception, exception:
+            traceback.print_exc()
             self.exception.getError(str(exception))
             exit()
         if dbg == 'true':
@@ -127,6 +131,7 @@ class Channels:
             #rtmp_json = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
             rtmp_json = json.loads(self.common.getURLRequestData(query_data, post))
         except Exception, exception:
+            traceback.print_exc()
             self.exception.getError(str(exception))
             exit()
         if dbg == 'true':
