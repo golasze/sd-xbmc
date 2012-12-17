@@ -6,6 +6,7 @@ import threading
 import simplejson as json
 import datetime
 import time
+import traceback
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -15,7 +16,7 @@ BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 #sys.path.append( os.path.join( os.getcwd(), "../" ) )
 
-import pLog, settings, Parser
+import pLog, settings, Parser, Navigation, pCommon, Errors
 
 log = pLog.pLog()
 
@@ -35,6 +36,7 @@ timedelta_h = ptv.getSetting('default_timedelta_hours')
 timedelta_m = ptv.getSetting('default_timedelta_minutes')
 strmdir = ptv.getSetting('weebtv_strm')
 sortby = ptv.getSetting('weebtv_sort')
+dbg = ptv.getSetting('default_debug')
 
 VIDEO_MENU = [ "Nagrywanie", "Odtwarzanie", "Zaprogramowanie nagrania" ]
 
@@ -66,7 +68,8 @@ class Settings:
 
 class Channels:
 	def __init__(self):
-		pass
+		self.common = pCommon.common()
+		self.exception = Errors.Exception()
 
 	def dec(self, string):
 		json_ustr = json.dumps(string, ensure_ascii=False)
@@ -84,16 +87,16 @@ class Channels:
 		return outTab
 	
 	def API(self, url):
+		query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
 		res = { "0": "Null" }
 		try:
-			headers = { 'User-Agent' : HOST, 'ContentType' : 'application/x-www-form-urlencoded' }
 			post = { 'username': login, 'userpassword': password }
-			data = urllib.urlencode(post)
-			req = urllib2.Request(url, data, headers)
-			raw = urllib2.urlopen(req)
-			res = json.loads(raw.read())
-		except:
+			res = json.loads(self.common.getURLRequestData(query_data, post))
+		except Exception, exc:
 			res = { "0": "Error" }
+			traceback.print_exc()
+			self.exception.getError(str(exc))
+			exit()
 		return res
 
 	def ChannelsList(self, url):
@@ -130,7 +133,7 @@ class Channels:
 					xbmcplugin.endOfDirectory(int(sys.argv[1]))
 			except KeyError, keyerr:
 				msg = xbmcgui.Dialog()
-				print keyerr
+				traceback.print_exc()
 				msg.ok("Błąd API", "Błędny klucz odczytany z API.")				
 		else:
 			msg = xbmcgui.Dialog()
@@ -199,6 +202,10 @@ class Player(xbmc.Player):
 		
 
 class Video:
+    def __init__(self):
+        self.common = pCommon.common()
+        self.exception = Errors.Exception()
+        
     def InputTime(self):
         nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
         text = None
@@ -236,11 +243,8 @@ class Video:
             values = { 'cid': channel, 'username': login, 'userpassword': password, 'platform': 'XBMC' }
         try:
             parser = Parser.Parser()
-            headers = { 'User-Agent' : HOST }
-            data = urllib.urlencode(values)
-            reqUrl = urllib2.Request(playerUrl, data, headers)
-            response = urllib2.urlopen(reqUrl)
-            resLink = response.read()
+            query_data = { 'url': playerUrl, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
+            resLink = self.common.getURLRequestData(query_data, values)
             params = parser.getParams(resLink)
             ticket = parser.getParam(params, "73")
             rtmpLink = parser.getParam(params, "10")
@@ -251,7 +255,7 @@ class Video:
         except urllib2.URLError, urlerr:
             msg = xbmcgui.Dialog()
             data = { 'rtmp': None, 'ticket': None, 'playpath': None, 'premium': premium, 'status': status }
-            print urlerr
+            traceback.print_exc()
             msg.ok("Błąd setPlayer.", "Nie uzyskano danych do autoryzacji.", "Sprawdź połączenie sieciowe.")
         return data
 
