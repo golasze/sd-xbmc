@@ -28,3 +28,5 @@ Ustawienie Nagrywania - "nagrywanie czasowe" podajemy date i godzine kiedy nagry
 
 pliki zapisywane sa w formacie *FLV*
 [https://lh6.googleusercontent.com/-DA0-7UpQ87w/ULu2lV5p3xI/AAAAAAAAA5Y/sQmSL_CfMpA/s800/zapis.JPG] 
+P.S.
+Uwaga w przypadku weeb.tv jeśli chcemy równocześnie nagrywać i oglądać potrzebne jest wykupienie multisesji, jeśli tego nie zrobimy to któryś ze strumieni zostanie przerwany
