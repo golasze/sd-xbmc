@@ -11,9 +11,12 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, urlparser, pCommon
+import pLog, settings, Parser, urlparser, pCommon, Navigation, Errors
 
 log = pLog.pLog()
+
+dbg = ptv.getSetting('default_debug')
+dstpath = ptv.getSetting('default_dstpath')
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 SERVICE = 'kinopecetowiec'
@@ -50,6 +53,9 @@ class KinoPecetowiec:
         self.up = urlparser.urlparser()
         self.cm = pCommon.common()
 	self.history = pCommon.history()
+	self.navigation = Navigation.VideoNav()
+	self.chars = pCommon.Chars()
+	self.exception = Errors.Exception()
 
 
     def setTable(self):
@@ -65,7 +71,14 @@ class KinoPecetowiec:
     def getCategoryTab(self,url):   
         strTab = []
         valTab = []
-        data = self.cm.requestData(url)
+        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	#data = self.cm.requestData(url)
+	try:
+		data = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
         match = re.compile('<div class=".+?"><a href="http://www.kino.pecetowiec.pl/categories/(.+?)/(.+?)" title=".+?"><span').findall(data)
         if len(match) > 0:
 	    for i in range(len(match)):
@@ -176,12 +189,14 @@ class KinoPecetowiec:
     def searchTab(self, text):
         strTab = []
         valTab = []
+        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
         values = {'search_id': text}
-        headers = { 'User-Agent' : HOST }
-        data = urllib.urlencode(values)
-        req = urllib2.Request(MAINURL + '/search/', data, headers)
-        response = urllib2.urlopen(req)
-        link = response.read()
+	try:
+		link = self.cm.getURLRequestData(query_data, values)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
         match = re.compile('<img src="(.+?)" width="126"  height="160" id="rotate').findall(link)
         if len(match) > 0:
           img = match
@@ -201,7 +216,14 @@ class KinoPecetowiec:
 
     def getHostTable(self,url):
 	valTab = []
-        link = self.cm.requestData(url)
+        #link = self.cm.requestData(url)
+	query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	try:
+		link = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
         data = link.replace('putlocker.com/file', 'putlocker.com/embed'). replace('http://sockshare.com', 'http://www.sockshare.com')
 	match = re.compile('<div id="videoplayer">(.+?)</div>', re.DOTALL).findall(data)
 	if len(match) > 0:
@@ -230,6 +252,13 @@ class KinoPecetowiec:
         if isPlayable:
             liz.setProperty("IsPlayable", "true")
         liz.setInfo( type="Video", infoLabels={ "Title": title, "Plot": plot } )
+	if dstpath != "None" or not dstpath and name == 'playSelectedMovie':
+		if dbg == 'true':
+			log.info('KINOPECETOWIEC - addDir() -> title: ' + title)
+			log.info('KINOPECETOWIEC - addDir() -> url: ' + page)
+			log.info('KINOPECETOWIEC - addDir() -> dstpath: ' + os.path.join(dstpath, SERVICE))
+		cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(self.chars.replaceChars(title)), 'url': urllib.quote_plus(page), 'path': os.path.join(dstpath, SERVICE) })
+		liz.addContextMenuItems(cm, replaceItems=False)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
     
       
@@ -258,17 +287,23 @@ class KinoPecetowiec:
         category = self.parser.getParam(params, "category")
         page = self.parser.getParam(params, "page")
         icon = self.parser.getParam(params, "icon")
+        link = self.parser.getParam(params, "url")
+        vtitle = self.parser.getParam(params, "vtitle")
+        service = self.parser.getParam(params, "service")
+        action = self.parser.getParam(params, "action")
+        path = self.parser.getParam(params, "path")
 
-	log.info ('name: ' + str(name))
-	log.info ('title: ' + str(title))
-	log.info ('category: ' + str(category))
-	log.info ('page: ' + str(page))
+	if dbg == 'true':
+		log.info ('name: ' + str(name))
+		log.info ('title: ' + str(title))
+		log.info ('category: ' + str(category))
+		log.info ('page: ' + str(page))
 
 	if page=='': page = 1
 	
 	#main menu	
-        if name == None:
-            self.listsMainMenu(SERVICE_MENU_TABLE)	
+	if name == None:
+		self.listsMainMenu(SERVICE_MENU_TABLE)	
 	#kategorie filmowe    
 	elif category == self.setTable()[1]:
 	    self.listsCategoriesMenu(MAINURL + '/categories')	    
@@ -321,3 +356,24 @@ class KinoPecetowiec:
             else:
                 d = xbmcgui.Dialog()
                 d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
+        
+        if service == SERVICE and action == 'download' and link != '':
+			if dbg == 'true':
+				log.info('KINOPECETOWIEC - handleService()[download][0] -> title: ' + urllib.unquote_plus(vtitle))
+				log.info('KINOPECETOWIEC - handleService()[download][0] -> url: ' + urllib.unquote_plus(link))
+				log.info('KINOPECETOWIEC - handleService()[download][0] -> path: ' + path)	
+			if urllib.unquote_plus(link).startswith('http://'):
+				urlTempVideo = self.getHostTable(urllib.unquote_plus(link))
+				linkVideo = self.up.getVideoLink(urlTempVideo)
+				if dbg == 'true':
+					log.info('KINOPECETOWIEC - handleService()[download][1] -> title: ' + urllib.unquote_plus(vtitle))
+					log.info('KINOPECETOWIEC - handleService()[download][1] -> temp url: ' + urlTempVideo)
+					log.info('KINOPECETOWIEC - handleService()[download][1] -> url: ' + linkVideo)							
+				if linkVideo != False:
+					if dbg == 'true':
+						log.info('KINOPECETOWIEC - handleService()[download][2] -> title: ' + urllib.unquote_plus(vtitle))
+						log.info('KINOPECETOWIEC - handleService()[download][2] -> url: ' + linkVideo)
+						log.info('KINOPECETOWIEC - handleService()[download][2] -> path: ' + path)							
+					import downloader
+					dwnl = downloader.Downloader()
+					dwnl.getFile({ 'title': urllib.unquote_plus(vtitle), 'url': linkVideo, 'path': path })
