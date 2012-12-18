@@ -11,12 +11,14 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, urlparser, pCommon
+import pLog, settings, Parser, urlparser, pCommon, Navigation, Errors
 
 log = pLog.pLog()
 
-SERVICE = 'bestplayer'
+dbg = ptv.getSetting('default_debug')
+dstpath = ptv.getSetting('default_dstpath')
 
+SERVICE = 'bestplayer'
 mainUrl = 'http://bestplayer.tv/'
 mainUrl2 = 'http://bestplayer.tv/filmy/'
 TOP_LINK = mainUrl + 'top100/'
@@ -30,7 +32,9 @@ MENU_TAB = {1: "Lektor",
 	    3: "Premiery",
             4: "TOP", 
             5: "Data wydania",
-            6: "Szukaj" }
+            6: "Szukaj",
+            7: "Historia Wyszukiwania"
+            }
 
 class BestPlayer:
     def __init__(self):
@@ -39,6 +43,14 @@ class BestPlayer:
         self.parser = Parser.Parser()
         self.up = urlparser.urlparser()
         self.cm = pCommon.common()
+        self.history = pCommon.history()
+	self.navigation = Navigation.VideoNav()
+	self.chars = pCommon.Chars()
+	self.exception = Errors.Exception()
+	self.dir = pCommon.common()
+
+    def setTable(self):
+	return MENU_TAB
 
     def listsMainMenu(self, table):
         for num, val in table.items():
@@ -46,45 +58,75 @@ class BestPlayer:
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def listsCategoriesMenu2(self):
-        link = self.cm.requestData(mainUrl2)     
-        match = re.compile('<a href="(.+?)z-lektorem.html" title="Filmy(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(link)
+        query_data = { 'url': mainUrl2, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        try:
+		data = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
+        match = re.compile('<a href="(.+?)z-lektorem.html" title="Filmy(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(data)
         if len(match) > 0:
             for i in range(len(match)):
              self.addDir(SERVICE, 'submenu', '', match[i][2], '', mainUrl + match[i][0] + 'z-lektorem-strona-1.html', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))    
 
     def listsCategoriesMenu3(self):
-        link = self.cm.requestData(mainUrl2)
-        match = re.compile('<a href="(.+?)z-napisami.html" title="Filmy.+?"><span class="float-left">(.+?)</span><span').findall(link)
+        query_data = { 'url': mainUrl2, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        try:
+		data = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
+        match = re.compile('<a href="(.+?)z-napisami.html" title="Filmy.+?"><span class="float-left">(.+?)</span><span').findall(data)
         if len(match) > 0:
             for i in range(len(match)):
              self.addDir(SERVICE, 'submenu', '', match[i][1], '', mainUrl + match[i][0] + 'z-napisami-strona-1.html', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def listsCategoriesMenu4(self):
-        link = self.cm.requestData(mainUrl2)
-        match = re.compile('<a href="(.+?)premiery.html" title="Filmy(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(link)
+        query_data = { 'url': mainUrl2, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        try:
+		data = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
+        match = re.compile('<a href="(.+?)premiery.html" title="Filmy(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(data)
         if len(match) > 0:
             for i in range(len(match)):
              self.addDir(SERVICE, 'submenu', '', match[i][2], '', mainUrl + match[i][0] + 'premiery-strona-1.html', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def listsCategoriesMenu5(self):
-        link = self.cm.requestData(mainUrl2)
-        match = re.compile('<a href="filmy/rok(.+?).html" title="(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(link)
+        query_data = { 'url': mainUrl2, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        try:
+		data = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
+        match = re.compile('<a href="filmy/rok(.+?).html" title="(.+?)"><span class="float-left">(.+?)</span><span class="float-right"></span></a></li>').findall(data)
         if len(match) > 0:
             for i in range(len(match)):
              self.addDir(SERVICE, 'submenu', '', match[i][1], '', mainUrl + 'filmy/rok' + match[i][0] + '-strona-1.html', logoUrl, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1])) 
      
     def getFilmTable(self,url):
-        link = self.cm.requestData(url)
-        tabURL = link.replace('</div>', '').replace('<div class="fr" style="width:475px; margin-right:10px; margin-top:10px">', '').replace('&amp;', '').replace('quot;', '').replace('&amp;quot;', '')
+        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        try:
+		data = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
+        tabURL = data.replace('</div>', '').replace('<div class="fr" style="width:475px; margin-right:10px; margin-top:10px">', '').replace('&amp;', '').replace('quot;', '').replace('&amp;quot;', '')
         match = re.compile('<a href="(.+?)" title=""><img src="(.+?)" width.+?/></a>\n.+?<div style.+?star.png" />\n.+?<div>Opini:.+?\n.+?\n.+?\n.+?<h2><a href=".+?">(.+?)</a></h2>\n.+?Kategorie:.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc" >(.+?)\n.+?').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
              self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
-        match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(link)
+        match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(data)
         if len(match2) > 0:
              nexturl = match2[0]
              self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', mainUrl + nexturl, '', True, False)     
@@ -93,39 +135,51 @@ class BestPlayer:
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def getFilmTable2(self,url):
-        link = self.cm.requestData(url)
-        tabURL = link.replace('</div>', '').replace('&amp;', '').replace('quot;', '').replace('&amp;quot;', '')
+        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        try:
+		data = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
+        tabURL = data.replace('</div>', '').replace('&amp;', '').replace('quot;', '').replace('&amp;quot;', '')
         match = re.compile('<a class=".+?"  href="(.+?)" title=""><img src="(.+?)" height=.+?/></a>\n.+?<div class="trigger.+?".+?star.png" />\n.+?<div class="trigger.+?".+?\n.+?<div class="trigger.+?".+?\n.+?\n.+?<div class="fr".+?\n.+?<h2><a href=".+?">(.+?)</a></h2>\n.+?Kategorie.+?\n.+?\n.+?<div class=".+?" class="p5 film-dsc".+?">(.+?)\n.+?<a class="trigger.+?"').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
              self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)       
         xbmcplugin.setContent(int(sys.argv[1]),'movies')
         xbmc.executebuiltin("Container.SetViewMode(503)")
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))    
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def searchInputText(self):
         text = None
         k = xbmc.Keyboard()
         k.doModal()
         if (k.isConfirmed()):
-          text = k.getText()
+	    text = k.getText()
+	    self.history.addHistoryItem(SERVICE, text)
         return text
 
-    def searchTab(self):
-        text = self.searchInputText()
-        searchUrl = mainUrl
+    def listsHistory(self, table):
+	for i in range(len(table)):
+	    if table[i] <> '':
+		self.addDir(SERVICE, table[i], 'history', table[i], 'None', logoUrl, 'None', True, False)
+	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+    def searchTab(self, url, text):
+        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
         values = {'q': text}
-        headers = { 'User-Agent' : HOST }
-        data = urllib.urlencode(values)
-        req = urllib2.Request(searchUrl, data, headers)
-        response = urllib2.urlopen(req)
-        link = response.read()
-        response.close()
+        try:
+		link = self.cm.getURLRequestData(query_data, values)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
         tabURL = link.replace('</div>', '').replace('&amp;', '').replace('quot;', '').replace('&amp;quot;', '')
         match = re.compile('<div class="movie-cover fl">\n.+?<a href="(.+?)" title=""><img src="(.+?)" width="150" height="200" alt="okladka" /></a>\n.+?<div.+?png" />\n.+?<div>O.+?\n.+?\n.+?<div.+?px">\n.+?<h2><a.+?>(.+?)</a></h2>\n.+?Kat.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc" >(.+?)\n.+?<div style="margin-top: 10px;">').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
-             self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
+             self.addDir(SERVICE, 'playSelectedMovie', 'history', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
         match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(link)
         if len(match2) > 0:
              nexturl = match2[0]
@@ -136,14 +190,20 @@ class BestPlayer:
 
     def getVideoID(self,url):
         videoID = ''
-        link = self.cm.requestData(url)
+        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
+        try:
+		link = self.cm.getURLRequestData(query_data)
+	except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()
         match = re.compile('<iframe src="(.+?)" style="border:0px; width: 740px; height: 475px;" scrolling="no"></iframe>').findall(link)
         if len(match) > 0:
             videoID = match[0]
         return videoID
 
-    def addDir(self, service, name, category, title, plot, link, iconimage, folder = True, isPlayable = True):
-        u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&page=" + urllib.quote_plus(link)
+    def addDir(self, service, name, category, title, plot, page, iconimage, folder = True, isPlayable = True):
+        u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&page=" + urllib.quote_plus(page)
         if name == 'main-menu':
             title = category
         if iconimage == '':
@@ -152,6 +212,13 @@ class BestPlayer:
         if isPlayable:
             liz.setProperty("IsPlayable", "true")
         liz.setInfo( type="Video", infoLabels={ "Title": title, "Plot": plot } )
+        if dstpath != "None" or not dstpath and name == 'playSelectedMovie':
+		if dbg == 'true':
+			log.info('BESTPLAYER - addDir() -> title: ' + title)
+			log.info('BESTPLAYER - addDir() -> url: ' + page)
+			log.info('BESTPLAYER - addDir() -> dstpath: ' + os.path.join(dstpath, SERVICE))
+		cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(self.chars.replaceChars(title)), 'url': urllib.quote_plus(page), 'path': os.path.join(dstpath, SERVICE) })
+		liz.addContextMenuItems(cm, replaceItems=False)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
       
     def LOAD_AND_PLAY_VIDEO(self, videoUrl, title):
@@ -176,23 +243,40 @@ class BestPlayer:
         name = self.parser.getParam(params, "name")
         title = self.parser.getParam(params, "title")
         category = self.parser.getParam(params, "category")
-        page = self.parser.getParam(params, "page")    
-        
+        page = self.parser.getParam(params, "page")
+        url = self.parser.getParam(params, "url")
+        vtitle = self.parser.getParam(params, "vtitle")
+        service = self.parser.getParam(params, "service")
+        action = self.parser.getParam(params, "action")
+        path = self.parser.getParam(params, "path")
+
+        if dbg == 'true':
+		log.info ('name: ' + str(name))
+		log.info ('title: ' + str(title))
+		log.info ('category: ' + str(category))
+		log.info ('page: ' + str(page))
+      
         if name == None:
             self.listsMainMenu(MENU_TAB)
-        elif name == 'main-menu' and category == 'Lektor':
+        elif category == self.setTable()[1]:
             self.listsCategoriesMenu2()
-        elif name == 'main-menu' and category == 'Napisy':
+        elif category == self.setTable()[2]:
             self.listsCategoriesMenu3()
-        elif name == 'main-menu' and category == "Premiery":
+        elif category == self.setTable()[3]:
             self.listsCategoriesMenu4()
-        elif name == 'main-menu' and category == "TOP":
+        elif category == self.setTable()[4]:
             self.getFilmTable2(TOP_LINK)    
-        elif name == 'main-menu' and category == 'Data wydania':
+        elif category == self.setTable()[5]:
             self.listsCategoriesMenu5()
-        elif name == 'main-menu' and category == 'Szukaj':
-            self.searchTab()  
-        elif name == 'submenu':
+        elif category == self.setTable()[6]:
+            text = self.searchInputText()
+            self.searchTab(mainUrl, text)
+        elif category == self.setTable()[7]:
+	    t = self.history.loadHistoryFile(SERVICE)
+	    self.listsHistory(t)
+	if category == 'history' and name != 'playSelectedMovie':
+	    self.searchTab(mainUrl, name)
+        if name == 'submenu':
             self.getFilmTable(page)
 
         if name == 'playSelectedMovie':
@@ -207,3 +291,25 @@ class BestPlayer:
             else:
                 d = xbmcgui.Dialog()
                 d.ok('Brak linku', 'Maxvideo - tymczasowo wyczerpałeś limit ilości uruchamianych seriali.', 'Zapraszamy za godzinę.')
+
+        if service == SERVICE and action == 'download' and url != '':
+                        self.dir.checkDir(os.path.join(dstpath, SERVICE))
+			if dbg == 'true':
+				log.info('BESTPLAYER - handleService()[download][0] -> title: ' + urllib.unquote_plus(vtitle))
+				log.info('BESTPLAYER - handleService()[download][0] -> url: ' + urllib.unquote_plus(url))
+				log.info('BESTPLAYER - handleService()[download][0] -> path: ' + path)	
+			if urllib.unquote_plus(url).startswith('film'):
+				urlTempVideo = self.getVideoID(mainUrl + urllib.unquote_plus(url))
+				linkVideo = self.up.getVideoLink(urlTempVideo)
+				if dbg == 'true':
+					log.info('BESTPLAYER - handleService()[download][1] -> title: ' + urllib.unquote_plus(vtitle))
+					log.info('BESTPLAYER - handleService()[download][1] -> temp url: ' + urlTempVideo)
+					log.info('BESTPLAYER - handleService()[download][1] -> url: ' + linkVideo)							
+				if linkVideo != False:
+					if dbg == 'true':
+						log.info('BESTPLAYER - handleService()[download][2] -> title: ' + urllib.unquote_plus(vtitle))
+						log.info('BESTPLAYER - handleService()[download][2] -> url: ' + linkVideo)
+						log.info('BESTPLAYER - handleService()[download][2] -> path: ' + path)							
+					import downloader
+					dwnl = downloader.Downloader()
+					dwnl.getFile({ 'title': urllib.unquote_plus(vtitle), 'url': linkVideo, 'path': path })
