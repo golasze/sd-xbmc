@@ -2,7 +2,7 @@
 import cookielib, os, string, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
-import xbmcaddon, xbmc, simplejson
+import xbmcaddon, xbmc, xbmcgui, simplejson
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -348,26 +348,57 @@ class urlparser:
 
 
   def parserMAXVIDEO(self, url):
-      self.servset = sets.getSettings('maxvideo')
-      self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
-      self.COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "maxvideo.cookie" 
-      query_data = { 'url': 'http://maxvideo.pl/api/login.php', 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
-      self.cm.getURLRequestData(query_data, {'login' : self.servset['maxvideo_login'], 'password' : self.servset['maxvideo_password'] })
+      apiLogin = 'http://maxvideo.pl/api/login.php'
+      apiVideoUrl = 'http://maxvideo.pl/api/get_link.php'
+      authKey = 'key=8d00321f70b85a4fb0203a63d8c94f97'
+      
       videoHash = url.split('/')[-1]
-      query_data = { 'url': 'http://maxvideo.pl/api/get_link.php', 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
-      data = self.cm.getURLRequestData(query_data, {'v' : videoHash})
-      result = simplejson.loads(data)
-      if (result['premium']):
-	premium_until = result['premium_until']
-	premium_until = premium_until.split(' ')
-	notification = '(Zalogowany,Premium maxvideo.pl aktywne do ' + premium_until[0] + ',10000)'
+      videoUrl = ''
+    
+      #addon settings
+      self.servset = sets.getSettings('maxvideo')
+      #cookies
+      self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
+      self.cookiefile = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "maxvideo.cookie"
+      
+      #log in
+      if self.servset['maxvideo_login']=='':
+	  log_error = False
+	  log_desc = 'Nie zalogowano'
       else:
-	notification = '(Niezalogowany, Oplac konto maxvideo.pl by w pelni korzystac z serwisu,30000)'
-      xbmc.executebuiltin("XBMC.Notification" + notification +'"')
+	  query_data = {'url': apiLogin, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': self.cookiefile, 'use_post': True, 'return_data': True}
+	  data = self.cm.getURLRequestData(query_data, {'login' : self.servset['maxvideo_login'], 'password' : self.servset['maxvideo_password']})
+	  result = simplejson.loads(data)	  
+	  try:
+	      if (result['error']):
+	      	  log_error = True
+		  log_desc = result['error'].encode('UTF-8')
+	  except:
+	      log_error = False
+	      log_desc = result['ok']	    
 
-      videoUrl = result['ok']
+      #get video url
+      query_data = { 'url': apiVideoUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': self.cookiefile, 'use_post': True, 'return_data': True }
+      data = self.cm.getURLRequestData(query_data, {'v' : videoHash, 'key' : authKey})
+      result = simplejson.loads(data)
+      result = dict([(str(k), v) for k, v in result.items()])
+         
+      try:
+	  if (result['error']): return videoUrl
+      except:
+	  if (result['premium']):
+	      premium_until = result['premium_until'].split(' ')
+	      log_desc2 = 'premium aktywne do ' + premium_until[0]
+	      log_time = 15000
+	  else:
+	      if (log_error): log_desc2 = 'sprawdz ustawienia wtyczki'
+	      else: log_desc2 = 'wykup konto premium maxvideo.pl by w pelni korzystac z serwisu'
+	      log_time = 30000
+	  notification = '(' + log_desc + ',' + log_desc2 + ',' + str(log_time) + ')'
+	  videoUrl = result['ok'].encode('UTF-8')
+      xbmc.executebuiltin("XBMC.Notification" + notification +'"')
       return videoUrl
-           
+
 
   def parserNEXTVIDEO(self, url):
       query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
