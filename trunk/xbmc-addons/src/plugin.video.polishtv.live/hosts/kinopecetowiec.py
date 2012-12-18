@@ -23,6 +23,7 @@ SERVICE = 'kinopecetowiec'
 MAINURL = 'http://www.kino.pecetowiec.pl'
 LOGOURL = 'http://pecetowiec.pl/images/blackevo4-space/logo.png'
 IMGURL = MAINURL + '/chimg/'
+SURL = MAINURL + '/search/'
 
 NEW_LINK = MAINURL + '/videos/basic/mr/'
 POP_LINK = MAINURL + '/videos/basic/mv/'
@@ -56,6 +57,7 @@ class KinoPecetowiec:
 	self.navigation = Navigation.VideoNav()
 	self.chars = pCommon.Chars()
 	self.exception = Errors.Exception()
+	self.dir = pCommon.common()
 
 
     def setTable(self):
@@ -186,7 +188,7 @@ class KinoPecetowiec:
         return text
 
 
-    def searchTab(self, text):
+    def searchTab(self, url, text):
         strTab = []
         valTab = []
         query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
@@ -332,14 +334,14 @@ class KinoPecetowiec:
 	#szukaj
 	elif category == self.setTable()[10]:
 	    text = self.searchInputText()
-	    self.getSearchTable(self.searchTab(text))
+	    self.getSearchTable(self.searchTab(SURL, text))
 	#Historia Wyszukiwania
 	elif category == self.setTable()[11]:
 	    t = self.history.loadHistoryFile(SERVICE)
 #	    print str(t)
 	    self.listsHistory(t)
 	if category == 'history' and name != 'playSelectedMovie':
-	    self.getSearchTable(self.searchTab(name))	
+	    self.getSearchTable(self.searchTab(SURL, name))	
 	
 	#lista tytulow w kategorii
 	if category > 0:
@@ -358,6 +360,7 @@ class KinoPecetowiec:
                 d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
         
         if service == SERVICE and action == 'download' and link != '':
+                        self.dir.checkDir(os.path.join(dstpath, SERVICE))
 			if dbg == 'true':
 				log.info('KINOPECETOWIEC - handleService()[download][0] -> title: ' + urllib.unquote_plus(vtitle))
 				log.info('KINOPECETOWIEC - handleService()[download][0] -> url: ' + urllib.unquote_plus(link))
