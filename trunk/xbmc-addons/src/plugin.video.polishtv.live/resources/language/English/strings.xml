@@ -36,7 +36,8 @@
     <string id="55205">Global settings</string>
     <string id="55206">Download settings</string>
     <string id="55207">Path to download files</string>
-
+    <string id="55208">I'm outside the Poland</string>
+    
     <!-- TVP settings -->
     <string id="55300">TVP</string>
     <string id="55301">Videos per page</string>

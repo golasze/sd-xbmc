@@ -9,7 +9,7 @@ from datetime import date
 import traceback
 
 import crypto.cipher.aes_cbc
-import crypto.cipher.base
+import crypto.cipher.base, base64
 import binascii, time, os
 
 try:
@@ -46,7 +46,7 @@ quality_manual = ptv.getSetting('tvn_quality_manual')
 #samsung_quality = __settings__.getSetting('tvn_samsung_quality')
 dstpath = ptv.getSetting('default_dstpath')
 dbg = ptv.getSetting('default_debug')
-
+proxy = ptv.getSetting('tvn_proxy')
 
 class tvn:
     mode = 0
@@ -307,10 +307,16 @@ class tvn:
         groupName = 'item'
         urlQuery = '&type=%s&id=%s&limit=%s&page=1&sort=newest&m=%s' % (category, id, str(PAGE_LIMIT), method)
         #urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
+        proxy_url = 'aHR0cDovL3NkLXhibWMub3JnL3N1cHBvcnQvdHZucHJveHkucGhwP3U9'
+        url = self.contentHost + self.startUrl + urlQuery
+        
+        if proxy == 'true':
+            url = base64.b64decode(proxy_url) + urllib.quote_plus(url)
+        
         if dbg == 'true':
-            log.info('TVN - getVideoUrl() -> link: ' + self.contentHost + self.startUrl + urlQuery)
+            log.info('TVN - getVideoUrl() -> link: ' + url)
         try:
-            response = self.common.getURLRequestData({ 'url': self.contentHost + self.startUrl + urlQuery, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': False })
+            response = self.common.getURLRequestData({ 'url': url , 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': False })
         except Exception, exception:
             traceback.print_exc()
             self.exception.getError(str(exception))
@@ -352,6 +358,9 @@ class tvn:
                 videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, quality_temp))
             elif platform == 'Samsung TV':
                 tempVideoUrl = self.getUrlFromTab(rankSorted, quality_temp)
+                print "KUPS: "
+                if proxy == 'true':
+                    tempVideoUrl = base64.b64decode(proxy_url) + urllib.quote_plus(tempVideoUrl)
                 try:
                     videoUrl = self.common.getURLRequestData({ 'url': tempVideoUrl, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': True })
                 except Exception, exception:
