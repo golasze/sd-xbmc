@@ -137,7 +137,8 @@ MENU_TAB = [
             [ "Publika TV", 6,"rtmp://91.230.214.56/publika/livepublika1" ],
             [ "Big Pond Sport ", 6,"http://cht-cdn220-is-12.se.bptvlive.ngcdn.telstra.com/bp_online_bpsport_high" ],
             [ "TVN24 [chello]", 0, "mms://stream.livetv.chello.pl/TVN24" ],
-            [ "TVN TURBO [BEZ REKLAM]", 0, "rtmp://adm.live.tvtp.pl/TVNTurbo/ playpath=tv swfUrl=http://www.tvtp.pl/player/player_o_video.swf?pUrl=tvnturbo_c.e9baa14091ebd631a7a7d03445c18c18&allowfullscreen=true&pAutoplay=1&pStreaming=11 pageUrl=http://www.tvtp.pl/player/player_o_video.swf?pUrl=tvnturbo_c.e9baa14091ebd631a7a7d03445c18c18&allowfullscreen=true&pAutoplay=1&pStreaming=11  live=true swfVfy=true" ],
+            [ "TVN TURBO", 0, "rtmp://94.23.39.164/satlive/tvnturbo playpath=tvnturbo swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-132.htm  live=true swfVfy=true" ],
+
  #          [ "Poslkie stacje radiowe", 0, "http://xbmc.cba.pl/zbmc/onair.m3u" ],
             [ "Jedynka Polskie Radio", 7,"rtmp://stream85.polskieradio.pl/live/pr1.sdp" ],
             [ "Dwójka Polskie Radio", 7,"rtmp://stream85.polskieradio.pl/live/pr2.sdp" ],
