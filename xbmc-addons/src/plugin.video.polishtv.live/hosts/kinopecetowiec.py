@@ -301,7 +301,7 @@ class KinoPecetowiec:
 		log.info ('category: ' + str(category))
 		log.info ('page: ' + str(page))
 
-	if page=='': page = 1
+	if str(page)=='None' or page=='': page = 1 
 	
 	#main menu	
 	if name == None:
