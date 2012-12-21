@@ -89,7 +89,7 @@ class EkinoTV:
     else:
       url = mainUrl + "/logowanie.html?login=1"
       headers = { 'User-Agent' : HOST }
-      post = { 'username': username, 'password': password }
+      post = { 'form_login_username': username, 'form_login_password': password }
       opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
       data = urllib.urlencode(post)
       req = urllib2.Request(url, data, headers)
@@ -105,8 +105,12 @@ class EkinoTV:
 
 
   def isLoggedIn(self, data):
+    #<div class="standard"><a href="profil,jatrn.html">jatrn</a></div>
     #<div class="span-7 medium lh200 last">Zalogowany jako: <b>
-    if 'Zalogowany jako:' in data:
+    lStr = 'profil,'+username+'.html'
+    print lStr
+    if lStr in data:
+    #if 'Zalogowany jako:' in data:
       return True
     else:
       return False
