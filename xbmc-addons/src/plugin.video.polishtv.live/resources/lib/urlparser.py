@@ -356,16 +356,16 @@ class urlparser:
       self.servset = sets.getSettings('maxvideo')
       if self.servset['maxvideo_notify'] == 'true': notify = True
       else: notify = False
-      #cookies
-      self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
-      self.cookiefile = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "maxvideo.cookie"
-      
+
       videoUrl = ''
       videoHash = url.split('/')[-1]
-      self.api = maxvideo.API()
-      self.api.Login(self.servset['maxvideo_login'], self.servset['maxvideo_password'], notify)
-      videoUrl = self.api.getVideoUrl(videoHash, self.cookiefile, notify)
-
+      login = self.api.Login(self.servset['maxvideo_login'], self.servset['maxvideo_password'], notify)
+      if (login):
+	  self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
+	  cookiefile = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "maxvideo.cookie"	
+      else: 
+	  cookiefile = ''	
+      videoUrl = self.api.getVideoUrl(videoHash, cookiefile, notify)
       return videoUrl
 
 
