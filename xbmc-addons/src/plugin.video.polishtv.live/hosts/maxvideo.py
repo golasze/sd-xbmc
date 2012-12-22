@@ -28,6 +28,7 @@ COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + 
 
 login = ptv.getSetting('maxvideo_login')
 password = ptv.getSetting('maxvideo_password')
+notification = ptv.getSetting('maxvideo_notify')
 
 
 class Maxvideo:
@@ -37,7 +38,6 @@ class Maxvideo:
     self.parser = Parser.Parser()
     self.cm = pCommon.common()
     self.api = API()
-    self.api.Login()
 
 
   def getFrontListTable(self):
@@ -126,14 +126,17 @@ class Maxvideo:
     name = name.replace("+", " ")
     category = category.replace("+", " ")
     page = page.replace("+", " ")
+    if notification == 'true': notify = True
+    else: notify = False
     
     if name == 'None':
+      self.api.Login(login, password, notify)
       self.addList(self.getMenuTable(),'main-menu')
     else:
       if name <> 'playSelectedMovie':
 	self.addList(self.getMovieTab(name),'movie')
       else:	
-	videoUrl = self.api.getVideoUrl(url, False)
+	videoUrl = self.api.getVideoUrl(url, COOKIEFILE, notify)
 	self.LOAD_AND_PLAY_VIDEO(videoUrl) 	
 
 
@@ -142,46 +145,34 @@ class API:
     self.cm = pCommon.common()
   
   
-  def Login(self):
+  def Login(self, username, password, notification):
     self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
-    if login=='':
-	log_error = False
-	log_desc = 'Nie zalogowano'
+    if login=='': log_desc = 'Nie zalogowano'
     else:
 	query_data = {'url': apiLogin, 'use_host': False, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True}
-	data = self.cm.getURLRequestData(query_data, {'login' : login, 'password' : password})
-	result = simplejson.loads(data)	  
-	try:
-	    if (result['error']):
-	      	log_error = True
-		log_desc = result['error'].encode('UTF-8')
-	except:
-	    log_error = False
-	    log_desc = result['ok']	  
+	data = self.cm.getURLRequestData(query_data, {'login' : username, 'password' : password})
+	result = simplejson.loads(data)
+	if 'error' in result:
+	    log_desc = result['error'].encode('UTF-8')
+	    log_time = 20000
+	else:
+	    log_desc = result['ok']
+	    log_time = 5000
+    if notification:
+      notification = '(maxvideo.pl,' + username + ': ' + log_desc + ',' + str(log_time) + ')'
+      xbmc.executebuiltin("XBMC.Notification" + notification +'"')
+      
 
-  #videoHash - 8 or 16 char video hash
-  #notify - Ture/False; premium notification. if no premium, notification will show anyway
-  def getVideoUrl(self, videoHash, notify):
-    query_data = { 'url': apiVideoUrl, 'use_host': False, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True }
+  def getVideoUrl(self, videoHash, cookiefile, notification):
+    query_data = { 'url': apiVideoUrl, 'use_host': False, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': cookiefile, 'use_post': True, 'return_data': True }
     data = self.cm.getURLRequestData(query_data, {'v' : videoHash, 'key' : authKey})
     result = simplejson.loads(data)
     result = dict([(str(k), v) for k, v in result.items()])
-      
-    log_desc = ''
-    log_dec2 = ''
-    try:
-      if (result['error']): return videoUrl
-    except:
-      if (result['premium']):
-	premium_until = result['premium_until'].split(' ')
-	log_desc2 = 'premium aktywne do ' + premium_until[0]
-	log_time = 15000
-      else:
-	notify = True
-	if (log_error): log_desc2 = 'sprawdz ustawienia wtyczki'
-	else: log_desc2 = 'wykup konto premium maxvideo.pl by w pelni korzystac z serwisu'
-	log_time = 30000
-      notification = '(' + log_desc + ',' + log_desc2 + ',' + str(log_time) + ')'
+    log.info(str(result))
+    if 'error' in result: videoUrl = ''
+    else:
+      if (not result['premium']):
+	if notification:   
+	  xbmc.executebuiltin("XBMC.Notification(maxvideo.pl,wykup konto premium by w pelni korzystac z serwisu,15000)")
       videoUrl = result['ok'].encode('UTF-8')
-    if notify: xbmc.executebuiltin("XBMC.Notification" + notification +'"')
     return videoUrl

@@ -9,6 +9,7 @@ scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
 import pLog, xppod, Parser, settings, pCommon
+import maxvideo
 
 log = pLog.pLog()
 sets = settings.TVSettings()
@@ -90,7 +91,8 @@ class urlparser:
     nUrl=''
     host = self.getHostName(url)
     log.info("video hosted by: " + host)
-
+    log.info(url)
+    
     if host == 'www.putlocker.com':
         nUrl = self.parserPUTLOCKER(url)
     if host == 'www.sockshare.com':
@@ -348,55 +350,22 @@ class urlparser:
 
 
   def parserMAXVIDEO(self, url):
-      apiLogin = 'http://maxvideo.pl/api/login.php'
-      apiVideoUrl = 'http://maxvideo.pl/api/get_link.php'
-      authKey = 'key=8d00321f70b85a4fb0203a63d8c94f97'
+      self.api = maxvideo.API()
       
-      videoHash = url.split('/')[-1]
-      videoUrl = ''
-    
       #addon settings
       self.servset = sets.getSettings('maxvideo')
+      if self.servset['maxvideo_notify'] == 'true': notify = True
+      else: notify = False
       #cookies
       self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
       self.cookiefile = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "maxvideo.cookie"
       
-      #log in
-      if self.servset['maxvideo_login']=='':
-	  log_error = False
-	  log_desc = 'Nie zalogowano'
-      else:
-	  query_data = {'url': apiLogin, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': self.cookiefile, 'use_post': True, 'return_data': True}
-	  data = self.cm.getURLRequestData(query_data, {'login' : self.servset['maxvideo_login'], 'password' : self.servset['maxvideo_password']})
-	  result = simplejson.loads(data)	  
-	  try:
-	      if (result['error']):
-	      	  log_error = True
-		  log_desc = result['error'].encode('UTF-8')
-	  except:
-	      log_error = False
-	      log_desc = result['ok']	    
+      videoUrl = ''
+      videoHash = url.split('/')[-1]
+      self.api = maxvideo.API()
+      self.api.Login(self.servset['maxvideo_login'], self.servset['maxvideo_password'], notify)
+      videoUrl = self.api.getVideoUrl(videoHash, self.cookiefile, notify)
 
-      #get video url
-      query_data = { 'url': apiVideoUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': self.cookiefile, 'use_post': True, 'return_data': True }
-      data = self.cm.getURLRequestData(query_data, {'v' : videoHash, 'key' : authKey})
-      result = simplejson.loads(data)
-      result = dict([(str(k), v) for k, v in result.items()])
-         
-      try:
-	  if (result['error']): return videoUrl
-      except:
-	  if (result['premium']):
-	      premium_until = result['premium_until'].split(' ')
-	      log_desc2 = 'premium aktywne do ' + premium_until[0]
-	      log_time = 15000
-	  else:
-	      if (log_error): log_desc2 = 'sprawdz ustawienia wtyczki'
-	      else: log_desc2 = 'wykup konto premium maxvideo.pl by w pelni korzystac z serwisu'
-	      log_time = 30000
-	  notification = '(' + log_desc + ',' + log_desc2 + ',' + str(log_time) + ')'
-	  videoUrl = result['ok'].encode('UTF-8')
-      xbmc.executebuiltin("XBMC.Notification" + notification +'"')
       return videoUrl
 
 
