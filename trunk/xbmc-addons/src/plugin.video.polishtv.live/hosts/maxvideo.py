@@ -147,24 +147,35 @@ class API:
   
   def Login(self, username, password, notification):
     self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
-    if login=='': log_desc = 'Nie zalogowano'
+    if login=='':
+	uname = ''
+	log_desc = 'Nie zalogowano'
+	log_time = 10000
+	retVal = False
     else:
+	uname = username + ': '
 	query_data = {'url': apiLogin, 'use_host': False, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True}
 	data = self.cm.getURLRequestData(query_data, {'login' : username, 'password' : password})
 	result = simplejson.loads(data)
 	if 'error' in result:
 	    log_desc = result['error'].encode('UTF-8')
 	    log_time = 20000
+	    retVal = False
 	else:
 	    log_desc = result['ok']
 	    log_time = 5000
+	    retVal = True
     if notification:
-      notification = '(maxvideo.pl,' + username + ': ' + log_desc + ',' + str(log_time) + ')'
+
+      notification = '(maxvideo.pl,' + uname + log_desc + ',' + str(log_time) + ')'
       xbmc.executebuiltin("XBMC.Notification" + notification +'"')
+    return retVal
       
 
   def getVideoUrl(self, videoHash, cookiefile, notification):
-    query_data = { 'url': apiVideoUrl, 'use_host': False, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': cookiefile, 'use_post': True, 'return_data': True }
+    if cookiefile == '': load_cookie = False
+    else: load_cookie = True
+    query_data = { 'url': apiVideoUrl, 'use_host': False, 'use_cookie': True, 'load_cookie': load_cookie, 'save_cookie': False, 'cookiefile': cookiefile, 'use_post': True, 'return_data': True }
     data = self.cm.getURLRequestData(query_data, {'v' : videoHash, 'key' : authKey})
     result = simplejson.loads(data)
     result = dict([(str(k), v) for k, v in result.items()])
