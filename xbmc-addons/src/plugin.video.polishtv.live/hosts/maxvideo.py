@@ -80,27 +80,24 @@ class Maxvideo:
   def addList(self, table, category):
     if category == 'movie':
       for i in range(len(table)):
-	self.add(SERVICE, 'playSelectedMovie', category, 'None', table[i][1].encode('UTF-8'), logoUrl, table[i][0], False, True)
+	#isPlayable musi byc False, bo inaczej sie wywyala
+	self.add(SERVICE, 'playSelectedMovie', category, table[i][1].encode('UTF-8'), logoUrl, table[i][0], False, False)
     if category == 'main-menu':
       for i in range(len(table)):
 	print table[i].encode('UTF-8')
-	self.add(SERVICE, table[i].encode('UTF-8'), category, 'None', table[i].encode('UTF-8'), logoUrl, 'None', True, False)      
+	self.add(SERVICE, table[i].encode('UTF-8'), category, table[i].encode('UTF-8'), logoUrl, 'None', True, False)      
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
   
 
-  def add(self, service, name, category, page, title, iconimage, url, folder = True, isPlayable = True):
-    u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name) + "&category=" + urllib.quote_plus(category) + "&page=" + urllib.quote_plus(page) + "&url=" + urllib.quote_plus(url)
-    if name == 'playSelectedMovie':
-    	name = title
-    if iconimage == '':
-    	iconimage = "DefaultVideo.png"
+  def add(self, service, name, category, title, iconimage, url, folder = True, isPlayable = True):
+    u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name) + "&category=" + urllib.quote_plus(category) + "&url=" + urllib.quote_plus(url)
+    if name == 'playSelectedMovie': name = title
     liz=xbmcgui.ListItem(name.decode('utf-8'), iconImage=iconimage, thumbnailImage=iconimage)
-    if isPlayable:
-	liz.setProperty("IsPlayable", "true")
-    liz.setInfo('video', {'title' : title.decode('utf-8')} )
+    if isPlayable: liz.setProperty("IsPlayable", "true")
+    liz.setInfo( type="Video", infoLabels={ "Title": title.decode('utf-8') } )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
-  
 
+  
   def LOAD_AND_PLAY_VIDEO(self, videoUrl):
     ok=True
     if videoUrl == '':
@@ -121,23 +118,20 @@ class Maxvideo:
     name = str(self.parser.getParam(params, "name"))
     title = str(self.parser.getParam(params, "title"))
     category = str(self.parser.getParam(params, "category"))
-    page = str(self.parser.getParam(params, "page"))
     url = str(self.parser.getParam(params, "url"))
     name = name.replace("+", " ")
     category = category.replace("+", " ")
-    page = page.replace("+", " ")
     if notification == 'true': notify = True
     else: notify = False
-    
+
     if name == 'None':
       self.api.Login(login, password, notify)
       self.addList(self.getMenuTable(),'main-menu')
-    else:
-      if name <> 'playSelectedMovie':
-	self.addList(self.getMovieTab(name),'movie')
-      else:	
-	videoUrl = self.api.getVideoUrl(url, COOKIEFILE, notify)
-	self.LOAD_AND_PLAY_VIDEO(videoUrl) 	
+    if name <> 'None' and category == 'main-menu':
+      self.addList(self.getMovieTab(name),'movie')
+    if category == 'movie':
+      videoUrl = self.api.getVideoUrl(url, COOKIEFILE, notify)
+      self.LOAD_AND_PLAY_VIDEO(videoUrl)      
 
 
 class API:

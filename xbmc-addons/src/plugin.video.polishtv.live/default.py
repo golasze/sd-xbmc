@@ -17,7 +17,8 @@ sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser
 import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv
-import ekinotv, iitvinfo, anyfiles, serialnet, bestplayer, kinopecetowiec
+import maxvideo, serialnet, anyfiles
+import ekinotv, iitvinfo, bestplayer, kinopecetowiec
 #import ipla
 
 log = pLog.pLog()
@@ -32,7 +33,7 @@ VOD_ONLINE_TABLE = {
                      200: "AnyFiles [różne filmy]",
                      #201: "Ekino TV [filmy, seriale]",
                      202: "iiTV info [seriale]",
-                     #203: "IPLA",
+                     203: "IPLA",
                      204: "IPLEX",
                      205: "TVN Player",
                      206: "TVP [info]",
@@ -40,6 +41,7 @@ VOD_ONLINE_TABLE = {
                      208: "SerialNet [seriale]",
                      209: "BestPlayer [filmy]",
 		     210: "Kino Pecetowiec [filmy]",
+		     211: "Maxvideo [różne filmy]",
 }
 
 REC_DOWN_TABLE = { 300: "Weeb TV",
@@ -108,7 +110,9 @@ class PolishLiveTV:
         elif mode == 210 or service == 'kinopecetowiec':
                 vod = kinopecetowiec.KinoPecetowiec()
                 vod.handleService()
-		
+        elif mode == 211 or service == 'maxvideo':
+                vod = maxvideo.Maxvideo()
+                vod.handleService()		
 		
         elif mode == 300:
                 vod = weebtv.WeebTV()
