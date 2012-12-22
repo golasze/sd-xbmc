@@ -69,5 +69,6 @@
 		<setting type="lsep" label="56001" />
 		<setting id="maxvideo_login" type="text" label="56002" default="" />
 		<setting id="maxvideo_password" type="text" label="56003" option="hidden" default="" />
+		<setting id="maxvideo_notify" type="bool" label="56004" default="false" />		
 	</category>
 </settings>
