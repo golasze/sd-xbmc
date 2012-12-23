@@ -9,7 +9,7 @@ scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
 import pLog, xppod, Parser, settings, pCommon
-import maxvideo
+import maxvideo, anyfiles
 
 log = pLog.pLog()
 sets = settings.TVSettings()
@@ -71,7 +71,6 @@ class urlparser:
     match = re.search('http://(.+?)/',url)
     if match:
       hostName = match.group(1)
-      
       if (nameOnly):
 	n = hostName.split('.')
 	hostName = n[-2]
@@ -109,10 +108,10 @@ class urlparser:
         nUrl = self.parserWGRANE(url)
     if host == 'www.cda.pl':
         nUrl = self.parserCDA(url)
-    if host == 'maxvideo.pl':
+    if host == 'maxvideo.pl' or host == 'nextvideo.pl':
         nUrl = self.parserMAXVIDEO(url)
-    if host == 'nextvideo.pl':
-        nUrl = self.parserNEXTVIDEO(url)
+#    if host == 'nextvideo.pl':
+#        nUrl = self.parserNEXTVIDEO(url)
     if host == 'video.anyfiles.pl':
         nUrl = self.parserANYFILES(url)
     if host == 'www.videoweed.es' or host == 'www.videoweed.com' or host == 'videoweed.es' or host == 'videoweed.com':
@@ -272,45 +271,11 @@ class urlparser:
 
 
   def parserANYFILES(self,url):
-	hostUrl = 'http://video.anyfiles.pl'
-	query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-	data = self.cm.getURLRequestData(query_data)
-	if DEBUG: log.info(data)
-	#var flashvars = {"uid":"player-vid-8552","m":"video","st":"c:1LdwWeVs3kVhWex2PysGP45Ld4abN7s0v4wV"};
-	match = re.search("""var flashvars = {.+?"st":"(.+?)"}""",data)
-	if match:
-		nUrl = xppod.Decode(match.group(1)[2:]).encode('utf-8').strip()
-		if 'http://' in nUrl:
-			url = nUrl
-		else:
-			url = hostUrl + nUrl
-		query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-		data = self.cm.getURLRequestData(query_data)
-		data = xppod.Decode(data).encode('utf-8').strip()
-		#{"file":"http://50.7.221.26/folder/776713c560821c666da18d8550594050_8552.mp4 or http://50.7.220.66/folder/776713c560821c666da18d8550594050_8552.mp4","ytube":"0",
-		match = re.search("""file":"(.+?)","ytube":"(.+?)",""",data)
-		if match:
-			if 'or' in match.group(1):
-				links = match.group(1).split(" or ")
-				if DEBUG: log.info("final link: " + links[1])
-				return links[1]			
-			else:
-				if match.group(2)=='1':
-				    p = match.group(1).split("/")
-				    if 'watch' in p[3]:
-					videoid = p[3][8:19]
-				    else:	
-					videoid = p[3]
-				    plugin = 'plugin://plugin.video.youtube/?action=play_video&videoid=' + videoid
-				    return plugin
-				else:	
-				    return match.group(1)
-		else:
-			return False
-	else: 
-		return False
-
-
+    self.anyfiles = anyfiles.serviceParser()
+    retVal = self.anyfiles.getVideoUrl(url)
+    return retVal
+  
+  
   def parserWOOTLY(self,url):
     query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
     link = self.cm.getURLRequestData(query_data)
@@ -367,19 +332,7 @@ class urlparser:
 	  cookiefile = ''	
       videoUrl = self.api.getVideoUrl(videoHash, cookiefile, notify)
       return videoUrl
-
-
-  def parserNEXTVIDEO(self, url):
-      query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-      link = self.cm.getURLRequestData(query_data)
-      if DEBUG: log.info(link)
-      match = re.compile('file\: "(.+?)",').findall(link)
-      if len(match) > 0:
-	  if DEBUG: log.info("final link: " + match[0])
-	  return match[0]
-      else:
-	  return False
-      
+    
       
   def parserVIDEOWEED(self, url):
     query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
