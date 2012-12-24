@@ -58,15 +58,19 @@ zmieniamy na:
 i godzina wyświetla się normalnie.
 
 
-==Automatyczne pobieranie pliku z programem EPG po uruchomieniu komputera==
-ściągamy [http://users.ugent.be/~bpuype/cgi-bin/fetch.pl?dl=wget/wget.exe], plik {{{wget.exe}}} wrzucamy do {{{c:\windows}}}, tworzymy plik tekstowy który zawiera:
+==Automatyczne pobieranie pliku z programem EPG==
+=== Wersja dla Windows ===
+Sciagamy paczke [http://jatrn.com/xbmc/autoepg.zip] i rozpakowywujemy ja do {{{C:\autoepg}}}. Teraz w folderze {{{C:\autoepg}}} znajduja sie nastepujace pliki:
+ * wget.exe - narzedzie do pobieranie plikow,
+ * autoepg.bat - plik wsadowy,
+ * source.cmd - plik z lokacja EPG do sciagniecia.
+Edytujemy pliki {{{source.cmd}}} i wskazujemy adres skad EPG mam byc sciagniety. Domyslnie wyglada to tak:
 {{{
-cd\
-d:
-del d:\epgPL.xml
-wget http://db.tt/ABX5BUx3
+SET epgurl=http://jatrn.com/xbmc/epg_weebtv_CST.xml
 }}}
-zapisujemy go jako {{{*.bat}}} i wrzucamy do autostartu. W moim przypadku po każdym uruchomieniu kompa stary plik EPG jest kasowany a na jego miejsce zapisywany jest nowy plik z epg, zapis u mnie następuje na dysku D, potem tylko zmieniamy ścieżkę w TVGuide i zawsze mamy aktualny plik z programem.
+Teraz po uruchomieniu {{{autoepg.bat}}}, plik z EPG zostanie sciagniety i zapisany do {{{c:\autoepg\epg.xml}}}. We wtyczce, TVGuide jako zrodlo XMLTV, nalez wybrac {{{c:\autoepg\epg.xml}}}.
+By automatycznie scigac EPG po uruchomieniu komputera nalezy skopiowac {{{autoepg.bat}}} do Autostart. Mozna rowniez uzyc Windows Task Scheduler a by sciagac go w regularnych odstepach czasowych. 
+
 
 ==Zmiana podświetlenia programu==
 U mnie na TV (na PC działa normalnie) podświetlona pozycja w programie zlewa się z reszta, aby to rozwiązać edytujemy plik {{{tvguide-program-grey-focus.png}}}, znajduje się on w:
