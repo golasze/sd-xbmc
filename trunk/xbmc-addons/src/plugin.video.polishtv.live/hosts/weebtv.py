@@ -87,7 +87,7 @@ class Channels:
 		return outTab
 	
 	def API(self, url):
-		query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+		query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
 		res = { "0": "Null" }
 		try:
 			post = { 'username': login, 'userpassword': password }
