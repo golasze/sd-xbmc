@@ -21,6 +21,7 @@ logoUrl = mainUrl + '/refresh140820/style/img/maxVideo.png'
 apiLogin = mainUrl + '/api/login.php'
 apiFrontList = mainUrl + '/api/front_list.php'
 apiVideoUrl = mainUrl + '/api/get_link.php'
+apiLoggedIn = mainUrl + '/api/is_logged.php'
 authKey = 'key=8d00321f70b85a4fb0203a63d8c94f97'
 
 SERVICE = 'maxvideo'
@@ -84,7 +85,6 @@ class Maxvideo:
 	self.add(SERVICE, 'playSelectedMovie', category, table[i][1].encode('UTF-8'), logoUrl, table[i][0], False, False)
     if category == 'main-menu':
       for i in range(len(table)):
-	print table[i].encode('UTF-8')
 	self.add(SERVICE, table[i].encode('UTF-8'), category, table[i].encode('UTF-8'), logoUrl, 'None', True, False)      
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
   
@@ -104,9 +104,11 @@ class Maxvideo:
       d = xbmcgui.Dialog()
       d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
     try:
-      log.info ("playing: " + videoUrl)
-      xbmcPlayer = xbmc.Player()
-      xbmcPlayer.play(videoUrl)
+      log.info ("playing: " + videoUrl)   
+      player = Player()
+      player.play(videoUrl)
+      while player.is_active:
+        player.sleep(100)  
     except:
       d = xbmcgui.Dialog()
       d.ok('Blad przy przetwarzaniu.', 'Najprawdopodobniej video zostalo usuniete')        
@@ -134,9 +136,59 @@ class Maxvideo:
       self.LOAD_AND_PLAY_VIDEO(videoUrl)      
 
 
+class Player(xbmc.Player):
+    def __init__(self, *args, **kwargs):
+      self.is_active = True
+      print "#Starting control events#"
+        
+    def getPremium(self):
+      self.api = API()
+      return self.api.Premium()
+    
+    def onPlayBackPaused(self):
+      print "#Im paused#"
+      ThreadPlayerControl("Stop").start()
+      self.is_active = False
+        
+    def onPlayBackResumed(self):
+      print "#Im Resumed #"
+        
+    def onPlayBackStarted(self):
+      print "#Playback Started#"
+      try:
+        print "#Im playing : " + self.getPlayingFile()
+      except:
+	print "#I failed get what Im playing#"
+            
+    def onPlayBackEnded(self):
+      msg = xbmcgui.Dialog()
+      print "#Playback Ended#"
+      self.is_active = False
+      if self.getPremium() == 0:
+        msg.ok("Błąd odtwarzania", "Wyczerpany limit lub zbyt duża liczba użytkowników.", "Wykup konto premium na maxvideo.pl aby oglądać bez przeszkód.")
+        
+    def onPlayBackStopped(self):
+      print "## Playback Stopped ##"
+      self.is_active = False
+    
+    def sleep(self, s):
+      xbmc.sleep(s)
+
+
 class API:
   def __init__(self):
     self.cm = pCommon.common()
+  
+  def Premium(self):
+    query_data = {'url': apiLoggedIn, 'use_host': False, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': False, 'return_data': True}
+    data = self.cm.getURLRequestData(query_data)
+    result = simplejson.loads(data)
+    print str(result)
+    if 'error' in result:
+      retVal = False
+    else:
+      retVal = result['premium']
+    return retVal
   
   
   def Login(self, username, password, notification):
@@ -173,7 +225,6 @@ class API:
     data = self.cm.getURLRequestData(query_data, {'v' : videoHash, 'key' : authKey})
     result = simplejson.loads(data)
     result = dict([(str(k), v) for k, v in result.items()])
-    log.info(str(result))
     if 'error' in result: videoUrl = ''
     else:
       if (not result['premium']):
