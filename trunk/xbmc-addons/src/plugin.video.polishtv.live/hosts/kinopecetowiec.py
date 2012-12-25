@@ -218,7 +218,7 @@ class KinoPecetowiec:
 
     def getHostTable(self,url):
 	valTab = []
-        #link = self.cm.requestData(url)
+	videoID = ''
 	query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	try:
 		link = self.cm.getURLRequestData(query_data)
@@ -238,10 +238,11 @@ class KinoPecetowiec:
 	
 	d = xbmcgui.Dialog()
         item = d.select("Wybór filmu", self.getItemTitles(valTab))
-        if item != '':
+        print str(item)
+	if item != -1:
 	    videoID = str(valTab[item][1])
 	    log.info('mID: ' + videoID)
-            return videoID
+        return videoID
 
 
     def addDir(self, service, name, category, title, plot, page, iconimage, folder = True, isPlayable = True):
@@ -338,7 +339,6 @@ class KinoPecetowiec:
 	#Historia Wyszukiwania
 	elif category == self.setTable()[11]:
 	    t = self.history.loadHistoryFile(SERVICE)
-#	    print str(t)
 	    self.listsHistory(t)
 	if category == 'history' and name != 'playSelectedMovie':
 	    self.getSearchTable(self.searchTab(SURL, name))	
@@ -352,12 +352,15 @@ class KinoPecetowiec:
 	    	    
         if name == 'playSelectedMovie':
             url = self.getHostTable(page)
-            linkVideo = self.up.getVideoLink(url)
-            if linkVideo != False:
-                self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
-            else:
-                d = xbmcgui.Dialog()
-                d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
+	    if url !='':
+		linkVideo = self.up.getVideoLink(url)
+		if linkVideo != False:
+		    self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
+		else:
+		    d = xbmcgui.Dialog()
+		    d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
+	    else:
+		exit()
         
         if service == SERVICE and action == 'download' and link != '':
                         self.dir.checkDir(os.path.join(dstpath, SERVICE))
