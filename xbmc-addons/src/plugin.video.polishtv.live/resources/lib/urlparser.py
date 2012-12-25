@@ -209,8 +209,11 @@ class urlparser:
     query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
     link = self.cm.getURLRequestData(query_data)
     if DEBUG: log.info(link)
-    (v_ext, v_file, v_dir, v_port, v_host) = re.search("\|\|.*SWFObject",link).group().split('|')[40:45]
-    url = "http://%s.odsiebie.pl:%s/d/%s/%s.%s" % (v_host, v_port, v_dir, v_file, v_ext);
+    try:
+      (v_ext, v_file, v_dir, v_port, v_host) = re.search("\|\|.*SWFObject",link).group().split('|')[40:45]
+      url = "http://%s.odsiebie.pl:%s/d/%s/%s.%s" % (v_host, v_port, v_dir, v_file, v_ext);
+    except:
+      url = False
     return url
 
 
@@ -233,18 +236,6 @@ class urlparser:
 
 
   def parserCDA(self,url):
-    query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-    link = self.cm.getURLRequestData(query_data)
-    if DEBUG: log.info(link)
-    match = re.search("""file: ['"](.+?)['"],""",link)
-    if match:
-      if DEBUG: log.info("final link: " + match.group(1))       
-      return match.group(1)
-    else: 
-      return False
-
-
-  def parserNOVAMOV(self,url):
     query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
     link = self.cm.getURLRequestData(query_data)
     if DEBUG: log.info(link)
