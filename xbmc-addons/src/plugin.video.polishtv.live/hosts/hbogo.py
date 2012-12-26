@@ -23,6 +23,8 @@ userAgent = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
 
 webUrl = 'http://www.hbogo.pl'
 plapiUrl = 'http://plapi.hbogo.eu'
+ploriginUrl = 'http://plorigin.hbogo.eu'
+drmUrl = 'http://sl.licensekeyserver.com'
 configUrl = plapiUrl + '/Player26.svc/Configuration/JSON/POL/TABL'
 categoryPlayer = '/Player26.svc/Category/JSON/POL/'
 mediaPlayer = '/Player26.svc/Media/JSON/POL/'
@@ -101,16 +103,47 @@ class Movies:
             materialId = self.dec(items[i]['MaterialId'])
             materialItemId = self.dec(items[i]['MaterialItemId'])
             origTitle = self.dec(items[i]['OriginalName'])
-            content = self.dec(items[i]['ContentType'])
+            content = items[i]['ContentType']
             n_url = plapiUrl + mediaPlayer + id + '/' + materialId + '/' + materialItemId + '/TABL'
             if dbg == 'true':
                 log.info("HBOGO - listSeasons() -> title: " + str(title))
                 log.info("HBOGO - listSeasons() -> img link: " + img)
                 log.info("HBOGO - listSeasons() -> url: " + n_url)
-                log.info("HBOGO - listSeasons() -> content: " + content)
-            if content == 'Season':
+                log.info("HBOGO - listSeasons() -> content: " + str(content))
+            if content == 1:
+                self.addDir(SERVICE, 'movie', title, img, desc, n_url)
+            elif content == 2:
+                self.addDir(SERVICE, 'episode', title, img, desc, n_url)
+            elif content == 5:
                 self.addDir(SERVICE, 'season', title, img, desc, n_url)
-            else:
+            #self.addDir(SERVICE, 'series', '', '', '', '')
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+    def listEpisodes(self, url):
+        api = self.hbogoAPI(url)
+        items = api['Episodes']
+        #log.info('json: ' + str(len(items)))
+        for i in range(len(items)):
+            allowfreepreview = items[i]['AllowFreePreview'] #true
+            allowplay = items[i]['AllowPlay'] #true
+            episode = items[i]['EpisodeNumber']
+            ispublic = items[i]['IsPublic']
+            duration = items[i]['MovieDuration']
+            desc = self.dec(items[i]['Abstract'])
+            img = self.dec(items[i]['ThumbnailUrl'])
+            title = self.dec(items[i]['Name'])
+            id = self.dec(items[i]['Id'])
+            materialId = self.dec(items[i]['MaterialId'])
+            materialItemId = self.dec(items[i]['MaterialItemId'])
+            origTitle = self.dec(items[i]['OriginalName'])
+            content = items[i]['ContentType']
+            n_url = plapiUrl + mediaPlayer + id + '/' + materialId + '/' + materialItemId + '/TABL'
+            if dbg == 'true':
+                log.info("HBOGO - listEpisodes() -> title: " + str(title))
+                log.info("HBOGO - listEpisodes() -> img link: " + img)
+                log.info("HBOGO - listEpisodes() -> url: " + n_url)
+                log.info("HBOGO - listEpisodes() -> content: " + str(content))
+            if content == 3:
                 self.addDir(SERVICE, 'movie', title, img, desc, n_url)
             #self.addDir(SERVICE, 'series', '', '', '', '')
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -150,7 +183,7 @@ class HBOGO:
             log.info('HBOGO - handleService()[0] -> service: ' + str(service))
             log.info('HBOGO - handleService()[0] -> image: ' + str(image))
             log.info('HBOGO - handleService()[0] -> url: ' + str(url))
-            log.info('HBOGO - handleService()[0] -> content: ' + str(content))
+            #log.info('HBOGO - handleService()[0] -> content: ' + str(content))
         
         if self.movie.getStatus(webUrl + '/servicestatus.aspx'):
             if dbg == 'true':
@@ -159,5 +192,7 @@ class HBOGO:
                 self.movie.listCategories(configUrl)
             elif title != 'None' and url.startswith("http://") and type == 'categories':
                 self.movie.listContent(url)
-            elif title != 'None' and url.startswith("http://") and type == 'seasons':
-                self.movie.listMovies(url)
+            elif title != 'None' and url.startswith("http://") and type == 'season':
+                self.movie.listEpisodes(url)
+            #elif title != 'None' and url.startswith("http://") and type == 'season':
+            #    self.movie.listEpisodes(url)
