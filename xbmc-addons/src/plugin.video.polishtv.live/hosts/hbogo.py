@@ -2,7 +2,7 @@
 import urllib, urllib2, sys, re, os
 import xbmcgui, xbmc, xbmcplugin, xbmcaddon
 import simplejson as json
-#import elementtree.ElementTree as ET
+import elementtree.ElementTree as ET
 
 import traceback
 
@@ -122,7 +122,6 @@ class Movies:
     def listEpisodes(self, url):
         api = self.hbogoAPI(url)
         items = api['Episodes']
-        #log.info('json: ' + str(len(items)))
         for i in range(len(items)):
             allowfreepreview = items[i]['AllowFreePreview'] #true
             allowplay = items[i]['AllowPlay'] #true
@@ -144,9 +143,36 @@ class Movies:
                 log.info("HBOGO - listEpisodes() -> url: " + n_url)
                 log.info("HBOGO - listEpisodes() -> content: " + str(content))
             if content == 3:
-                self.addDir(SERVICE, 'movie', title, img, desc, n_url)
+                self.addDir(SERVICE, 'info-movie', title, img, desc, n_url)
             #self.addDir(SERVICE, 'series', '', '', '', '')
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+    def infoMovie(self, url):
+        api = self.hbogoAPI(url)
+        audio = api['AudioTracks']
+        desc = self.dec(api['Description'])
+        ispublic = api['IsPublic']
+        duration = api['Duration']
+        id = api['Id']
+        materialId = api['MaterialId']
+        materialItemId = api['MaterialItemId']
+        name = self.dec(api['Name'])
+        img = api['ThumbnailUrl']
+        background = api['BackgroundUrl']
+        n_url = ploriginUrl + '//' + id + '/' + self.getIdFromURL(background) + '/MOBI/Movie/mux.ism/Manifest'
+        if dbg == 'true':
+            log.info("HBOGO - infoMovie() -> audio: " + str(audio))
+            log.info("HBOGO - infoMovie() -> desc: " + desc)
+            log.info("HBOGO - infoMovie() -> name: " + str(name))
+            log.info("HBOGO - infoMovie() -> n_url: " + str(n_url))
+        self.addDir(SERVICE, 'playedSelectedMovie', 'PLAY: ' + name, img, desc, n_url)
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        
+    def getMovieInformation(self, url):
+        api = self.hbogoAPI(url, 'get', False, False)
+
+    def getIdFromURL(self, url):
+        return url.split("/")[5]
     
     def addDir(self, service, type, title, img, desc, link):
         liz = xbmcgui.ListItem(title, iconImage = "DefaultFolder.png", thumbnailImage = img)
@@ -158,6 +184,11 @@ class Movies:
                                                 #"Aired": user } )
         u = '%s?service=%s&type=%s&title=%s&icon=%s&url=%s' % (sys.argv[0], SERVICE, type, str(title), urllib.quote_plus(img), urllib.quote_plus(link))
         xbmcplugin.addDirectoryItem(HANDLE, url = u, listitem = liz, isFolder = True)
+
+
+class DRM:
+    def __init__(self):
+        pass
 
 
 class HBOGO:
@@ -194,5 +225,8 @@ class HBOGO:
                 self.movie.listContent(url)
             elif title != 'None' and url.startswith("http://") and type == 'season':
                 self.movie.listEpisodes(url)
-            #elif title != 'None' and url.startswith("http://") and type == 'season':
-            #    self.movie.listEpisodes(url)
+            elif title != 'None' and url.startswith("http://") and type == 'info-movie':
+                self.movie.infoMovie(url)
+            
+        if type == 'playSelectedMovie' and url.startswith("http://"):
+            pass
