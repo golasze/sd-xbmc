@@ -3,6 +3,7 @@ import cookielib, os, string, StringIO
 import os, time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
 import xbmcgui, xbmc, xbmcaddon, xbmcplugin
+import traceback
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
