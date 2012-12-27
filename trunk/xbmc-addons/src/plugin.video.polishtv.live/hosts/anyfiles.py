@@ -3,6 +3,7 @@ import os, string, cookielib, StringIO
 import time, base64, logging, calendar
 import urllib, urllib2, re, sys, math
 import xbmcgui, xbmc, xbmcaddon, xbmcplugin
+import simplejson
 
 scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
@@ -253,8 +254,9 @@ class AnyFiles:
     #odtwarzaj video
     if name == 'playSelectedMovie':
       videoUrl = self.anyfiles.getVideoUrl(url)
-      log.info("videoUrl: "+ videoUrl)
-      self.LOAD_AND_PLAY_VIDEO(videoUrl)
+      if videoUrl != False:
+	log.info("videoUrl: "+ videoUrl)
+	self.LOAD_AND_PLAY_VIDEO(videoUrl)
   
       
 class serviceParser:
@@ -264,7 +266,6 @@ class serviceParser:
     def getVideoUrl(self,url):
       query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
       data = self.cm.getURLRequestData(query_data)
-
       #var flashvars = {"uid":"player-vid-8552","m":"video","st":"c:1LdwWeVs3kVhWex2PysGP45Ld4abN7s0v4wV"};
       match = re.search("""var flashvars = {.+?"st":"(.+?)"}""",data)
       if match:
@@ -274,20 +275,17 @@ class serviceParser:
 	query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	data = self.cm.getURLRequestData(query_data)
 	data = xppod.Decode(data).encode('utf-8').strip()
-	#{"file":"http://50.7.221.26/folder/776713c560821c666da18d8550594050_8552.mp4 or http://50.7.220.66/folder/776713c560821c666da18d8550594050_8552.mp4","ytube":"0",
-	match = re.search("""file":"(.+?)","ytube":"(.+?)",""",data)
-	if match:
-	  if 'or' in match.group(1):
-	    links = match.group(1).split(" or ")
-	    return links[1]			
-	  else:
-	    if match.group(2)=='1':
-	      p = match.group(1).split("/")
-	      if 'watch' in p[3]: videoid = p[3][8:19]
-	      else: videoid = p[3]
-	      plugin = 'plugin://plugin.video.youtube/?action=play_video&videoid=' + videoid
-	      return plugin
-	    else: return match.group(1)
-	else: return False
-      else: return False
+	#json cleanup
+	while data[-2:] != '"}': data = data[:-1]
+	result = simplejson.loads(data)
+	if (result['ytube']=='0'):
+	  vUrl = result['file'].split("or")
+	  return vUrl[0]
+	else:
+	  p = result['file'].split("/")
+          if 'watch' in p[3]: videoid = p[3][8:19]
+	  else: videoid = p[3]
+	  plugin = 'plugin://plugin.video.youtube/?action=play_video&videoid=' + videoid
+	  return plugin
+      return False  
 
