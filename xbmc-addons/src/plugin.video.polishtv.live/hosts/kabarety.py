@@ -53,6 +53,7 @@ CHARS = [
     [ '&#377;', 'Ż' ],
     [ '&#379;', 'Ż' ],
     [ '&amp;', '&' ],
+    [ '&quot;', '"' ],
 ]
 
 class Kabarety:
@@ -186,11 +187,6 @@ class Kabarety:
 	    self.history.addHistoryItem(SERVICE, text)
         return text
 
-    def getVideo(self,page):
-        videoUrl = []   
-        videoUrl = 'plugin://plugin.video.youtube?path=/root/video&action=play_video&videoid=' + page
-        return videoUrl
-
 
     def searchTab(self, text):
         strTab = []
@@ -229,8 +225,8 @@ class Kabarety:
     
       
     def LOAD_AND_PLAY_VIDEO(self, page):
-        videoUrl = self.getVideo(page)
         ok=True
+        videoUrl = 'plugin://plugin.video.youtube?path=/root/video&action=play_video&videoid=' + page
         if videoUrl == '':
             d = xbmcgui.Dialog()
             d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
@@ -240,8 +236,8 @@ class Kabarety:
             xbmcPlayer.play(videoUrl)
         except:
             d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
-        return ok
+            d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')        
+        return videoUrl
 
 
     def handleService(self):
