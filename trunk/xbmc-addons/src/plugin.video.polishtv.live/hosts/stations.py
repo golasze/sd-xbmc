@@ -34,7 +34,7 @@ MENU_TAB = [
             [ "TVN", 0, "rtmp://75.126.203.130/stream/JardelloTV3333?id=59199" ],
             [ "Polsat LQ1", 0, "rtmp://50.23.115.84/stream/telewizyjka?id=61660" ],
             [ "TVN24", 1, "rtmp://94.23.39.164/satlive/tvn24 playpath=tvn24 swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-129.htm  live=true swfVfy=true" ],
-#           [ "POLSAT", 0, "rtsp://publish.001.wlacz.tv:1935/live/polsat.stream" ],
+            [ "SkyWindows", 0, "rtmp://ls1.webcamera.pl/nartytv/tv_medium" ],
             [ "Polsat", 0, "rtmp://198.105.209.124/stream/JardelloTV4343?id=59200" ],
             [ "Polsat LQ", 0, "rtmp://75.126.203.130/stream/darmowatelewizjacompolsat?id=59168" ],
 #           [ "TV4", 0, "rtsp://publish.005.wlacz.tv:1935/live/tv4.stream" ],
@@ -122,8 +122,7 @@ MENU_TAB = [
             [ "TV Rijnmond", 6, "rtsp://wm1.ams.cdn.surf.net/surfnetvdox=RTVRijnmond=TVRijnmond3" ],
             [ "Rai2", 6, "http://212.162.68.162:80/prodtvr2" ],
             [ "BFM TV", 6, "http://vipmms9.yacast.net:80/bfm_bfmtv" ],
-            
-            [ "Discovery Channel", 6,"rtmp://78.129.146.62/edge3/BETUK/BETUK" ],
+            [ "Discovery Channel", 0,"rtmp://62.212.72.193/stream/DISCOVERYTELEWIZYJKAPL?id=69118" ],
             [ "LTV 1", 6,"http://82.135.235.37:80/LTV" ],
             [ "LTV World", 6,"http://82.135.235.37:80/LTVworld" ],
             [ "MTV Россия", 3,"http://77.91.77.19:7015/?sid=" ],
