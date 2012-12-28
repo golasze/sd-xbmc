@@ -9,13 +9,14 @@ log = pLog.pLog()
 #urlCategoryList = 'https://itvp.one-2-one.pl/api/mp4.php'
 urlCategoryList = 'http://www.api.v3.tvp.pl/shared/listing.php?dump=json&direct=true&count=100&parent_id=1785454'
 
-urlRecommended  = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json'
+urlRecommended  = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json&order=release_date_long,-1'
 urlEpisodesList = 'http://www.api.v3.tvp.pl/shared/listing.php?parent_id=%d&direct=false&count=%d&page=%d&filter=android_enabled=true&dump=json&type=video&order=release_date_long,-1'
 urlVideo = 'http://www.tvp.pl/pub/stat/videofileinfo?video_id=%d&mime_type=video/mp4'
 urlImage = 'http://s.v3.tvp.pl/images/%s/%s/%s/uid_%s_width_%d_gs_0.jpg'
 
 USER_AGENT = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
 VOD_ID = 6442748
+VOD_LIST_ID = 2919829
 
 PAGE_MOVIES = 15
 
@@ -97,6 +98,8 @@ class tvpvod:
         for i in range(len(result.get('items'))):
             if result.get('items')[i].get('types')[1] == 'directory_series':
                 ID = result.get('items')[i].get('_id')
+                if ID == 1649941:
+                    ID = VOD_LIST_ID
                 title = result.get('items')[i].get('title').title().encode('utf-8')
                 self.addDir(title,"list_category",ID,"")
 
