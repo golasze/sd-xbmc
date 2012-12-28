@@ -37,7 +37,7 @@ MENU_TAB = [
             [ "SkyWindows", 0, "rtmp://ls1.webcamera.pl/nartytv/tv_medium" ],
             [ "Polsat", 0, "rtmp://198.105.209.124/stream/JardelloTV4343?id=59200" ],
             [ "Polsat LQ", 0, "rtmp://75.126.203.130/stream/darmowatelewizjacompolsat?id=59168" ],
-#           [ "TV4", 0, "rtsp://publish.005.wlacz.tv:1935/live/tv4.stream" ],
+            [ "TV4", 0, "rtmp://gdansk.popler.tv:80/rtplive?play=123452/titru" ],
 #           [ "TVN7", 0, "rtsp://publish.001.wlacz.tv:1935/live/polsatsportnews.stream" ],
 #           [ "HBO", 0, "rtsp://publish.001.wlacz.tv:1935/live/hbo1.stream" ],
 #           [ "TTV", 0, "rtsp://publish.001.wlacz.tv:1935/live/utv.stream" ],
