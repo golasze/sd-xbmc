@@ -18,7 +18,7 @@ sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 import pLog, settings, Parser
 import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv
 import maxvideo, serialnet, anyfiles
-import ekinotv, iitvinfo, bestplayer, kinopecetowiec
+import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kabarety
 #import ipla
 
 log = pLog.pLog()
@@ -33,7 +33,7 @@ VOD_ONLINE_TABLE = {
                      200: "AnyFiles [różne filmy]",
                      #201: "Ekino TV [filmy, seriale]",
                      202: "iiTV info [seriale]",
-                     203: "IPLA",
+                     #203: "IPLA",
                      204: "IPLEX",
                      205: "TVN Player",
                      206: "TVP [info]",
@@ -42,6 +42,9 @@ VOD_ONLINE_TABLE = {
                      209: "BestPlayer [filmy]",
 		     210: "Kino Pecetowiec [filmy]",
 		     211: "Maxvideo [różne filmy]",
+}
+
+ROZRYWKA_TABLE = { 400: "Kabarety",
 }
 
 REC_DOWN_TABLE = { 300: "Weeb TV",
@@ -112,7 +115,12 @@ class PolishLiveTV:
                 vod.handleService()
         elif mode == 211 or service == 'maxvideo':
                 vod = maxvideo.Maxvideo()
-                vod.handleService()		
+                vod.handleService()
+        elif mode == 4:
+                self.LIST(ROZRYWKA_TABLE)
+        elif mode == 400 or service == 'kabarety':
+                vod = kabarety.Kabarety()
+                vod.handleService()
 		
         elif mode == 300:
                 vod = weebtv.WeebTV()
@@ -149,6 +157,7 @@ class PolishLiveTV:
   def CATEGORIES(self):
         self.addDir("Telewizja", 1, False, False)
         self.addDir("Filmy, Seriale", 2, False, False)
+#        self.addDir("Rozrywka", 4, False, False)
         self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False)
         self.addDir('Ustawienia', 20, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
