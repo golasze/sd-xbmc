@@ -23,32 +23,33 @@ import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kabarety
 
 log = pLog.pLog()
 
-
-TV_ONLINE_TABLE = { 100: "Weeb TV [wyświetl kanały]",
-                    101: "Włącz TV [wyświetl kanały]",
-                    102: "Stacje TV [strumienie]",
+TV_ONLINE_TABLE = {
+		     100 : ["Weeb TV [wyświetl kanały]", 'weebtv'],
+		     101 : ["Włącz TV [wyświetl kanały]", 'wlacztv'],
+		     102 : ["Stacje TV [strumienie]", 'stations'],
 }
+
 
 VOD_ONLINE_TABLE = {
-                     200: "AnyFiles [różne filmy]",
-                     #201: "Ekino TV [filmy, seriale]",
-                     202: "iiTV info [seriale]",
-                     #203: "IPLA",
-                     204: "IPLEX",
-                     205: "TVN Player",
-                     206: "TVP [info]",
-                     207: "TVP VOD",
-                     208: "SerialNet [seriale]",
-                     209: "BestPlayer [filmy]",
-		     210: "Kino Pecetowiec [filmy]",
-		     211: "Maxvideo [różne filmy]",
+                     200: ["AnyFiles [różne filmy]", 'anyfiles'],
+                     #201: ["Ekino TV [filmy, seriale]", 'ekinotv'],
+                     202: ["iiTV info [seriale]", 'iitvinfo'],
+                     #203: ["IPLA", 'ipla'], 
+                     204: ["IPLEX", 'iplex'],
+                     205: ["TVN Player", 'tvn'],
+                     206: ["TVP [info]", 'tvp'],
+                     207: ["TVP VOD", 'tvpvod'],
+                     208: ["SerialNet [seriale]", 'serialnet'],
+                     209: ["BestPlayer [filmy]", 'bestplayer'],
+		     210: ["Kino Pecetowiec [filmy]", 'kinopecetowiec'],
+		     211: ["Maxvideo [różne filmy]", ''],
 }
 
-ROZRYWKA_TABLE = { 400: "Kabarety",
+ROZRYWKA_TABLE = { 400: ["Kabarety", ''],
 }
 
-REC_DOWN_TABLE = { 300: "Weeb TV",
-                   301: "Włącz TV",
+REC_DOWN_TABLE = { 300: ["Weeb TV", 'weebtv'],
+                   301: ["Włącz TV", 'wlacztv'],
 }
 
 
@@ -58,64 +59,68 @@ class PolishLiveTV:
     self.settings = settings.TVSettings()
     self.parser = Parser.Parser()
 
+
   def showListOptions(self):
         params = self.parser.getParams()
         mode = self.parser.getIntParam(params, "mode")
         name = self.parser.getParam(params, "name")
         service = self.parser.getParam(params, 'service')
+	
         if mode == None and name == None and service == None:
                 log.info('Wyświetlam kategorie')
                 self.CATEGORIES()
+		
         elif mode == 1:
                 self.LIST(TV_ONLINE_TABLE)
-        elif mode == 100 or service == 'weebtv':
+        elif mode == 100 or service == TV_ONLINE_TABLE[100][1]:
                 tv = weebtv.WeebTV()
                 tv.handleService()
-        elif mode == 101 or service == 'wlacztv':
+        elif mode == 101 or service == TV_ONLINE_TABLE[101][1]:
                 tv = wlacztv.WlaczTV()
                 tv.handleService()            
-        elif mode == 102 or service == 'stations':
+        elif mode == 102 or service == TV_ONLINE_TABLE[102][1]:
                 tv = stations.StreamStations()
                 tv.handleService()
-        elif mode == 2:
-                #log.info('Wejście do TV internetowej')
+        
+	elif mode == 2:
                 self.LIST(VOD_ONLINE_TABLE)
-        elif mode == 200 or service == 'anyfiles':
+        elif mode == 200 or service == VOD_ONLINE_TABLE[200][1]:
                 vod = anyfiles.AnyFiles()
                 vod.handleService()
-        elif mode == 201 or service == 'ekinotv':
-                vod = ekinotv.EkinoTV()
-                vod.handleService()
-        elif mode == 202 or service == 'iitvinfo':
+       # elif mode == 201 or service == VOD_ONLINE_TABLE[201][1]:
+       #         vod = ekinotv.EkinoTV()
+       #         vod.handleService()
+        elif mode == 202 or service == VOD_ONLINE_TABLE[202][1]:
                 vod = iitvinfo.iiTVInfo()
                 vod.handleService()
-        elif mode == 203 or service == 'ipla':
-               vod = ipla.IPLA()
-               vod.handleService()
-        elif mode == 204 or service == 'iplex':
+       # elif mode == 203 or service == VOD_ONLINE_TABLE[203][1]:
+       #        vod = ipla.IPLA()
+       #        vod.handleService()
+        elif mode == 204 or service == VOD_ONLINE_TABLE[204][1]:
                 vod = iplex.IPLEX()
                 vod.handleService()
-        elif mode == 205 or service == 'tvn':
+        elif mode == 205 or service == VOD_ONLINE_TABLE[205][1]:
                 vod = tvn.tvn()
                 vod.handleService()
-        elif mode == 206 or service == 'tvp':
+        elif mode == 206 or service == VOD_ONLINE_TABLE[206][1]:
                 vod = tvp.tvp()
                 vod.handleService()
-        elif mode == 207 or service == 'tvpvod':
+        elif mode == 207 or service == VOD_ONLINE_TABLE[207][1]:
                 vod = tvpvod.tvpvod()
                 vod.handleService()
-        elif mode == 208 or service == 'serialnet':
+        elif mode == 208 or service == VOD_ONLINE_TABLE[208][1]:
                 vod = serialnet.SerialNet()
                 vod.handleService()
-        elif mode == 209 or service == 'bestplayer':
+        elif mode == 209 or service == VOD_ONLINE_TABLE[209][1]:
                 vod = bestplayer.BestPlayer()
                 vod.handleService()
-        elif mode == 210 or service == 'kinopecetowiec':
+        elif mode == 210 or service == VOD_ONLINE_TABLE[210][1]:
                 vod = kinopecetowiec.KinoPecetowiec()
                 vod.handleService()
         elif mode == 211 or service == 'maxvideo':
                 vod = maxvideo.Maxvideo()
                 vod.handleService()
+		
         elif mode == 4:
                 self.LIST(ROZRYWKA_TABLE)
         elif mode == 400 or service == 'kabarety':
@@ -128,7 +133,8 @@ class PolishLiveTV:
         elif mode == 301:
                 vod = wlacztv.WlaczTV()
                 vod.handleRecords()              
-        elif mode == 19:
+        
+	elif mode == 19:
                 log.info('Zarządzanie nagrywaniem/ściąganiem')
                 self.LIST(REC_DOWN_TABLE)
         elif mode == 20:
@@ -142,7 +148,6 @@ class PolishLiveTV:
       d = xbmcgui.Dialog()
       choice = d.select(title, table)
       for i in range(len(table)):
-        #log.info(table[i])
         if choice == i:
           value = table[i]
     return value
@@ -155,34 +160,38 @@ class PolishLiveTV:
 
 
   def CATEGORIES(self):
-        self.addDir("Telewizja", 1, False, False)
-        self.addDir("Filmy, Seriale", 2, False, False)
-#        self.addDir("Rozrywka", 4, False, False)
-        self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False)
-        self.addDir('Ustawienia', 20, True, False)
+
+        self.addDir("Telewizja", 1, False, False, False)
+        self.addDir("Filmy, Seriale", 2, False, False, False)
+#        self.addDir("Rozrywka", 4, False, False, False)
+        self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False, False)
+        self.addDir('Ustawienia', 20, True, False, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
   def LIST(self, table = {}):
       valTab = []
       strTab = []
-      for num, val in table.items():
-          #self.addDir(val, num, False, False)
+      for num, tab in table.items():
           strTab.append(num)
-          strTab.append(val)
+          strTab.append(tab[0])
+	  strTab.append(tab[1])
           valTab.append(strTab)
           strTab = []
-      valTab.sort(key = lambda x: x[1])
+      valTab.sort(key = lambda x: x[1])      
       for i in range(len(valTab)):
-          self.addDir(valTab[i][1], valTab[i][0], False, False)
+          if valTab[i][2] == '': icon = False
+          else: icon = valTab[i][2]
+          self.addDir(valTab[i][1], valTab[i][0], False, icon, False)
       xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
-  def addDir(self, name, mode, autoplay, isPlayable = True):
+  def addDir(self, name, mode, autoplay, icon, isPlayable = True):
     u=sys.argv[0] + "?mode=" + str(mode)
-    icon = "DefaultVideoPlaylists.png"
-    if autoplay:
-      icon= "DefaultVideo.png"
+    if icon != False:
+      icon = os.path.join(ptv.getAddonInfo('path'), "images/") + icon + '.png'
+    else:
+      icon = "DefaultVideoPlaylists.png"
     liz=xbmcgui.ListItem(name, iconImage=icon, thumbnailImage='')
     if autoplay and isPlayable:
       liz.setProperty("IsPlayable", "true")
