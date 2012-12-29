@@ -17,15 +17,15 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 import pLog, settings, Parser, pCommon, Navigation, Errors
 
 log = pLog.pLog()
-cj = cookielib.LWPCookieJar()
 
 SERVICE = 'wlacztv'
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
-#mainUrl = "http://www.wlacz.tv"
-#mainChannels = mainUrl + "/kanaly"
-mainUrl = 'http://www.polandlive.tv'
+mainUrl = "http://www.wlacz.tv"
 playerUrl = mainUrl + '/api/setPlayer'
+altUrl = 'http://www.polandlive.tv'
+altPlayerUrl = altUrl + '/api/setPlayer'
+
 channelsUrl = mainUrl + '/api/online_channels'
 loginUrl = mainUrl + '/api/login'
 isLoggedUrl = mainUrl + '/api/is_logged'
@@ -54,14 +54,16 @@ class Channels:
         self.navigation = Navigation.RecordNav()
         self.exception = Errors.Exception()
 
+
     def dec(self, string):
         json_ustr = json.dumps(string, ensure_ascii=False)
         return json_ustr.encode('utf-8')
+
    
     def checkDirCookie(self):
         if not os.path.isdir(ptv.getAddonInfo('path') + os.path.sep + "cookies"):
             os.mkdir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
-            
+  
     
     def isLogged(self):
         query_data = { 'url': isLoggedUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': False, 'return_data': True }
@@ -71,7 +73,6 @@ class Channels:
             traceback.print_exc()
             self.exception.getError(str(exception))
             exit()
-        #content_json = self.common.getURLFromFileCookieData(isLoggedUrl, COOKIEFILE)
         result_json = json.loads(content_json)
         if dbg == 'true':
             log.info('WLACZ.TV - isLogged() -> json: ' + str(result_json))
@@ -80,7 +81,8 @@ class Channels:
             return True
         else:
             return False
-    
+ 
+   
     def requestLoginData(self):
         if login == "" or password == "":
             d = xbmcgui.Dialog()
@@ -91,18 +93,17 @@ class Channels:
             query_data = { 'url': loginUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True }
             self.checkDirCookie()
             try:
-                #self.common.saveURLToFileCookieData(loginUrl, COOKIEFILE, post)
                 self.common.getURLRequestData(query_data, post)
             except Exception, exception:
                 traceback.print_exc()
                 self.exception.getError(str(exception))
                 exit()
+ 
     
     def channelsList(self, url):
         query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': True, 'save_cookie': False, 'load_cookie': True, 'cookiefile': COOKIEFILE, 'use_post': False, 'return_data': True }
         try:
             raw_json = self.common.getURLRequestData(query_data)
-            #raw_json = self.common.getURLFromFileCookieData(url, COOKIEFILE)
             result_json = json.loads(raw_json)
         except Exception, exception:
             traceback.print_exc()
@@ -122,24 +123,34 @@ class Channels:
         xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
         xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
     
     def getChannelRTMPLink(self, key, title, icon):
         post = { 'key': key }
         query_data = { 'url': playerUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True }
-        #log.info('rtmp: ' + str(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post)))
         try:
-            #rtmp_json = json.loads(self.common.postURLFromFileCookieData(playerUrl, COOKIEFILE, post))
             rtmp_json = json.loads(self.common.getURLRequestData(query_data, post))
         except Exception, exception:
             traceback.print_exc()
             self.exception.getError(str(exception))
-            exit()
+	    exit()
+	#try alternative url 
+	if 'error' in rtmp_json:
+	    query_data = { 'url': altPlayerUrl, 'use_host': True, 'host': HOST, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True }
+	    try:
+		rtmp_json = json.loads(self.common.getURLRequestData(query_data, post))
+	    except Exception, exception:
+		traceback.print_exc()
+		self.exception.getError(str(exception))
+		exit()	    
         if dbg == 'true':
             log.info('WLACZ.TV - getChannelRTMPLink() -> rtmp json: ' + str(rtmp_json))
+
         #tcurl = rtmp_json['rtmp_server'] + '/wlacztv/' + rtmp_json['playPath']
         rtmp = rtmp_json['rtmp_server'] + "/" + rtmp_json['app'] + '?wlacztv_session_token=' + rtmp_json['token']
         return { 'title': title, 'icon': icon, 'key': key, 'rtmp': rtmp, 'playpath': rtmp_json['playPath'] }
-    
+ 
+   
     def addChannel(self, service, title, key, icon):
         u = "%s?service=%s&title=%s&key=%s&icon=%s" % (sys.argv[0], service, title, key, urllib.quote_plus(icon))
         liz = xbmcgui.ListItem(title, iconImage="DefaultFolder.png", thumbnailImage = icon)
@@ -153,11 +164,11 @@ class Channels:
             FILE = open(os.path.join(strmdir, "%s.strm" % ''.join(c for c in title if c in '-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')),"w+")
             FILE.write("plugin://plugin.video.polishtv.live/?service=%s&key=%s&icon=%s&title=%s" % (service, key, urllib.quote_plus(icon), urllib.quote_plus(title)))
 
-
-        
+ 
 class Player:
     def __init__(self):
         pass
+
 
     def InputTime(self):
         nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
@@ -167,7 +178,8 @@ class Player:
         if (k.isConfirmed()):
             text = k.getText()
         return self.GetTime(text)
-    
+
+  
     def GetTime(self, end):
         rectime = 0
         if ":" in end:
@@ -186,7 +198,8 @@ class Player:
             if rectime < 0:
                 rectime = 0
         return rectime
-        
+
+
     def LOAD_AND_PLAY_VIDEO(self, jsonUrl = {}):
         if jsonUrl['rtmp'] == '':
             d = xbmcgui.Dialog()
@@ -237,6 +250,7 @@ class RTMPDownloader:
             res = True
         return res
 
+
     def download(self, app, params = {}):
         td = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
         nt = time.mktime(td.timetuple())
@@ -250,13 +264,15 @@ class Record:
         self.recdir = os.path.join(ptv.getAddonInfo('path'), "recs")
         self.cmddir = os.path.join(ptv.getAddonInfo('path'), "cmd")
 
+
     def input(self, text, header):
         k = xbmc.Keyboard(text, header)
         k.doModal()
         if (k.isConfirmed()):
             text = k.getText()
         return text
-    
+ 
+   
     def Init(self, url, key, title, login_url):
         nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
         nowDate = str(nowTime.strftime("%Y-%m-%d"))
@@ -270,6 +286,7 @@ class Record:
         opts = { 'service': SERVICE, 'key': key, 'login_url': login_url, 'date': s_Date, 'start': s_Start, 'rectime': str(setTime[1]), 'name': nameRec, 'url': url, 'login': login, 'password': password, 'dst_path': dstpath, 'rtmp_path': rtmppath, 'hours_delta': timedelta_h, 'minutes_delta': timedelta_m }
         self.saveFile(opts)
         xbmc.executebuiltin('AlarmClock(' + str(nameRec) + ', "RunScript(' + str(self.cmddir) + str(os.sep) + 'record.py, ' + str(self.recdir) + str(os.sep) + str(nameRec) + '.json)", ' + str(setTime[0]) + '))')
+ 
         
     def saveFile(self, opts = {}):
         out = json.dumps(opts)
@@ -277,6 +294,7 @@ class Record:
         wfile = open(file, "w")
         wfile.write(out)
         wfile.close()
+
 
     def SetTime(self, startDate, startTime, endDate, endTime):
         nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
@@ -291,6 +309,7 @@ class Record:
         alarmtime = int(float(st - nt) / 60)
         rectime = int(et - st)
         return [ alarmtime, rectime ]
+
 
     def GetAlarmTime(self, startDate, startTime):
         nowTime = datetime.datetime.now() + datetime.timedelta(hours = int(timedelta_h), minutes = int(timedelta_m))
@@ -323,7 +342,8 @@ class WlaczTV:
         self.parser = Parser.Parser()
         self.channel = Channels()
         self.player = Player()
-    	
+
+
     def handleService(self):
         params = self.parser.getParams()
         title = str(self.parser.getParam(params, "title"))
@@ -341,6 +361,7 @@ class WlaczTV:
             self.channel.channelsList(channelsUrl)
         elif title != '' and key != '':
             self.player.LOAD_AND_PLAY_VIDEO(self.channel.getChannelRTMPLink(key, title, icon))
+
 
     def handleRecords(self):
         d = xbmcgui.Dialog()
