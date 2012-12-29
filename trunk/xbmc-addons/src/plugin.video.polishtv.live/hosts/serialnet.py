@@ -24,10 +24,9 @@ watchUrl = mainUrl + '/ogladaj/'
 class SerialNet:
     def __init__(self):
         log.info('Loading ' + SERVICE)
-        #self.settings = settings.TVSettings()
         self.exception = Errors.Exception()
         self.parser = Parser.Parser()
-        self.cm = pCommon.common()
+        self.common = pCommon.common()
         self.navigation = Navigation.VideoNav()
                
         
@@ -40,8 +39,9 @@ class SerialNet:
     def getSerialsTable(self, letter):
         strTab = []
         outTab = []
-        link = self.cm.requestData(mainUrl)
-        match = re.compile('<li><a href="http://serialnet.pl/serial/(.+?)">(.+?)<').findall(link)
+        query_data = {'url': mainUrl, 'use_host': True, 'host': self.common.getRandomHost(), 'use_cookie': False, 'use_post': False, 'return_data': True}    
+        data = self.common.getURLRequestData(query_data)
+        match = re.compile('<li><a href="http://serialnet.pl/serial/(.+?)">(.+?)<').findall(data)
         if len(match) > 0:
             addItem = False
             for i in range(len(match)):
@@ -57,7 +57,7 @@ class SerialNet:
         return outTab        
     
 
-    def getInfo(self,data):
+    def getInfo(self, data):
         outTab = []       
         match = re.compile('<meta property="og:image" content="(.+?)"/>').findall(data)
         if len(match) > 0: imageLink = match[0]
@@ -79,10 +79,11 @@ class SerialNet:
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
 
-    def showSeason(self, url):  
-        link = self.cm.requestData(url)       
-        info = self.getInfo(link)
-        match = re.compile('<div style=".+?"><h3>(.+?)</h3></div>').findall(link)
+    def showSeason(self, url):
+        query_data = {'url': url, 'use_host': True, 'host': self.common.getRandomHost(), 'use_cookie': False, 'use_post': False, 'return_data': True}    
+        data = self.common.getURLRequestData(query_data)
+        info = self.getInfo(data)
+        match = re.compile('<div style=".+?"><h3>(.+?)</h3></div>').findall(data)
         if len(match) > 0:
             for i in range(len(match)):
                 if 'Sezon' in match[i]:
@@ -94,12 +95,13 @@ class SerialNet:
 
 
     def showSerialParts(self, url, title):
-        link = self.cm.requestData(url)
-        info = self.getInfo(link)
+        query_data = {'url': url, 'use_host': True, 'host': self.common.getRandomHost(), 'use_cookie': False, 'use_post': False, 'return_data': True}    
+        data = self.common.getURLRequestData(query_data)
+        info = self.getInfo(data)
         tTab = title.split(' ')
         num = tTab[1]        
         s = "sezon-" + str(num)               
-        match = re.compile('href="(.+?)' + s + '(.+?)"><b>Odcinek:(.+?)</b>').findall(link)
+        match = re.compile('href="(.+?)' + s + '(.+?)"><b>Odcinek:(.+?)</b>').findall(data)
         if len(match) > 0:
             for i in range(len(match)):
                 oTab = match[i][2].split(':')
@@ -115,16 +117,16 @@ class SerialNet:
             
 
     def getVideoUrl(self, url):
-        print str(servset)
-        
+        #print str(servset)
         videoUrl = ''
         try:
-            link = self.cm.requestData(url)
+            query_data = {'url': url, 'use_host': True, 'host': self.common.getRandomHost(), 'use_cookie': False, 'use_post': False, 'return_data': True}    
+            data = self.common.getURLRequestData(query_data)
         except Exception, exception:
             self.exception.getError(str(exception))
             exit()
         #<iframe id="framep" class="radi" src="http://serialnet.pl/play.php?t=1-18"
-        match = re.compile('<iframe id="framep" class="radi" src="(.+?)"').findall(link)
+        match = re.compile('<iframe id="framep" class="radi" src="(.+?)"').findall(data)
         if len(match) > 0:
             nUrl = match[0]
             if servset[SERVICE + '_wersja'] == 'false':
@@ -133,14 +135,21 @@ class SerialNet:
                 if item == -1: return videoUrl
                 elif item == 0: nUrl = match[0] + '&wersja=napisy'
             log.info("wersja: " + nUrl)
-            link = self.cm.requestData(nUrl)
-            print "link: " + link
+            query_data = {'url': nUrl, 'use_host': True, 'host': self.common.getRandomHost(), 'use_cookie': False, 'use_post': False, 'return_data': True}    
+            data = self.common.getURLRequestData(query_data)
+            #link = self.cm.requestData(nUrl)
+            #print "link: " + link
             
-            match = re.compile('eval\((.+?),0,{}\)\)',re.DOTALL).findall(link)
+            match = re.compile('url: escape\((.+?)\)',re.DOTALL).findall(data) 
             if len(match) > 0:
-                js = 'eval(' + match[0] + ',0,{}))'
-                videoUrl = self.decodeJS(js)
-                log.info("decoded link: " + videoUrl)
+                if 'http' in match[0]:
+                    videoUrl = match[0][1:-1]
+                else:    
+                    match2 = re.compile('eval\((.+?),0,{}\)\)',re.DOTALL).findall(data)
+                    if len(match2) > 0:
+                        js = 'eval(' + match2[0] + ',0,{}))'
+                        videoUrl = self.decodeJS(js)
+                        log.info("decoded link: " + videoUrl)
         return videoUrl
         
 
@@ -187,7 +196,7 @@ class SerialNet:
         
         #main menu
         if name == None:
-            self.listsABCMenu(self.cm.makeABCList())
+            self.listsABCMenu(self.common.makeABCList())
         #A-Z
         if name == 'abc-menu':
             self.showSerialTitles(category)   
