@@ -88,7 +88,7 @@ class Kabarety:
 		traceback.print_exc()
 		self.exception.getError(str(exception))
 		exit()
-        match = re.compile('<b>Kategorie</a><br><br>(.+?)<br><br>&nbsp;', re.DOTALL).findall(data)
+        match = re.compile('<b>Kategorie</a><br><br>(.+?)<br><br>', re.DOTALL).findall(data)
         if len(match) > 0:
             match2 = re.compile('href="(.+?)">(.+?)</a>').findall(match[0]) 
             if len(match2) > 0:
