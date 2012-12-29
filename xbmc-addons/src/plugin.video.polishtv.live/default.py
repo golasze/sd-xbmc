@@ -42,14 +42,16 @@ VOD_ONLINE_TABLE = {
                      208: ["SerialNet [seriale]", 'serialnet'],
                      209: ["BestPlayer [filmy]", 'bestplayer'],
 		     210: ["Kino Pecetowiec [filmy]", 'kinopecetowiec'],
-		     211: ["Maxvideo [różne filmy]", ''],
+		     211: ["Maxvideo [różne filmy]", 'maxvideo'],
 }
 
-ROZRYWKA_TABLE = { 400: ["Kabarety", ''],
+ROZRYWKA_TABLE = {
+		     400: ["Kabarety", ''],
 }
 
-REC_DOWN_TABLE = { 300: ["Weeb TV", 'weebtv'],
-                   301: ["Włącz TV", 'wlacztv'],
+REC_DOWN_TABLE = {
+		     300: ["Weeb TV", 'weebtv'],
+		     301: ["Włącz TV", 'wlacztv'],
 }
 
 
