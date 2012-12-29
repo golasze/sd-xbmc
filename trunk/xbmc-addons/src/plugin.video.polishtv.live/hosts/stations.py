@@ -42,6 +42,8 @@ MENU_TAB = [
             [ "TV Puls", 0, "rtmp://creyden.popler.tv:80/rtplive?play=123452/istreampl3" ],
             [ "TV Puls 2", 0, "rtmp://poviss.popler.tv:1935/rtplive?play=123452/istreampl4" ],
             [ "Discovery Science", 0, "rtmp://creyden.popler.tv:80/rtplive?play=123452/istreampl2" ],
+            [ "TTV", 0, "rtmp://gdansk.popler.tv:80/rtplive?play=123452/admin245" ],
+
             [ "TVP1", 0, "rtmp://94.23.39.164/satlive/tvp1 playpath=tvp1 swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-126.htm  live=true swfVfy=true" ],
             [ "HBO", 0, "rtmp://94.23.39.164/satlive/hbo playpath=hbo swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-137.htm  live=true swfVfy=true" ],
             [ "Canal Plus Film", 0, "rtmp://94.23.39.164/satlive/canalplusfilm playpath=canalplusfilm swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-132.htm  live=true swfVfy=true" ],
