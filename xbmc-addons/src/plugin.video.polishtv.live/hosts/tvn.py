@@ -28,6 +28,7 @@ scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
 SERVICE = 'tvn'
+proxy_url = 'aHR0cDovL3NkLXhibWMub3JnL3N1cHBvcnQvdHZucHJveHkucGhwP3U9'
 
 qualities = [
             'HD',
@@ -96,6 +97,9 @@ class tvn:
 
     def addVideoLink(self,prop,url,iconimage,listsize=0):
         ok=True
+        folder = False
+        if proxy == 'true':
+            folder = True
         if not 'description' in prop:
             prop['description'] = ''
         if not 'time' in prop:
@@ -124,7 +128,45 @@ class tvn:
         if dstpath != "None" or not dstpath:
             cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(prop['title']), 'url': urllib.quote_plus(url), 'path': os.path.join(dstpath, SERVICE) })
             liz.addContextMenuItems(cm, replaceItems=False)
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=False,totalItems=listsize)
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz,isFolder=folder,totalItems=listsize)
+        return ok
+
+    def addVideoProxyLink(self,prop,url,iconimage,listsize=0):
+        ok=True
+        u = '%s?service=%s&url=%s&type=playSelectedMovie&name=%s' % (sys.argv[0], SERVICE, urllib.quote_plus(url), prop['title'])
+        folder = False
+        if proxy == 'true':
+            folder = True
+        if not 'description' in prop:
+            prop['description'] = ''
+        if not 'time' in prop:
+            prop['time'] = 0
+        if not 'aired' in prop:
+            prop['aired'] = ''
+        if not 'overlay' in prop:
+            prop['overlay'] = 0
+        if not 'TVShowTitle' in prop:
+            prop['TVShowTitle'] = ''
+        if not 'episode' in prop:
+            prop['episode'] = 0
+        if dbg == 'true':
+            log.info('TVN - addVideoProxyLink() -> prop[]: ' + str(prop))        
+        liz=xbmcgui.ListItem(prop['title'], iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+        liz.setProperty("IsPlayable", "true")
+        liz.setInfo( type="Video", infoLabels={
+            "Title": prop['title'],
+            "Plot": prop['description'],
+            "Duration": str(prop['time']),
+            "Premiered": prop['aired'],
+            "Overlay": prop['overlay'],
+            "TVShowTitle" : prop['TVShowTitle'],
+            "Episode" : prop['episode']
+        } )
+        
+        if dstpath != "None" or not dstpath:
+            cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(prop['title']), 'url': urllib.quote_plus(url), 'path': os.path.join(dstpath, SERVICE) })
+            liz.addContextMenuItems(cm, replaceItems=False)
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder,totalItems=listsize)
         return ok
 
     def listsCategories(self):
@@ -238,9 +280,17 @@ class tvn:
                         }
                     if self.watched(videoUrl):
                         prop['overlay'] = 7
-
-                    self.addVideoLink(prop,videoUrl,iconUrl,listsize)
-                    hasVideo = True
+                    if dbg == 'true':
+                        log.info('TVN Player - listCategories() -> videoUrl: ' + videoUrl)
+                    
+                    if proxy == 'true':
+                        hasVideo = False
+                        if dbg == 'true':
+                            log.info('TVN - listCategories()[proxy] -> prop[]: ' + str(prop))
+                        self.addVideoProxyLink(prop,videoUrl,iconUrl,listsize)
+                    else:
+                        hasVideo = True
+                        self.addVideoLink(prop,videoUrl,iconUrl,listsize)
 
 
         if showSeasons:
@@ -272,6 +322,7 @@ class tvn:
         self.service = self.parser.getParam(params, "service")
         self.path = self.parser.getParam(params, "path")
         self.vtitle = self.parser.getParam(params, "vtitle")
+        self.type = self.parser.getParam(params, "type")
         
         if not self.page:
             self.page = 0
@@ -288,9 +339,20 @@ class tvn:
 
         if self.name == 'None':
             self.listsCategories()
-        elif self.name != 'None' and self.category != '':
-            self.listsCategories()
-   
+        elif self.name != 'None' and self.category != '' and self.type != 'playSelectedMovie':
+            self.listsCategories()    
+        elif self.name != 'None' and self.type == 'playSelectedMovie':
+            proxyVideoUrl = base64.b64decode(proxy_url) + urllib.quote_plus(self.url)
+            try:
+                linkVideoUrl = self.common.getURLRequestData({ 'url': proxyVideoUrl, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': True })
+            except Exception, exception:
+                traceback.print_exc()
+                self.exception.getError(str(exception))
+                exit()
+            if dbg == 'true':
+                log.info('TVN - handleService -> linkVideoUrl: ' + linkVideoUrl)
+            self.LOAD_AND_PLAY_VIDEO(linkVideoUrl, self.name)
+        
         if self.service == SERVICE and self.action == 'download' and self.url != '':
             self.common.checkDir(os.path.join(dstpath, SERVICE))
             if dbg == 'true':
@@ -306,8 +368,6 @@ class tvn:
         method = 'getItem'
         groupName = 'item'
         urlQuery = '&type=%s&id=%s&limit=%s&page=1&sort=newest&m=%s' % (category, id, str(PAGE_LIMIT), method)
-        #urlQuery = urlQuery + '&deviceScreenHeight=1080&deviceScreenWidth=1920'
-        proxy_url = 'aHR0cDovL3NkLXhibWMub3JnL3N1cHBvcnQvdHZucHJveHkucGhwP3U9'
         url = self.contentHost + self.startUrl + urlQuery
         
         if proxy == 'true':
@@ -321,7 +381,6 @@ class tvn:
             traceback.print_exc()
             self.exception.getError(str(exception))
             exit()
-        #response = urllib2.urlopen(self.contentHost + self.startUrl + urlQuery)
         xmlDoc = ET.parse(response).getroot()
         runtime = xmlDoc.find(method + "/" + groupName + "/run_time")
         videoTime = 0
@@ -358,15 +417,15 @@ class tvn:
                 videoUrl = self.generateToken(self.getUrlFromTab(rankSorted, quality_temp))
             elif platform == 'Samsung TV':
                 tempVideoUrl = self.getUrlFromTab(rankSorted, quality_temp)
-                print "KUPS: "
                 if proxy == 'true':
-                    tempVideoUrl = base64.b64decode(proxy_url) + urllib.quote_plus(tempVideoUrl)
-                try:
-                    videoUrl = self.common.getURLRequestData({ 'url': tempVideoUrl, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': True })
-                except Exception, exception:
-                    traceback.print_exc()
-                    self.exception.getError(str(exception))
-                    exit()
+                    videoUrl = tempVideoUrl
+                else:
+                    try:
+                        videoUrl = self.common.getURLRequestData({ 'url': tempVideoUrl, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': True })
+                    except Exception, exception:
+                        traceback.print_exc()
+                        self.exception.getError(str(exception))
+                        exit()
                 if dbg == 'true':
                     log.info('TVN - getVideoUrl() -> temporary videoUrl: ' + tempVideoUrl)
                     log.info('TVN - getVideoUrl() -> videoUrl: ' + videoUrl)
@@ -467,4 +526,19 @@ class tvn:
                     break
         return out
 
-        
+    def LOAD_AND_PLAY_VIDEO(self, videoUrl, title):
+        ok=True
+        if videoUrl == '':
+            d = xbmcgui.Dialog()
+            d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+            return False
+        thumbnail = xbmc.getInfoImage("ListItem.Thumb")
+        liz=xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
+        liz.setInfo( type="Video", infoLabels={ "Title": title } )
+        try:
+            xbmcPlayer = xbmc.Player()
+            xbmcPlayer.play(videoUrl, liz)
+        except:
+            d = xbmcgui.Dialog()
+            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+        return ok       
