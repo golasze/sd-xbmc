@@ -165,7 +165,7 @@ class PolishLiveTV:
 
         self.addDir("Telewizja", 1, False, False, False)
         self.addDir("Filmy, Seriale", 2, False, False, False)
-#        self.addDir("Rozrywka", 4, False, False, False)
+        self.addDir("Rozrywka", 4, False, False, False)
         self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False, False)
         self.addDir('Ustawienia', 20, True, False, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
