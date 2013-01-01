@@ -52,7 +52,7 @@
     <string id="55502">Order by</string>
     <string id="55503">Username:</string>
     <string id="55504">Password:</string>
-    <string id="55505">Global settigs</string>
+    <string id="55505">Login settings</string>
     <string id="55506">Download settings</string>
     <string id="55507">Path to download</string>
     
@@ -105,7 +105,7 @@
     
     <!-- Maxvideo settings -->
     <string id="56000">Maxvideo</string>
-    <string id="56001">Global settigs</string>
+    <string id="56001">Login settings</string>
     <string id="56002">Username:</string>
     <string id="56003">Password:</string>
     <string id="56004">Show Notifications</string>
