@@ -29,6 +29,7 @@ ptv = xbmcaddon.Addon(scriptID)
 
 SERVICE = 'tvn'
 proxy_url = 'aHR0cDovL3NkLXhibWMub3JnL3N1cHBvcnQvdHZucHJveHkucGhwP3U9'
+proxy_cache = 'aHR0cDovL3NkLXhibWMub3JnL3N1cHBvcnQvdHZucHJveHkucGhwP2MmdT0='
 
 qualities = [
             'HD',
@@ -187,12 +188,8 @@ class tvn:
             groupName = 'categories'
             urlQuery = '&m=' + method
 
-
         if dbg == 'true':
             log.info('TVN - listCategories() -> link: ' + self.contentHost + self.startUrl + urlQuery)
-        #req = urllib2.Request(self.contentHost+self.startUrl + urlQuery)
-        #req.add_header('User-Agent', self.contentUserAgent)
-        #response = ''
         try:
             #response = urllib2.urlopen(req)
             response = self.common.getURLRequestData({ 'url': self.contentHost + self.startUrl + urlQuery, 'use_host': True, 'host': self.contentUserAgent, 'use_cookie': False, 'use_post': False, 'return_data': False })
@@ -210,7 +207,6 @@ class tvn:
                 showNextPage = True
         
         listsize = len(categories)
-
 
         seasons = xmlDoc.find(method + "/seasons")
         showSeasons = False
@@ -371,7 +367,7 @@ class tvn:
         url = self.contentHost + self.startUrl + urlQuery
         
         if proxy == 'true':
-            url = base64.b64decode(proxy_url) + urllib.quote_plus(url)
+            url = base64.b64decode(proxy_cache) + urllib.quote_plus(url)
         
         if dbg == 'true':
             log.info('TVN - getVideoUrl() -> link: ' + url)
