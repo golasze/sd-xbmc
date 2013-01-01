@@ -1,11 +1,19 @@
-Version 0.2.0
+version 0.3.0
+- dodanie serwisu bestplayer.tv,
+- dodanie serwisu maxvideo.pl,
+- dodanie serwisu kabarety.odpoczywam.net,
+- dodanie mozliwosci sciagania video z wybranych serwisow,
+- wylacznie EkinoTV z obslugi,
+- nowe logo i ikony do serwisow
+
+version 0.2.0
 - dodany serwis kino.pecetowiec.pl
 - naprawiona obsluga Wlacz TV,
-- naprawiona oblsuga SerialNet.
+- naprawiona obsluga SerialNet.
 
-Version 0.1.0
+version 0.1.0
 
-Version 0.0.4
+version 0.0.4
 - added iplex (need patch ffmpeg)
 - added tvp info
 - added tvn player (need install PyCrypto)
@@ -14,7 +22,7 @@ Version 0.0.4
 - fixed iitv
 - disabled ipla
 
-Version 0.0.1
+version 0.0.1
 Initial release
 
 
