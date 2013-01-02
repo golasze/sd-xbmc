@@ -42,7 +42,7 @@ method getURLRequestData(params):
 import re, os, sys, cookielib, random
 import urllib, urllib2, re, sys, math
 import elementtree.ElementTree as ET
-import xbmcaddon
+import xbmcaddon, xbmc
 import simplejson as json
 
 import pLog
@@ -72,7 +72,7 @@ HOST_TABLE = { 100: 'Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefo
 	    }
 
 HOST = 'Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefox/17.0'
-HISTORYFILE = ptv.getAddonInfo('path') + os.path.sep + "searchhistory.xml"
+HISTORYFILE = xbmc.translatePath(ptv.getAddonInfo('profile') + "history.xml")
 
 cj = cookielib.LWPCookieJar()
 
