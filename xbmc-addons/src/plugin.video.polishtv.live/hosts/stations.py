@@ -48,7 +48,7 @@ MENU_TAB = [
             [ "HBO", 0, "rtmp://94.23.39.164/satlive/hbo playpath=hbo swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-137.htm  live=true swfVfy=true" ],
             [ "Canal Plus Film", 0, "rtmp://94.23.39.164/satlive/canalplusfilm playpath=canalplusfilm swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-132.htm  live=true swfVfy=true" ],
 
-            [ "TVP INFO ", 1, "rtmp://freeview.fms.visionip.tv/live/tvnetwork-polskaplus-tvpinfo-hsslive-25f-4x3-SDh?extsessionid=50444e8f09104-69afb3db1bb7434f243177b5996b8af1" ],
+            [ "TVP INFO ", 1, "rtmp://freeview.fms.visionip.tv/live/tvnetwork-polskaplus-tvpinfo-hsslive-25f-4x3-SDh?extsessionid=50e3fa0e292fb-52489ced473722861898a32c76fd7f93" ],
             [ "TVP MIX 1", 0, "http://195.245.213.199/Ch0003" ],
             [ "TVP MIX 2", 0, "http://195.245.213.204/Ch0018" ],
             [ "TVP MIX 3", 0, "http://195.245.213.204/Ch0019" ],
