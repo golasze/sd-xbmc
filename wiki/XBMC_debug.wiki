@@ -37,10 +37,12 @@ Możesz również chcieć użyć pluginu {{{XBMC Log Uploader}}}, który automat
 
 ==Lokalizacja==
 Pliki logu znajdziesz w katalogu z zainstalowanym XBMC - typowo (w zależności od Systemu Operacyjnego) będzie to:
-||Linux||{{{/home//.xbmc/temp/ }}}||
-||Windows||{{{%APPDATA%\XBMC\ }}}||
-|| iOS (ATV2/iPad/iPhone) ||{{{/private/var/mobile/Library/Preferences/xbmc.log }}}||
-||OSX/ATV||{{{/Users//Library/Logs/ }}}||
+|| Linux ||{{{/home/user/.xbmc/temp/ }}}||
+|| Crystalbuntu ||{{{/root/.xbmc/temp/}}}||
+|| Windows ||{{{%APPDATA%\XBMC\ }}}||
+|| iOS (ATV2/iPad/iPhone) ||{{{/private/var/mobile/Library/Preferences/ }}}||
+|| OSX/ATV ||{{{/Users//Library/Logs/ }}}||
+|| Android ||{{{/data/data/org.xbmc.xbmc/cache/temp/}}}||
 
 Otwierając podaną lokalizację znajdziesz zwykle w niej dwa pliki:
  * *xbmc.log* – ostatni plik logu (to właśnie ten plik w zwykle Cię interesuje!),
