@@ -20,3 +20,6 @@ do
 
 === _Windows: Error script failed_ ===
 Nazwa uzytkownika systemu Windows nie moze zawierac polskich znakow.
+
+=== _TVNPlayer nie dziala poza granicami Polski_ ===
+W Ustawieniach wtyczki, w zakladce TVN, zaznacz opcje "I'm outside the Poland".
