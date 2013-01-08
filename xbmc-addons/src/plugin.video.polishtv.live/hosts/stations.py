@@ -43,6 +43,7 @@ MENU_TAB = [
             [ "TV Puls 2", 0, "rtmp://poviss.popler.tv:1935/rtplive?play=123452/istreampl4" ],
             [ "Discovery Science", 0, "rtmp://creyden.popler.tv:80/rtplive?play=123452/istreampl2" ],
             [ "TTV", 0, "rtmp://gdansk.popler.tv:80/rtplive?play=123452/admin245" ],
+            [ "Eska party", 3, "rtmp://stream.supermedia.pl/t-eska/eska_party_360p" ],
 
             [ "TVP1", 0, "rtmp://94.23.39.164/satlive/tvp1 playpath=tvp1 swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-126.htm  live=true swfVfy=true" ],
             [ "HBO", 0, "rtmp://94.23.39.164/satlive/hbo playpath=hbo swfUrl=http://satlive.pl/player/player.swf pageUrl=http://satlive.pl/stream,id-137.htm  live=true swfVfy=true" ],
