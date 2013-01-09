@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import cookielib, os, string, StringIO
-import os, time, base64, logging, calendar
-import urllib, urllib2, re, sys, math
+import string, StringIO
+import os
+import re, sys
 import xbmcaddon, xbmc, xbmcgui
 from xml.dom.minidom import parseString, parse
 import traceback
@@ -21,8 +21,7 @@ STATUSURL = 'http://sd-xbmc.org/xbmc/servicestatus.xml'
 
 ACTION_EXIT = 117
 ACTION_LIST = 120
-ACTION_PREVIOUS_MENU = 10
-ACTION_SELECT_ITEM = 7
+
   
 class ServiceInfo:
     def __init__(self):
@@ -43,18 +42,23 @@ class ServiceInfo:
             exit()
   
         if len(data) > 0:
-            d = parseString(data)
-            for node in d.getElementsByTagName('service'):
-                status = node.getElementsByTagName('status')[0]
-                date = node.getElementsByTagName('date')[0]
-                description = node.getElementsByTagName('description')[0]
-                if self.getText(status.childNodes) != None:
-                    strTab.append(node.attributes.items()[1][1])
-                    strTab.append(self.getText(status.childNodes))
-                    strTab.append(self.getText(date.childNodes))
-                    strTab.append(self.getText(description.childNodes))
-                    outTab.append(strTab)
-                    strTab = []
+            try:
+                d = parseString(data)
+                for node in d.getElementsByTagName('service'):
+                    status = node.getElementsByTagName('status')[0]
+                    date = node.getElementsByTagName('date')[0]
+                    description = node.getElementsByTagName('description')[0]
+                    if self.getText(status.childNodes) != None:
+                        strTab.append(node.attributes.items()[1][1])
+                        strTab.append(self.getText(status.childNodes))
+                        strTab.append(self.getText(date.childNodes))
+                        strTab.append(self.getText(description.childNodes))
+                        outTab.append(strTab)
+                        strTab = []
+            except Exception, exception:
+                traceback.print_exc()
+                self.exception.getError(str(exception))
+                exit()
         return outTab 
   
     
@@ -76,7 +80,7 @@ class WindowServiceInfo(xbmcgui.WindowXMLDialog):
     def __init__(self, strXMLname, strFallbackPath, strDefaultName, forceFallback = True):
         self.si = ServiceInfo()
         self.sTab = self.si.getServiceInfo()
-        self.list = {}      
+        #self.list = {}      
        
     def onInit(self):
         list = self.getControl(ACTION_LIST)
@@ -88,12 +92,13 @@ class WindowServiceInfo(xbmcgui.WindowXMLDialog):
             dateS = self.sTab[i][2]
             descS = self.sTab[i][3]
             statusR = '[I][COLOR green]' + statusS + '[/COLOR][/I]'
+            descR = '[I]' + descS + '[/I]'
             if statusS == 'OFFLINE':
                 statusR = '[I][COLOR red]' + statusS + '[/COLOR][/I]'
             elif statusS == 'WORKAROUND':
                 statusR = '[I][COLOR yellow]' + statusS + '[/COLOR][/I]'
             info = "%s (%s, %s)" % ('[B][COLOR blue]' + nameS + '[/COLOR][/B]', statusR, dateS)
-            l = xbmcgui.ListItem(label=info, label2=descS)
+            l = xbmcgui.ListItem(label = info, label2 = descR)
             list.addItem(l)
     
     def onAction(self, action):
