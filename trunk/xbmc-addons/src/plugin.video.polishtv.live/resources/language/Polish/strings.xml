@@ -102,6 +102,7 @@
     <string id="55905">Obiekt nie posiada atrybutu</string>
     <string id="55906">Opis:</string>
     <string id="55907">Nie można otworzyć linku. Czas został przekroczony!</string>
+    <string id="55908">Nie można odczytać pliku XML.</string>
     
     <!-- Maxvideo settings -->
     <string id="56000">Maxvideo</string>

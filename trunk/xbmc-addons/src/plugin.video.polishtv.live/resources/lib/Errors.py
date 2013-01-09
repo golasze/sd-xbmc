@@ -23,6 +23,7 @@ ERRORS = [
     [ 'urlopen error timed out', t(55900).encode('utf-8'), t(55907).encode('utf-8') ],
     [ '[Errno 2]', t(55900).encode('utf-8'), t(55906).encode('utf-8') ],
     [ '[Errno 10035]', t(55900).encode('utf-8'), t(55906).encode('utf-8') ],
+    [ 'xml.parsers.expat.ExpatError', t(55900).encode('utf-8'), t(55908).encode('utf-8')],
 ]
 
 class Exception:
