@@ -120,6 +120,8 @@ class urlparser:
         nUrl = self.parserNOVAMOV(url)
     if host== 'www.nowvideo.eu':
         nUrl = self.parserNOWVIDEO(url)
+    if host== 'www.rapidvideo.com':
+        nUrl = self.parserRAPIDVIDEO(url)
 	
     return nUrl
 
@@ -403,6 +405,17 @@ class urlparser:
       else:
         return False
     else:
+      return False
+
+  def parserRAPIDVIDEO(self,url):
+    query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+    link = self.cm.getURLRequestData(query_data)
+    if DEBUG: log.info(link)
+    match = re.search("""'file': '(.+?)','image':""",link)
+    if match:
+      if DEBUG: log.info("final link: " + match.group(1))       
+      return match.group(1)
+    else: 
       return False
 
 
