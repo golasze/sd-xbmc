@@ -411,7 +411,7 @@ class urlparser:
     query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
     link = self.cm.getURLRequestData(query_data)
     if DEBUG: log.info(link)
-    match = re.search("""'file': '(.+?)','image':""",link)
+    match = re.search("""'(.+?)','720p'""",link)
     if match:
       if DEBUG: log.info("final link: " + match.group(1))       
       return match.group(1)
