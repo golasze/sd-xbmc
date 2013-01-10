@@ -33,6 +33,74 @@
 			<posx>0</posx>
 			<posy>10</posy>
 			<!-- Button Group -->
+			<control type="button" id="111">
+				<description>Show all</description>
+				<posx>0</posx>
+				<posy>0</posy>
+				<height>70</height>
+				<width>120</width>
+				<align>center</align>
+				<aligny>top</aligny>
+				<textoffsety>45</textoffsety>
+				<label>SCRIPT101</label>
+				<font>font12_title</font>
+				<onright>120</onright>
+				<ondown>112</ondown>
+				<onup>120</onup>
+				<texturefocus>serviceinfo-all-focus.png</texturefocus>
+				<texturenofocus>serviceinfo-all-nofocus.png</texturenofocus>
+			</control>
+			<control type="button" id="112">
+				<description>Show online</description>
+				<posx>0</posx>
+				<posy>75</posy>
+				<height>70</height>
+				<width>120</width>
+				<align>center</align>
+				<aligny>top</aligny>
+				<textoffsety>45</textoffsety>
+				<label>SCRIPT102</label>
+				<font>font12_title</font>
+				<onright>120</onright>
+				<onup>111</onup>
+				<ondown>113</ondown>
+				<texturefocus>serviceinfo-online-focus.png</texturefocus>
+				<texturenofocus>serviceinfo-online-nofocus.png</texturenofocus>
+			</control>
+			<control type="button" id="113">
+				<description>Show workaround</description>
+				<posx>0</posx>
+				<posy>150</posy>
+				<height>70</height>
+				<width>122</width>
+				<align>center</align>
+				<aligny>top</aligny>
+				<textoffsety>45</textoffsety>
+				<label>SCRIPT103</label>
+				<font>font12_title</font>
+				<onright>120</onright>
+				<onup>112</onup>
+				<ondown>114</ondown>
+				<texturefocus>serviceinfo-work-focus.png</texturefocus>
+				<texturenofocus>serviceinfo-work-nofocus.png</texturenofocus>
+			</control>
+			<control type="button" id="114">
+				<description>Show offline</description>
+				<posx>0</posx>
+				<posy>225</posy>
+				<height>70</height>
+				<width>120</width>
+				<align>center</align>
+				<aligny>top</aligny>
+				<textoffsety>45</textoffsety>
+				<label>SCRIPT104</label>
+				<font>font12_title</font>
+				<onright>120</onright>
+				<onup>113</onup>
+				<ondown>120</ondown>
+				<texturefocus>serviceinfo-stop-focus.png</texturefocus>
+				<texturenofocus>serviceinfo-stop-nofocus.png</texturenofocus>
+			</control>
 			<control type="button" id="117">
 				<description>Exit</description>
 				<posx>0</posx>
