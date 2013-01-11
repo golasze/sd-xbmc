@@ -46,7 +46,7 @@
 				<font>font12_title</font>
 				<onright>120</onright>
 				<ondown>112</ondown>
-				<onup>120</onup>
+				<onup>117</onup>
 				<texturefocus>serviceinfo-all-focus.png</texturefocus>
 				<texturenofocus>serviceinfo-all-nofocus.png</texturenofocus>
 			</control>
@@ -97,7 +97,7 @@
 				<font>font12_title</font>
 				<onright>120</onright>
 				<onup>113</onup>
-				<ondown>120</ondown>
+				<ondown>117</ondown>
 				<texturefocus>serviceinfo-stop-focus.png</texturefocus>
 				<texturenofocus>serviceinfo-stop-nofocus.png</texturenofocus>
 			</control>
@@ -113,10 +113,10 @@
 				<label>SCRIPT107</label>
 				<font>font12_title</font>
 				<onright>120</onright>
-				<onup>120</onup>
+				<onup>114</onup>
 				<texturefocus>serviceinfo-exit-focus.png</texturefocus>
 				<texturenofocus>serviceinfo-exit-nofocus.png</texturenofocus>
-				<ondown>120</ondown>
+				<ondown>111</ondown>
 			</control>
 		</control>
 		<control type="list" id="120">

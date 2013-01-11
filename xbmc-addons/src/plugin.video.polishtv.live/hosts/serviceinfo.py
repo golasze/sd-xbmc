@@ -16,7 +16,7 @@ import pCommon, pLog, Errors
 log = pLog.pLog()
 dbg = ptv.getSetting('default_debug')
 
-STATUSURL = 'http://sd-xbmc.org/xbmc/servicestatus.xml'
+STATUSURL = 'http://sd-xbmc.org/si/serviceinfo.xml'
 #get actioncodes from keymap.xml
 
 ACTION_ALL = 111
@@ -63,7 +63,7 @@ class ServiceInfo:
                 traceback.print_exc()
                 self.exception.getError(str(exception))
                 exit()
-        return outTab 
+        return outTab
   
     
     def getText(self, nodelist):

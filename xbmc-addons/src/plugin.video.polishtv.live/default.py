@@ -19,6 +19,7 @@ import pLog, settings, Parser
 import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv
 import maxvideo, serialnet, anyfiles
 import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kabarety
+import serviceinfo
 #import ipla
 
 log = pLog.pLog()
@@ -142,7 +143,11 @@ class PolishLiveTV:
         elif mode == 20:
                 log.info('Wyświetlam ustawienia')
                 self.settings.showSettings()
-
+	elif mode == 21:
+		log.info('Service Info')
+		si = serviceinfo.ServiceInfo()
+		si.getWindow()
+		
 
   def listsMenu(self, table, title):
     value = ''
@@ -167,6 +172,7 @@ class PolishLiveTV:
         self.addDir("Filmy, Seriale", 2, False, False, False)
         self.addDir("Rozrywka", 4, False, False, False)
         self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False, False)
+        self.addDir('Informacje o serwisach', 21, True, False, False)
         self.addDir('Ustawienia', 20, True, False, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
