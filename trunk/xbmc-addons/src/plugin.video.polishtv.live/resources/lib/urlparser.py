@@ -98,8 +98,8 @@ class urlparser:
         nUrl = self.parserSOCKSHARE(url)
     if host == 'megustavid.com':
         nUrl = self.parserMEGUSTAVID(url)
-    #if host == 'hd3d.cc':
-    #    nUrl = self.parserHD3D(url)
+    if host == 'hd3d.cc':
+        nUrl = self.parserHD3D(url)
     if host == 'sprocked.com':
         nUrl = self.parserSPROCKED(url)
     if host == 'odsiebie.pl':
