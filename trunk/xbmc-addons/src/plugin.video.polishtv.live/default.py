@@ -18,7 +18,7 @@ sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 import pLog, settings, Parser
 import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv
 import maxvideo, serialnet, anyfiles
-import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kabarety
+import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kinomaniak, kabarety
 import serviceinfo
 #import ipla
 
@@ -44,6 +44,7 @@ VOD_ONLINE_TABLE = {
                      209: ["BestPlayer [filmy]", 'bestplayer'],
 		     210: ["Kino Pecetowiec [filmy]", 'kinopecetowiec'],
 		     211: ["Maxvideo [różne filmy]", 'maxvideo'],
+		     212: ["Kinomaniak", 'kinomaniak'],
 }
 
 ROZRYWKA_TABLE = {
@@ -122,6 +123,9 @@ class PolishLiveTV:
                 vod.handleService()
         elif mode == 211 or service == 'maxvideo':
                 vod = maxvideo.Maxvideo()
+                vod.handleService()
+        elif mode == 212 or service == 'kinomaniak':
+                vod = kinomaniak.Kinomaniak()
                 vod.handleService()
 		
         elif mode == 4:

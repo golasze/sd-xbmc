@@ -163,7 +163,7 @@ class common:
         if params['use_cookie']:
 			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 			if params['load_cookie']:
-				cj.load(params['cookiefile'])
+				cj.load(params['cookiefile'], ignore_discard = True)
         if params['use_post']:
 	        headers = { 'User-Agent' : host }
 	        if dbg == 'true':
@@ -184,7 +184,7 @@ class common:
             out_data = data
             response.close()
         if params['use_cookie'] and params['save_cookie']:
-        	cj.save(params['cookiefile'])
+        	cj.save(params['cookiefile'], ignore_discard = True)
         return out_data 
                
     def makeABCList(self):
