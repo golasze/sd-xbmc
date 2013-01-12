@@ -72,7 +72,7 @@ HOST_TABLE = { 100: 'Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefo
 	    }
 
 HOST = 'Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefox/17.0'
-HISTORYFILE = xbmc.translatePath(ptv.getAddonInfo('profile') + "history.xml")
+HISTORYFILE = ptv.getAddonInfo('path') + os.path.sep + "history.xml"
 
 cj = cookielib.LWPCookieJar()
 
@@ -148,6 +148,14 @@ class common:
         response.close()
         cj.save(COOKIEFILE)
         return data
+    
+    def getCookieItem(self, cookiefile, item):
+	ret = ''
+	cj = cookielib.LWPCookieJar()
+	cj.load(cookiefile, ignore_discard = True)
+	for cookie in cj:
+	    if cookie.name == item: ret = cookie.value
+	return ret
 
     def getURLRequestData(self, params = {}, post_data = {}):
     	host = HOST
@@ -163,7 +171,7 @@ class common:
         if params['use_cookie']:
 			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 			if params['load_cookie']:
-				cj.load(params['cookiefile'])
+				cj.load(params['cookiefile'], ignore_discard = True)
         if params['use_post']:
 	        headers = { 'User-Agent' : host }
 	        if dbg == 'true':
@@ -184,7 +192,7 @@ class common:
             out_data = data
             response.close()
         if params['use_cookie'] and params['save_cookie']:
-        	cj.save(params['cookiefile'])
+        	cj.save(params['cookiefile'], ignore_discard = True)
         return out_data 
                
     def makeABCList(self):
