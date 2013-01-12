@@ -121,10 +121,10 @@ class PolishLiveTV:
         elif mode == 210 or service == VOD_ONLINE_TABLE[210][1]:
                 vod = kinopecetowiec.KinoPecetowiec()
                 vod.handleService()
-        elif mode == 211 or service == 'maxvideo':
+        elif mode == 211 or service == VOD_ONLINE_TABLE[211][1]:
                 vod = maxvideo.Maxvideo()
                 vod.handleService()
-        elif mode == 212 or service == 'kinomaniak':
+        elif mode == 212 or service == VOD_ONLINE_TABLE[212][1]:
                 vod = kinomaniak.Kinomaniak()
                 vod.handleService()
 		

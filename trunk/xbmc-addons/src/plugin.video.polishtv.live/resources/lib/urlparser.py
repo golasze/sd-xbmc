@@ -425,28 +425,29 @@ class urlparser:
   def parserVIDEOSLASHER(self, url):
     self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
     self.COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "videoslasher.cookie"
-    query_data = { 'url': url.replace('embed', 'video'), 'use_host': True, 'host': HOST, 'use_cookie': True, 'save_cookie': True, 'load_cookie': False, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
+    query_data = { 'url': url.replace('embed', 'video'), 'use_host': False, 'use_cookie': True, 'save_cookie': True, 'load_cookie': False, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
     postdata = {'confirm': 'Close Ad and Watch as Free User', 'foo': 'bar'}
-    link = self.cm.getURLRequestData(query_data, postdata)
-    #match1 = re.compile('user: (.+?),').findall(link)
-    #match2 = re.compile('code: \'(.+?)\',').findall(link)
-    #match3 = re.compile('hash: \'(.+?)\'').findall(link)
-    match4 = re.compile('playlist: \'/playlist/(.+?)\'').findall(link)
-    #query_data = { 'url': 'http://www.videoslasher.com/service/player/on-start', 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
-    #postdata = { "user" : match1[0], "code": match2[0], "hash" : match3[0] }
-    #link = self.cm.getURLRequestData(query_data, postdata)
-    query_data = { 'url': 'http://www.videoslasher.com/playlist/' + match4[0], 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-    link2 = self.cm.getURLRequestData(query_data)
-    match5 = re.compile('url="(.+?)"').findall(link2)
-    cj = cookielib.LWPCookieJar()
-    cj.load(self.COOKIEFILE, ignore_discard = True)
-    streamUrl = False
-    cookies = []
-    for cookie in cj:
-	cookies.append( "%s=%s" % (cookie.name, cookie.value) )
-	ckStr = ';'.join(cookies)
-	streamUrl = ( '%s|Cookie="%s"' % (match5[1],ckStr) )
-    return streamUrl
+    data = self.cm.getURLRequestData(query_data, postdata)
+    
+    match = re.compile("playlist: '/playlist/(.+?)'").findall(data)
+    if len(match)>0:
+      query_data = { 'url': 'http://www.videoslasher.com//playlist/' + match[0], 'use_host': False, 'use_cookie': True, 'save_cookie': False, 'load_cookie': True, 'cookiefile': self.COOKIEFILE,  'use_post': True, 'return_data': True }
+      data = self.cm.getURLRequestData(query_data)
+      #url="http://proxy4.videoslasher.com/free/Y/YR/YRW6OFQAPDWA.flv?h=XekQ5nvD9Ub6jJ7kMLlgaw&e=1357989166"
+      match = re.compile('<title>Video</title><media:content url="(.+?)"').findall(data)
+      if len(match)>0:
+	sid = self.cm.getCookieItem(self.COOKIEFILE,'authsid')
+	if sid != '':
+	  #Cookie="authsid=08jv4vdln1ocd22do043r91vg4"
+	  streamUrl = match[0] + '|Cookie="authsid=' + sid + '"'
+	  return streamUrl	
+	else:
+	  return False
+      else:
+	return False
+    else:
+      return False
+
 
 
           
