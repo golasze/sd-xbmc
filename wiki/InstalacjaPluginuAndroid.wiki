@@ -3,7 +3,7 @@
 =Opis i modyfikacje wykonane na Samsung Galaxy Tap 2 z Android 4.0=
 Autorem jest *matiszek30@gmail.com*
 
-Na początek zaznczamy w ustawieniach bezpieczeństwa żeby można było instalować pliki z innych źródeł. Następnie ściągamy XBMC na Androida, który znajdziemy tutaj [http://depositfiles.com/files/soxkfz662].
+Na początek zaznczamy w ustawieniach bezpieczeństwa żeby można było instalować pliki z innych źródeł. Następnie ściągamy XBMC na Androida, który znajdziemy tutaj [http://mirrors.xbmc.org/releases/android/xbmc-12.0-Frodo_rc2-armeabi-v7a.apk].
 Instalujemy go normalnie jak każdą aplikacje i gotowe mamy XBMC na Androidzie.
 
 
