@@ -137,10 +137,11 @@ class SerialNet:
             log.info("wersja: " + nUrl)
             query_data = {'url': nUrl, 'use_host': True, 'host': self.common.getRandomHost(), 'use_cookie': False, 'use_post': False, 'return_data': True}    
             data = self.common.getURLRequestData(query_data)
-            #link = self.cm.requestData(nUrl)
-            #print "link: " + link
             
-            match = re.compile('url: escape\((.+?)\)',re.DOTALL).findall(data) 
+            match = re.compile('url: escape\((.+?)\)',re.DOTALL).findall(data)
+            if len(match) == 0:
+                match = re.compile('url: decodeURIComponent\((.+?)\)',re.DOTALL).findall(data)
+
             if len(match) > 0:
                 if 'http' in match[0]:
                     videoUrl = match[0][1:-1]
