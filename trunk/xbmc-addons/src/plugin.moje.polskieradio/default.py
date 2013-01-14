@@ -3,7 +3,7 @@ import urllib, urllib2, re, sys, xbmcplugin, xbmcgui
 import cookielib, os, string, cookielib
 import os, time
 import xbmcaddon, xbmcplugin, xbmcgui
-import parser
+import pParser
 
 scriptID = 'plugin.moje.polskieradio'
 scriptname = "Moje Polskie Radio"
@@ -19,7 +19,7 @@ MENU_MAIN = { 1: 'Programy',
 
 class MyPolishRadio:
     def handleService(self):
-        p = parser.Parser()
+        p = pParser.Parser()
         params = p.getParams()
         if p.getParam(params, 'mode') == None or p.getParam(params, 'mode') == '':
             self.LIST(MENU_MAIN)
