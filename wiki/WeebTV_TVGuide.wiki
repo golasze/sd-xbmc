@@ -47,18 +47,6 @@ Następnie kopiujemy plik do:
 ||AppleTV 2|| {{{/private/var/mobile/Library/Preferences/XBMC/addons/script.tvguide/}}}||
 
 
-==Poprawne wyświetlanie godziny w TV Guide==
-jeśli godzina wyświetla się np.: _1220:20_ zamiast _12:20_, edytujemy plik {{{langinfo.xml}}}, ktory znajduje się w {{{c:\Program Files\XBMC\language\Polish}}}, jest:
-{{{
-<time symbolAM="" symbolPM="">HH:mm:ss</time>
-}}}
-zmieniamy na:
-{{{
-<time symbolAM="" symbolPM="">H:mm:ss</time>
-}}}
-i godzina wyświetla się normalnie.
-
-
 ==Automatyczne pobieranie pliku z programem EPG==
 === Wersja dla Windows ===
 Sciagamy paczke [http://jatrn.com/xbmc/autoepg.zip] i rozpakowywujemy ja do {{{C:\autoepg}}}. Teraz w folderze {{{C:\autoepg}}} znajduja sie nastepujace pliki:
@@ -73,11 +61,5 @@ Teraz po uruchomieniu {{{autoepg.bat}}}, plik z EPG zostanie sciagniety i zapisa
 By automatycznie scigac EPG po uruchomieniu komputera nalezy skopiowac {{{autoepg.bat}}} do Autostart. Mozna rowniez uzyc Windows Task Scheduler a by sciagac go w regularnych odstepach czasowych. 
 
 
-==Zmiana podświetlenia programu==
-U mnie na TV (na PC działa normalnie) podświetlona pozycja w programie zlewa się z reszta, aby to rozwiązać edytujemy plik {{{tvguide-program-grey-focus.png}}}, znajduje się on w:
-{{{
-\Dane aplikacji\XBMC\addons\script.tvguide\resources\skins\Default\media
-}}}
-
-Zmieniłem podświetlenie na czerwony wygląda to tak:
-[https://lh6.googleusercontent.com/-g6PlKJXNXCQ/UIvuaHT6aiI/AAAAAAAAA3M/xymMdMc_ebc/s800/screenshot002.png]
+==Dodadkowe modyfikacje==
+W tym momencie powinnsmy miec wpelni dzialajacy TVGuide z obsluga streamow z wtyczki *plugin.vide.polishtv.live*. O modyfikacjach wygladu samego TVGuide, mozesz poczytac w [ModyfikacjeTVGuide].
