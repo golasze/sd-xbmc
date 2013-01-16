@@ -1,4 +1,4 @@
-#modifikacje pluginu TVGuide
+#summary modifikacje pluginu TVGuide
 
 = Modyfikacje pluginu TVGuide =
 
