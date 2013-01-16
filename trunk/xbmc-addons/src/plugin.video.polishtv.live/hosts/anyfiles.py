@@ -69,14 +69,12 @@ class AnyFiles:
     valTab = []
     self.common.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
     if SEARCHURL in text:
-      print "TUTAJ"
       query_data = {'url': text, 'use_host': False, 'use_cookie': True, 'load_cookie': True, 'save_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': False, 'return_data': True}    
       data = self.common.getURLRequestData(query_data)
     else:  
       query_data = {'url': SEARCHURL, 'use_host': False, 'use_cookie': True, 'load_cookie': False, 'save_cookie': True, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True}
       data = self.common.getURLRequestData(query_data, {'q': text, 'oe': 'polish'})
    
-    print data
     match = re.compile('src="(.+?)" class="icon-img "></a>.+?<a class="box-title" href="(.+?)">(.+?)</a></td></tr>').findall(data)
     if len(match) > 0:
       for i in range(len(match)):
@@ -262,9 +260,12 @@ class AnyFiles:
 class serviceParser:
     def __init__(self):
       self.cm = pCommon.common()
+     
     
     def getVideoUrl(self,url):
-      query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+      self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
+     
+      query_data = { 'url': url, 'use_host': False, 'use_cookie': True, 'cookiefile': COOKIEFILE, 'load_cookie': False, 'save_cookie': True, 'use_post': False, 'return_data': True }
       data = self.cm.getURLRequestData(query_data)
       #var flashvars = {"uid":"player-vid-8552","m":"video","st":"c:1LdwWeVs3kVhWex2PysGP45Ld4abN7s0v4wV"};
       match = re.search("""var flashvars = {.+?"st":"(.+?)"}""",data)
@@ -272,9 +273,11 @@ class serviceParser:
 	nUrl = xppod.Decode(match.group(1)[2:]).encode('utf-8').strip()
 	if 'http://' in nUrl: url = nUrl
 	else: url = 'http://video.anyfiles.pl' + nUrl
-	query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	
+	query_data = { 'url': url+ "&ref=", 'use_host': False, 'use_cookie': True, 'cookiefile': COOKIEFILE, 'load_cookie': True, 'save_cookie': False, 'use_post': False, 'return_data': True }
 	data = self.cm.getURLRequestData(query_data)
 	data = xppod.Decode(data).encode('utf-8').strip()
+
 	#json cleanup
 	while data[-2:] != '"}': data = data[:-1]
 	result = simplejson.loads(data)
