@@ -148,6 +148,7 @@ class common:
         response.close()
         cj.save(COOKIEFILE)
         return data
+
     
     def getCookieItem(self, cookiefile, item):
 	ret = ''
@@ -156,6 +157,14 @@ class common:
 	for cookie in cj:
 	    if cookie.name == item: ret = cookie.value
 	return ret
+    
+    #item = {'name': 'xxx', 'value': 'yyy', 'domain': 'zzz'}
+    def addCookieItem(self, cookiefile, item, load_cookie=True):
+	if load_cookie==True and os.path.isfile(cookiefile):
+	    cj.load(cookiefile, ignore_discard = True)
+	c = cookielib.Cookie(0, item['name'], item['value'], None, False, item['domain'], False, False, '/', True, False, None, True, None, None, {})
+	cj.set_cookie(c)
+	cj.save(cookiefile, ignore_discard = True)
 
     def getURLRequestData(self, params = {}, post_data = {}):
     	host = HOST
