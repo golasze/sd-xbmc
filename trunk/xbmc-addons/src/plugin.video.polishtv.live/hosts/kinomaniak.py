@@ -242,7 +242,7 @@ class Kinomaniak:
 	    traceback.print_exc()
 	    self.exception.getError(str(exception))
 	    exit()
-	match = re.compile('<div id="(?:aqq|opt)_.+">(.+?)</div>').findall(link)
+	match = re.compile('<div id="(?:[a-zA-Z]+[^nl]_[0-9]+)">(.+?)</div>').findall(link)
 	if len(match) > 0:
 	    for i in range(len(match)):
 		exec 'encodedStr = u"%s".encode("utf-8")' % (match[i].replace("'",''))
