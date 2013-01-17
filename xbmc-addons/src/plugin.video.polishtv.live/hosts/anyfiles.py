@@ -264,8 +264,10 @@ class serviceParser:
     
     def getVideoUrl(self,url):
       self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
-     
-      query_data = { 'url': url, 'use_host': False, 'use_cookie': True, 'cookiefile': COOKIEFILE, 'load_cookie': False, 'save_cookie': True, 'use_post': False, 'return_data': True }
+      #show adult content
+      self.cm.addCookieItem(COOKIEFILE, {'name': 'AnyF18', 'value': 'mam18', 'domain': 'video.anyfiles.pl'}, False)
+      
+      query_data = { 'url': url, 'use_host': False, 'use_cookie': True, 'cookiefile': COOKIEFILE, 'load_cookie': True, 'save_cookie': True, 'use_post': False, 'return_data': True }
       data = self.cm.getURLRequestData(query_data)
       #var flashvars = {"uid":"player-vid-8552","m":"video","st":"c:1LdwWeVs3kVhWex2PysGP45Ld4abN7s0v4wV"};
       match = re.search("""var flashvars = {.+?"st":"(.+?)"}""",data)
