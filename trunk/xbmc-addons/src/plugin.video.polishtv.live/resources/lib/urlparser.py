@@ -77,13 +77,13 @@ class urlparser:
     return hostName
 
 
-  def requestData(self, url, postdata = {}):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', HOST)
-	response = urllib2.urlopen(req)
-	data = response.read()
-	response.close()	
-	return data
+#  def requestData(self, url, postdata = {}):
+#	req = urllib2.Request(url)
+#	req.add_header('User-Agent', HOST)
+#	response = urllib2.urlopen(req)
+#	data = response.read()
+#	response.close()	
+#	return data
 
 
   def getVideoLink(self, url):
@@ -338,7 +338,8 @@ class urlparser:
     match_filekey = re.compile('flashvars.filekey="(.+?)"').findall(link)
     if len(match_domain) > 0 and len(match_file) > 0 and len(match_filekey) > 0:
         get_api_url = ('%s/api/player.api.php?user=undefined&codes=1&file=%s&pass=undefined&key=%s') % (match_domain[0], match_file[0], match_filekey[0])
-        link_api = self.requestData(get_api_url)
+        link_api = { 'url': get_api_url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	#link_api = self.requestData(get_api_url)
         if 'url' in link_api:
               parser = Parser.Parser()
               params = parser.getParams(link_api)
@@ -357,7 +358,8 @@ class urlparser:
       match_key = re.compile('flashvars.filekey="(.+?)";').findall(link)
       if len(match_file) > 0 and len(match_key) > 0:
           get_api_url = ('http://www.novamov.com/api/player.api.php?key=%s&user=undefined&codes=1&pass=undefined&file=%s') % (match_key[0], match_file[0])
-	  link_api = self.requestData(get_api_url)
+	  link_api = link_api = { 'url': get_api_url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	  #link_api = self.requestData(get_api_url)
           match_url = re.compile('url=(.+?)&title').findall(link_api)
           if len(match_url) > 0:
               return match_url[0]
