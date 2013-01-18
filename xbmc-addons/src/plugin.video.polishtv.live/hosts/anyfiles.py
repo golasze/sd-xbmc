@@ -100,8 +100,11 @@ class AnyFiles:
   def getCategories(self):
     valTab = []
     strTab = []
-    link = self.common.requestData(MAINURL)
-    match = re.compile('<tr><td><a href="(.+?)" class="kat-box-title">.+?</a></td></tr>').findall(link)
+
+    query_data = { 'url': MAINURL, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+    data = self.common.getURLRequestData(query_data)
+    #link = self.common.requestData(MAINURL)
+    match = re.compile('<tr><td><a href="(.+?)" class="kat-box-title">.+?</a></td></tr>').findall(data)
     if len(match) > 0:
       for i in range(len(match)):	
 	c = match[i].split('/')
@@ -116,8 +119,10 @@ class AnyFiles:
   def getMovieTab(self, url):
     strTab = []
     valTab = []
-    link = self.common.requestData(url)
-    match = re.compile('src="(.+?)".+?(?:\n|\r\n?).+?(?:\n|\r\n?).+?(?:\n|\r\n?)<tr><td><a href="(.+?)" class="kat-box-name">(.+?)</a>', re.MULTILINE).findall(link)
+    query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+    data = self.common.getURLRequestData(query_data)
+    #link = self.common.requestData(url)
+    match = re.compile('src="(.+?)".+?(?:\n|\r\n?).+?(?:\n|\r\n?).+?(?:\n|\r\n?)<tr><td><a href="(.+?)" class="kat-box-name">(.+?)</a>', re.MULTILINE).findall(data)
     if len(match) > 0:
       for i in range(len(match)):
 	value = match[i]
@@ -126,7 +131,7 @@ class AnyFiles:
 	strTab.append(value[0])	
 	valTab.append(strTab)
 	strTab = []
-      match = re.search('Paginator.+?,(.+?), 8, (.+?),',link)
+      match = re.search('Paginator.+?,(.+?), 8, (.+?),',data)
     if match:
       if int(match.group(2)) < int(match.group(1)):
 	p = url.split('/')

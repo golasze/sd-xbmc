@@ -93,7 +93,9 @@ class Kinomaniak:
     def getFilmTab(self, url, category, page):
 	strTab = []
 	valTab = []
-	data = self.cm.requestData(url)
+	query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	data = self.cm.getURLRequestData(query_data)
+	#data = self.cm.requestData(url)
 	matchAll = re.compile('<div class="filtered-movies">(.+?)<hr />(?:\s+)</div>', re.S).findall(data);
 	match = re.compile('<img src="(.+?)" alt="" width="90" height="90">').findall(str(matchAll[0]))
 	if len(match) > 0:

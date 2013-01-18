@@ -108,7 +108,9 @@ class KinoPecetowiec:
     def getFilmTab(self, url, category):
         strTab = []
         valTab = []
-        data = self.cm.requestData(url)
+	query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	data = self.cm.getURLRequestData(query_data)
+        #data = self.cm.requestData(url)
 	#Kategorie
 	if category.isdigit()==True:
 	    match = re.compile('<div class="channel-details-thumb-box-texts"> <a href="http://www.kino.pecetowiec.pl/video/(.+?)/(.+?)">(.+?)</a><br/>').findall(data)
