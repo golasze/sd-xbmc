@@ -11,7 +11,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, urlparser, pCommon, Navigation, Errors
+import pLog, settings, Parser, urlparser, pCommon, Navigation, Errors, downloader
 
 log = pLog.pLog()
 
@@ -23,11 +23,9 @@ mainUrl = 'http://iitv.info'
 watchUrl = mainUrl + '/ogladaj/'
 imageUrl = mainUrl + '/gfx/'
 
-HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
-
 class iiTVInfo:
     def __init__(self):
-        log.info('Loading iiTVinfo')
+        log.info('Loading ' + SERVICE)
         self.settings = settings.TVSettings()
         self.parser = Parser.Parser()
         self.up = urlparser.urlparser()
@@ -35,7 +33,7 @@ class iiTVInfo:
         self.navigation = Navigation.VideoNav()
 	self.chars = pCommon.Chars()
 	self.exception = Errors.Exception()
-	self.dir = pCommon.common()
+
 
     def listsABCMenu(self, table):
         for i in range(len(table)):
@@ -46,13 +44,13 @@ class iiTVInfo:
     def getSerialsTable(self, letter):
         strTab = []
         outTab = []
-        query_data = { 'url': mainUrl, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        query_data = { 'url': mainUrl, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	try:
-		data = self.cm.getURLRequestData(query_data)
+	    data = self.cm.getURLRequestData(query_data)
 	except Exception, exception:
-		traceback.print_exc()
-		self.exception.getError(str(exception))
-		exit()
+	    traceback.print_exc()
+	    self.exception.getError(str(exception))
+	    exit()
         match = re.compile('<li class="serial_menu.+?" style="display:.+?"><a href="(.+?)">(.+?)</a>').findall(data)
         if len(match) > 0:
             addItem = False
@@ -79,7 +77,6 @@ class iiTVInfo:
         tab = self.getSerialsTable(letter)
         if len(tab) > 0:
             for i in range(len(tab)):
-                #log.info(tab[i][1])
                 imageLink = self.getImage(tab[i][1])
                 self.addDir(SERVICE, 'serial-title', tab[i][0], tab[i][0], tab[i][1], imageLink, True, False)
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -88,13 +85,13 @@ class iiTVInfo:
     def showSeason(self, url, fname):
         imageLink = self.getImage(url)
         nUrl = mainUrl + url
-        query_data = { 'url': nUrl, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-	try:
-		data = self.cm.getURLRequestData(query_data)
+        query_data = { 'url': nUrl, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        try:
+	    data = self.cm.getURLRequestData(query_data)
 	except Exception, exception:
-		traceback.print_exc()
-		self.exception.getError(str(exception))
-		exit()
+	    traceback.print_exc()
+	    self.exception.getError(str(exception))
+	    exit()
         match = re.compile('<div class="serial_season">(.+?)</div>').findall(data)
         if len(match) > 0:
             for i in range(len(match)):
@@ -109,18 +106,17 @@ class iiTVInfo:
         nUrl = mainUrl + url
         tTab = title.split(' ')
         num = tTab[1]
-        if float(num) < 10:
-            num = '0' + num
+        if float(num) < 10: num = '0' + num
         s = "s" + str(num)
         log.info("url:" + nUrl)
         log.info("season: " + s)
-        query_data = { 'url': nUrl, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        query_data = { 'url': nUrl, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	try:
-		data = self.cm.getURLRequestData(query_data)
+	    data = self.cm.getURLRequestData(query_data)
 	except Exception, exception:
-		traceback.print_exc()
-		self.exception.getError(str(exception))
-		exit()       
+	    traceback.print_exc()
+	    self.exception.getError(str(exception))
+	    exit()       
         match_parts = re.compile('<a href="(.+?)"><span class="release">(.+?)</span>(.+?)</a>').findall(data)
         if len(match_parts) > 0:
             for i in range(len(match_parts)):
@@ -139,20 +135,19 @@ class iiTVInfo:
         out = []
         for i in range(len(table)):
             value = table[i]
-            #title = value[0].replace('cc', '').replace('com', '').replace('.', '').replace('pl', '').replace('eu', '')
             out.append(value[0])
         return out
 
 
     def getVideoID(self, url):
         videoID = ''
-        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+        query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	try:
-		data = self.cm.getURLRequestData(query_data)
+	    data = self.cm.getURLRequestData(query_data)
 	except Exception, exception:
-		traceback.print_exc()
-		self.exception.getError(str(exception))
-		exit() 
+	    traceback.print_exc()
+	    self.exception.getError(str(exception))
+	    exit() 
         match = re.compile('<input type="hidden" name="(.+?)" value="(.+?)" />').findall(data)
         if len(match) > 0:
             og_ser = ''
@@ -170,16 +165,16 @@ class iiTVInfo:
                 elif match[i][0] == 'og_url':
                     og_url = match[i][1]
                 elif match[i][0] == 'og_coda':
-                    og_code = match[i][1] 
-            values = {'og_ser': og_ser, 'og_sez': og_s, 'og_e': og_e, 'og_url': og_url, 'og_coda': og_code}
-            headers = { 'User-Agent' : HOST }
-            data = urllib.urlencode(values)
-            req = urllib2.Request(watchUrl, data, headers)
-            response = urllib2.urlopen(req)
-            link = response.read()
-            response.close()
-            match_watch = re.compile('<div class="watch_link" id=".+?"> <a href="(.+?)" target="_blank">').findall(link)
-#            match_watch = re.compile('<div class="watch_link" id=".+?"> <a href="(.+?)" target="_blank">http://(.+?)/.+?</a>').findall(link)
+                    og_code = match[i][1]
+            post_data = {'og_ser': og_ser, 'og_sez': og_s, 'og_e': og_e, 'og_url': og_url, 'og_coda': og_code}
+            query_data = {'url': watchUrl, 'use_host': False, 'use_cookie': False, 'use_post': True, 'return_data': True}
+            try:
+                data = self.cm.getURLRequestData(query_data, post_data)
+            except Exception, exception:
+                traceback.print_exc()
+                self.exception.getError(str(exception))
+                exit()                       
+            match_watch = re.compile('<div class="watch_link" id=".+?"> <a href="(.+?)" target="_blank">').findall(data)
             if len(match_watch) > 0:
                 valTab = []
                 strTab = []
@@ -209,12 +204,12 @@ class iiTVInfo:
             liz.setProperty("IsPlayable", "true")
         liz.setInfo( type="Video", infoLabels={ "Title": title } )
         if dstpath != "None" or not dstpath and name == 'playSelectedMovie':
-		if dbg == 'true':
-			log.info('IITVINFO - addDir() -> title: ' + title)
-			log.info('IITVINFO  - addDir() -> url: ' + page)
-			log.info('IITVINFO  - addDir() -> dstpath: ' + os.path.join(dstpath, SERVICE))
-		cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(self.chars.replaceChars(category + ' - ' + title)), 'url': urllib.quote_plus(page), 'path': os.path.join(dstpath, SERVICE) })
-		liz.addContextMenuItems(cm, replaceItems=False)
+	    if dbg == 'true':
+	    	log.info(SERVICE + ' - addDir() -> title: ' + title)
+		log.info(SERVICE + ' - addDir() -> url: ' + page)
+		log.info(SERVICE + ' - addDir() -> dstpath: ' + os.path.join(dstpath, SERVICE))
+	    cm = self.navigation.addVideoContextMenuItems({ 'service': SERVICE, 'title': urllib.quote_plus(self.chars.replaceChars(category + ' - ' + title)), 'url': urllib.quote_plus(page), 'path': os.path.join(dstpath, SERVICE) })
+	    liz.addContextMenuItems(cm, replaceItems=False)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
       
 
@@ -222,7 +217,7 @@ class iiTVInfo:
         ok=True
         if videoUrl == '':
             d = xbmcgui.Dialog()
-            d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+            d.ok('Nie znaleziono streamingu', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas.')
             return False
         thumbnail = xbmc.getInfoImage("ListItem.Thumb")
         liz=xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
@@ -232,7 +227,7 @@ class iiTVInfo:
             xbmcPlayer.play(videoUrl, liz)
         except:
             d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
         return ok
 
     
@@ -262,7 +257,7 @@ class iiTVInfo:
             linkVideo = ''
             ID = ''
             ID = self.getVideoID(nUrl)
-            print str (ID)
+            #print str (ID)
             if (ID!=False):
                 if ID != '':
                     linkVideo = self.up.getVideoLink(ID)
@@ -270,26 +265,25 @@ class iiTVInfo:
                         self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
                 else:
                     d = xbmcgui.Dialog()
-                    d.ok('Brak linku', 'iiTV.info - tymczasowo wyczerpałeś limit ilości uruchamianych seriali.', 'Zapraszamy za godzinę.')
+                    d.ok('Brak linku', SERVICE + ' - tymczasowo wyczerpałeś limit ilości uruchamianych seriali.', 'Zapraszamy za godzinę.')
 
         if service == SERVICE and action == 'download' and url != '':
-                        self.dir.checkDir(os.path.join(dstpath, SERVICE))
-			if dbg == 'true':
-				log.info('IITVINFO  - handleService()[download][0] -> title: ' + urllib.unquote_plus(vtitle))
-				log.info('IITVINFO  - handleService()[download][0] -> url: ' + urllib.unquote_plus(url))
-				log.info('IITVINFO  - handleService()[download][0] -> path: ' + path)	
-			if urllib.unquote_plus(url).startswith('/'):
-				urlTempVideo = self.getVideoID(mainUrl + urllib.unquote_plus(url))
-				linkVideo = self.up.getVideoLink(urlTempVideo)
-				if dbg == 'true':
-					log.info('IITVINFO  - handleService()[download][1] -> title: ' + urllib.unquote_plus(vtitle))
-					log.info('IITVINFO  - handleService()[download][1] -> temp url: ' + urlTempVideo)
-					log.info('IITVINFO  - handleService()[download][1] -> url: ' + linkVideo)							
-				if linkVideo != False:
-					if dbg == 'true':
-						log.info('IITVINFO  - handleService()[download][2] -> title: ' + urllib.unquote_plus(vtitle))
-						log.info('IITVINFO  - handleService()[download][2] -> url: ' + linkVideo)
-						log.info('IITVINFO  - handleService()[download][2] -> path: ' + path)							
-					import downloader
-					dwnl = downloader.Downloader()
-					dwnl.getFile({ 'title': urllib.unquote_plus(vtitle), 'url': linkVideo, 'path': path })
+            self.cm.checkDir(os.path.join(dstpath, SERVICE))
+	    if dbg == 'true':
+		log.info(SERVICE + ' - handleService()[download][0] -> title: ' + urllib.unquote_plus(vtitle))
+		log.info(SERVICE + ' - handleService()[download][0] -> url: ' + urllib.unquote_plus(url))
+		log.info(SERVICE + ' - handleService()[download][0] -> path: ' + path)	
+	    if urllib.unquote_plus(url).startswith('/'):
+		urlTempVideo = self.getVideoID(mainUrl + urllib.unquote_plus(url))
+		linkVideo = self.up.getVideoLink(urlTempVideo)
+		if dbg == 'true':
+		    log.info(SERVICE + ' - handleService()[download][1] -> title: ' + urllib.unquote_plus(vtitle))
+		    log.info(SERVICE + ' - handleService()[download][1] -> temp url: ' + urlTempVideo)
+		    log.info(SERVICE + ' - handleService()[download][1] -> url: ' + linkVideo)							
+		if linkVideo != False:
+		    if dbg == 'true':
+			log.info(SERVICE + ' - handleService()[download][2] -> title: ' + urllib.unquote_plus(vtitle))
+			log.info(SERVICE + ' - handleService()[download][2] -> url: ' + linkVideo)
+			log.info(SERVICE + ' - handleService()[download][2] -> path: ' + path)							
+		    dwnl = downloader.Downloader()
+		    dwnl.getFile({ 'title': urllib.unquote_plus(vtitle), 'url': linkVideo, 'path': path })
