@@ -244,7 +244,12 @@ class Kinomaniak:
 	    traceback.print_exc()
 	    self.exception.getError(str(exception))
 	    exit()
-	match = re.compile('<div id="(?:[a-zA-Z]+[^nl]_[0-9]+)">(.+?)</div>').findall(link)
+	match = re.compile('<div id="([a-zA-Z]+_[0-9]+)">(.+?)</div>').findall(link)
+	matchFiltered = []
+	for i in range(len(match)):
+	    if not re.search('nl_', match[i][0]):
+		matchFiltered.append(match[i][1])
+	match = matchFiltered
 	if len(match) > 0:
 	    for i in range(len(match)):
 		exec 'encodedStr = u"%s".encode("utf-8")' % (match[i].replace("'",''))
