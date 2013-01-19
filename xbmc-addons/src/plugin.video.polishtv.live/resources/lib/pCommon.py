@@ -42,7 +42,7 @@ method getURLRequestData(params):
 import re, os, sys, cookielib, random
 import urllib, urllib2, re, sys, math
 import elementtree.ElementTree as ET
-import xbmcaddon, xbmc
+import xbmcaddon, xbmc, xbmcgui
 import simplejson as json
 
 import pLog
@@ -240,6 +240,23 @@ class common:
 	log.info("host ID: " + str(host_id))
 	host = HOST_TABLE[host_id]
 	return host
+
+    def LOAD_AND_PLAY_VIDEO(self, videoUrl, title):
+        ok=True
+        if videoUrl == '':
+            d = xbmcgui.Dialog()
+            d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+            return False
+        thumbnail = xbmc.getInfoImage("ListItem.Thumb")
+        liz=xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
+        liz.setInfo( type="Video", infoLabels={ "Title": title } )
+        try:
+            xbmcPlayer = xbmc.Player()
+            xbmcPlayer.play(videoUrl, liz)
+        except:
+            d = xbmcgui.Dialog()
+            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+        return ok
 	    
 	    
 	
