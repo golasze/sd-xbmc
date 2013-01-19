@@ -43,8 +43,11 @@ Następnie ta czynność powtarzamy dla reszty stacji.
  
 
 Następnie kopiujemy plik do:
-||Win XP|| {{{\Dane aplikacji\XBMC\addons\script.tvguide\}}}||
+||Win XP|| {{{C:\Documents and Settings\<user name>\Dane aplikacji\XBMC\addons\script.tvguide\}}}||
+||Win7|| {{{C:\Uzytkownicy\<uzytkownik>\AppData\xbmc\addons\script.tvguide\}}}||
 ||AppleTV 2|| {{{/private/var/mobile/Library/Preferences/XBMC/addons/script.tvguide/}}}||
+
+_W systemach Windows, folder {{{Dane Aplikacji}}} jest ukryty._
 
 
 ==Automatyczne pobieranie pliku z programem EPG==
