@@ -182,7 +182,9 @@ class Kinomaniak:
 	strTab = []
 	valTab = []
 	idxTab = []
-	sUrl = url + 'q=' + text
+	if text == None or str(text) == '':
+	    return valTab
+	sUrl = url + 'q=' + str(text)
 	query_data = { 'url': sUrl, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	try:
 	    link = self.cm.getURLRequestData(query_data)
@@ -271,7 +273,6 @@ class Kinomaniak:
 
 	d = xbmcgui.Dialog()
 	item = d.select("Wybór filmu", self.getItemTitles(valTab))
-	print str(item)
 	if item != -1:
 	    videoID = str(valTab[item][1])
 	    log.info('mID: ' + videoID)
@@ -384,7 +385,7 @@ class Kinomaniak:
 
 	if name == 'playSelectedMovie':
 	    url = self.getHostTable(page)
-	    if url !='':
+	    if url != '':
 		linkVideo = self.up.getVideoLink(url)
 		if linkVideo != False:
 		    self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
@@ -392,7 +393,7 @@ class Kinomaniak:
 		    d = xbmcgui.Dialog()
 		    d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
 	    else:
-		exit()
+		self.getSearchTable(self.searchTab(SEARCH_URL, title))
 
 	if service == SERVICE and action == 'download' and link != '':
 	    self.cm.checkDir(os.path.join(dstpath, SERVICE))
