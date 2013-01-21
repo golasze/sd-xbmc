@@ -11,6 +11,7 @@ method getURLRequestData(params):
 	params['use_post'] - True, or False. Use post method.
 	post_data - Post data
 	params['return_data'] - True, or False. Return response read data.
+	params['read_data'] - True, or False. Use when params['return_data'] is False.
 	
 	If you want to get data from url use this method (for default host):
 	data = { 'url': <your url>, 'use_host': False, use_cookie': False, 'use_post': False, 'return_data': True }
@@ -195,10 +196,15 @@ class common:
         else:
             response = urllib2.urlopen(req)
         if not params['return_data']:
-            out_data = response
+        	try:
+	            if params['read_data']:
+	            	out_data = response.read()
+	            else:
+	            	out_data = response
+	        except:
+	        	out_data = response
         if params['return_data']:
-            data = response.read()
-            out_data = data
+            out_data = response.read()
             response.close()
         if params['use_cookie'] and params['save_cookie']:
         	cj.save(params['cookiefile'], ignore_discard = True)

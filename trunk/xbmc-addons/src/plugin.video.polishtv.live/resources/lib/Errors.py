@@ -24,6 +24,7 @@ ERRORS = [
     [ '[Errno 2]', t(55900).encode('utf-8'), t(55906).encode('utf-8') ],
     [ '[Errno 10035]', t(55900).encode('utf-8'), t(55906).encode('utf-8') ],
     [ 'xml.parsers.expat.ExpatError', t(55900).encode('utf-8'), t(55908).encode('utf-8')],
+    [ 'must be string or read-only character buffer', t(55900).encode('utf-8'), t(55909).encode('utf-8') ],
 ]
 
 class Exception:
@@ -49,4 +50,8 @@ class Exception:
                 content1 = ERRORS[i][2]
                 content2 = error
                 break
+            elif (i + 1) == len(ERRORS):
+                title = t(55900).encode('utf-8')
+                content1 = t(55906).encode('utf-8')
+                content2 = error
         d.ok(title, content1, content2)                     
