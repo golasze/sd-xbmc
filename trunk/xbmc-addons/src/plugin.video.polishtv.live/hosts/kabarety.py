@@ -11,7 +11,7 @@ ptv = xbmcaddon.Addon(scriptID)
 BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import pLog, settings, Parser, urlparser, pCommon, Errors, traceback
+import pLog, settings, Parser, pCommon, Errors, traceback
 
 log = pLog.pLog()
 
@@ -61,12 +61,11 @@ class Kabarety:
         log.info('Loading ' + SERVICE)
         self.settings = settings.TVSettings()
         self.parser = Parser.Parser()
-        self.up = urlparser.urlparser()
         self.cm = pCommon.common()
 	self.history = pCommon.history()
 	self.chars = pCommon.Chars()
 	self.exception = Errors.Exception()
-	self.dir = pCommon.common()
+
 
     def setTable(self):
 	return SERVICE_MENU_TABLE
