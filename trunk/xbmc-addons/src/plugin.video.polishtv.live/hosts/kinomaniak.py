@@ -246,7 +246,7 @@ class Kinomaniak:
 	    traceback.print_exc()
 	    self.exception.getError(str(exception))
 	    exit()
-	match = re.compile('<div id="(?:[a-zA-Z]+(?:_)?[0-9]+)">(.+?)</div>').findall(link)
+	match = re.compile('<div id=".*">([\\\\x0-9a-f\']+)</div>').findall(link)
 	matchFiltered = []
 	for i in range(len(match)):
 	    exec 'decodedStr = u"%s".encode("utf-8")' % (match[i].replace("'",''))
