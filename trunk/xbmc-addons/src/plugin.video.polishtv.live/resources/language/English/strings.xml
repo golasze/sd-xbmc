@@ -26,6 +26,9 @@
     <string id="55011">Enable record question</string>
     <string id="55012">Channels</string>
     <string id="55013">Sort channels by</string>
+    <string id="55014">Login requied</string>
+    <string id="55015">Enter to weeb.tv website to registry,</string>
+    <string id="55016">then set your username and password to settings.</string>
     
     <!-- TVN settings -->
     <string id="55200">TVN</string>
@@ -103,7 +106,6 @@
     <string id="55906">Description:</string>
     <string id="55907">Couldn't open url. Time out!</string>
     <string id="55908">Can not parse XML file.</string>
-    <string id="55909">Value is not a string.</string>
     
     <!-- Maxvideo settings -->
     <string id="56000">Maxvideo</string>
