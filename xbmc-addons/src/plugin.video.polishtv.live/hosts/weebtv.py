@@ -9,6 +9,7 @@ import time
 import traceback
 
 scriptID = 'plugin.video.polishtv.live'
+t = sys.modules[ "__main__" ].language
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
@@ -87,6 +88,11 @@ class Channels:
 		return outTab
 	
 	def API(self, url):
+            if login == "" or password == "":
+                d = xbmcgui.Dialog()
+                d.ok(t(55014).encode("utf-8"), t(55015).encode("utf-8"), t(55016).encode("utf-8"))
+                exit()
+            else:
 		query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
 		res = { "0": "Null" }
 		try:

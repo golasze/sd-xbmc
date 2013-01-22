@@ -26,6 +26,9 @@
     <string id="55011">Włącz pytanie o nagranie</string>
     <string id="55012">Kanaly</string>
     <string id="55013">Sortuj wedlug</string>
+    <string id="55014">Wymagane logowanie</string>
+    <string id="55015">Wejdź na stronę weeb.tv aby się zarejestrować,</string>
+    <string id="55016">a później ustaw użytkownika i hasło w ustawieniach.</string>
     
     <!-- TVN settings -->
     <string id="55200">TVN</string>
@@ -103,7 +106,6 @@
     <string id="55906">Opis:</string>
     <string id="55907">Nie można otworzyć linku. Czas został przekroczony!</string>
     <string id="55908">Nie można odczytać pliku XML.</string>
-    <string id="55909">Wartość nie jest typem string.</string>
     
     <!-- Maxvideo settings -->
     <string id="56000">Maxvideo</string>
