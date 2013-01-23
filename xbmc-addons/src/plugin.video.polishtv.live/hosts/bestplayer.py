@@ -130,8 +130,8 @@ class BestPlayer:
 	    traceback.print_exc()
 	    self.exception.getError(str(exception))
 	    exit()
-        tabURL = data.replace('</div>', '').replace('<div class="fr" style="width:475px; margin-right:10px; margin-top:10px">', '').replace('&amp;', '').replace('quot;', '').replace('&amp;quot;', '')
-        match = re.compile('<a href="(.+?)" title=""><img src="(.+?)" width.+?/></a>\n.+?<div style.+?star.png" />\n.+?<div>Opini:.+?\n.+?\n.+?\n.+?<h2><a href=".+?">(.+?)</a></h2>\n.+?Kategorie:.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc" >(.+?)\n.+?').findall(tabURL)
+        tabURL = data.replace('</div>', '').replace('<div class="fr" style="width:515px; margin-right:10px; margin-top:10px">', '').replace('&amp;', '').replace('quot;', '').replace('&amp;quot;', '')
+        match = re.compile('<a href="(.+?)" title=""><img src="(.+?)" height.+?/></a>\n.+?<div style.+?star.png" />\n.+?<div>Ocena:.+?\n.+?\n.+?\n.+?<h2><a href=".+?">(.+?)</a></h2>\n.+?Kategorie:.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc" style="min-height: 70px;">(.+?)\n.+?').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
                 #isPlayable needs to be set to False in order to play
