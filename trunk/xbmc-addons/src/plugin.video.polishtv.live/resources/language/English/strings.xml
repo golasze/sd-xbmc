@@ -106,6 +106,7 @@
     <string id="55906">Description:</string>
     <string id="55907">Couldn't open url. Time out!</string>
     <string id="55908">Can not parse XML file.</string>
+    <string id="55909">Value is not a string.</string>
     
     <!-- Maxvideo settings -->
     <string id="56000">Maxvideo</string>
