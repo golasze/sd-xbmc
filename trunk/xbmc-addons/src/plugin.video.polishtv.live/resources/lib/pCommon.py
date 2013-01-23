@@ -109,47 +109,6 @@ class common:
     def __init__(self):
         pass
     
-#    def requestData(self, url):
-#        req = urllib2.Request(url)
-#        req.add_header('User-Agent', self.getRandomHost())
-#        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-#        response = opener.open(req)
-#        data = response.read()
-#        response.close()    
-#        return data
-    
-#    def getURLFromFileCookieData(self, url, COOKIEFILE):
-#        cj.load(COOKIEFILE)
-#        req = urllib2.Request(url)
-#        req.add_header('User-Agent', HOST)
-#        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-#        response = opener.open(req)
-#        data = response.read()
-#        response.close()    
-#        return data
-
-#    def postURLFromFileCookieData(self, url, COOKIEFILE, POST = {}):
-#        cj.load(COOKIEFILE)
-#        headers = { 'User-Agent' : HOST }
-#        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-#        dataPost = urllib.urlencode(POST)
-#        req = urllib2.Request(url, dataPost, headers)
-#        response = opener.open(req)
-#        data = response.read()
-#        response.close()
-#        return data
-    
-#    def saveURLToFileCookieData(self, url, COOKIEFILE, POST = {}):
-#        headers = { 'User-Agent' : HOST }
-#        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-#        dataPost = urllib.urlencode(POST)
-#        req = urllib2.Request(url, dataPost, headers)
-#        response = opener.open(req)
-#        data = response.read()
-#        response.close()
-#        cj.save(COOKIEFILE)
-#        return data
-
     
     def getCookieItem(self, cookiefile, item):
 	ret = ''
