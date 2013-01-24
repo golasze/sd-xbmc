@@ -6,7 +6,7 @@ import elementtree.ElementTree as ET
 
 import traceback
 
-import pLog, settings, Parser, Navigation, pCommon, Errors
+import pLog, settings, Parser, Navigation, pCommon, Errors, smth
 
 log = pLog.pLog()
 HANDLE = int(sys.argv[1])
@@ -20,6 +20,7 @@ sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
 SERVICE = 'hbogo'
 userAgent = 'Apache-HttpClient/UNAVAILABLE (java 1.4)'
+TMP = os.path.join( ptv.getAddonInfo('path'), "smth" )
 
 webUrl = 'http://www.hbogo.pl'
 plapiUrl = 'http://plapi.hbogo.eu'
@@ -38,6 +39,10 @@ class Movies:
     def __init__(self):
         self.common = pCommon.common()
         self.chars = pCommon.Chars()
+        self.manifest_path = os.path.join(TMP, 'manifest')
+        self.exception = Errors.Exception()
+        self.smt = smth.SMTH()
+        self.sm = smth.Manifest()
 
     def enc(self, string):
         json_ustr = json.dumps(string, ensure_ascii=False)
@@ -165,11 +170,77 @@ class Movies:
             log.info("HBOGO - infoMovie() -> desc: " + desc)
             log.info("HBOGO - infoMovie() -> name: " + str(name))
             log.info("HBOGO - infoMovie() -> n_url: " + str(n_url))
-        self.addDir(SERVICE, 'playedSelectedMovie', 'PLAY: ' + name, img, desc, n_url)
+        self.addDir(SERVICE, 'playSelectedMovie', 'PLAY: ' + name, img, desc, n_url)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
-    def getMovieInformation(self, url):
-        api = self.hbogoAPI(url, 'get', False, False)
+    def getMovieInformationAndPlay(self, url):
+        url = 'http://mediadl.microsoft.com/mediadl/iisnet/smoothmedia/Experience/BigBuckBunny_720p.ism/Manifest'
+        query_data = { 'url': url, 'use_host': True, 'host': userAgent, 'use_cookie': False, 'use_post': False, 'return_data': False, 'read_data': True }
+        try:
+            response = self.common.getURLRequestData(query_data)
+            self.saveTmpManifest(response)
+        except Exception, exception:
+            traceback.print_exc()
+            self.exception.getError(str(exception))
+            exit()
+        version = self.sm.getVersion(self.manifest_path)
+        quality = self.sm.getQualityLevel(self.manifest_path)
+        if dbg == 'true':
+            #xbmc.log('HBOGO - getMovieInformation() -> manifest: ' + response)
+            log.info('HBOGO - getMovieInformation() -> video: ' + str(quality['video']))
+            log.info('HBOGO - getMovieInformation() -> audio: ' + str(quality['audio']))
+        d = xbmcgui.Dialog()
+        video_menu = d.select("Wybór jakości video", self.sm.createChooseMenuTab(quality['video']))
+        video_value = self.sm.getValueFromMenuTab(video_menu, quality['video'])
+        if dbg == "true":
+            log.info('HBOGO - getMovieInformation() -> video_value: ' + str(video_value))
+        audio_menu = d.select("Wybór ścieżki audio", self.sm.createChooseMenuTab(quality['audio']))
+        audio_value = self.sm.getValueFromMenuTab(audio_menu, quality['audio'])
+        if dbg == "true":
+            log.info('HBOGO - getMovieInformation() -> audio_value: ' + str(audio_value))
+        if video_menu != "" and audio_menu != "":
+            a_method = ""
+            v_method = video_value['fourcc'].upper()
+            v_codec_data = video_value['codec_private_data']
+            a_wave_format = audio_value['wave_format_ex']
+            a_sample = audio_value['sample_rate']
+            base_url = url[:-8]
+            v_bitrate = video_value['bitrate']
+            a_bitrate = audio_value['bitrate']
+            v_url = video_value['url_name']
+            a_url = audio_value['url_name']
+            timestamps = self.sm.Timestamps(self.manifest_path)
+            args = {
+                'v_timestamps': timestamps['v_timestamps'],
+                'a_timestamps': timestamps['a_timestamps'],
+                'base_url': base_url,
+                'v_bitrate': v_bitrate,
+                'a_bitrate': a_bitrate,
+                'v_url': v_url,
+                'a_url': a_url,
+                'v_method': v_method,
+                'a_method': a_method
+            }
+            if version == "1":
+                a_method = audio_value['subtype'].upper()
+            elif version == "2":
+                a_method = audio_value['fourcc'].upper()
+            self.smt.initialize(v_method, a_method, v_codec_data, a_wave_format, a_sample)
+            v_chunk = url[:-8] + video_value['url_name'].replace("{bitrate}", video_value['bitrate']).replace("{start time}", "0")
+            a_chunk = url[:-8] + audio_value['url_name'].replace("{bitrate}", audio_value['bitrate']).replace("{start time}", "0")
+            if dbg == 'true':
+                log.info('HBOGO - getMovieInformation() -> v_chunk url: ' + str(v_chunk))
+                log.info('HBOGO - getMovieInformation() -> a_chunk url: ' + str(a_chunk))
+            self.smt.download_chunk(v_chunk, a_chunk, v_method, a_method)
+            smtd = smth.DownloadAVChunks(args)
+            smtd.start()
+            #log.info('wave_format_ex: ' + str(smt.calc_wave_format_ex(audio_value)))
+
+    def saveTmpManifest(self, response):
+        self.common.checkDir(TMP)
+        f = open(self.manifest_path, "w")
+        f.write(response)
+        f.close()
 
     def getIdFromURL(self, url):
         return url.split("/")[5]
@@ -229,4 +300,4 @@ class HBOGO:
                 self.movie.infoMovie(url)
             
         if type == 'playSelectedMovie' and url.startswith("http://"):
-            pass
+            self.movie.getMovieInformationAndPlay(url)
