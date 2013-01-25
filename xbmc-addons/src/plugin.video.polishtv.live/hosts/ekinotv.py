@@ -37,7 +37,6 @@ if username=='' or password=='':
 else:
     pr = '?premium&player=1'
 
-
 SERVICE_MENU_TABLE =  {1: "Filmy [wg. gatunków]",
                        2: "Filmy [lektor]",
                        3: "Filmy [napisy]",
@@ -420,13 +419,15 @@ class EkinoTV:
 	if str(page)=='None' or page=='': page = 0
 
 	if sortby=='ocena':
-          sSort = 'sort_field=ocena&sort_method='
+          sSort = '?sort_field=ocena&sort_method='
         if sortby=='popularnosc':
-          sSort = 'sort_field=odslony&sort_method='
+          sSort = '?sort_field=odslony&sort_method='
         if sortby=='data dodania':
-          sSort = 'sort_field=data-dodania&sort_method='
+          sSort = '?sort_field=data-dodania&sort_method='
         if sortby=='tytul':
-          sSort = 'sort_field=alfabetycznie&sort_method='
+          sSort = '?sort_field=alfabetycznie&sort_method='
+        if sortby=='data premiery':
+          sSort = '?sort_field=data-premiery&sort_method='
 
 	if quality=='wszystkie':
           sQua = 'wszystkie'
@@ -451,23 +452,23 @@ class EkinoTV:
 	    self.listsCategoriesMenu(MAINURL + '/kategorie.html', category)	    
 	#lektor
 	elif category == self.setTable()[2]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',lektor,' + sQua + ',.html' + sSort + sHow
+            url = MAINURL + '/kategorie' + ',' + str(page) + ',lektor,' + sQua + ',1900-2013,.html' + sSort + sHow
 	    self.getFilmTable(url, category, page)	
-	#napisy
+	#napisy    http://www.ekino.tv/kategorie,0,napisy,wszystkie,1900-2013,.html?sort_field=alfabetycznie&sort_method=asc
 	elif category == self.setTable()[3]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',napisy,' + sQua + ',.html' + sSort + sHow           
+            url = MAINURL + '/kategorie' + ',' + str(page) + ',napisy,' + sQua + ',1900-2013,.html' + sSort + sHow           
 	    self.getFilmTable(url, category, page)
 	#dubbing
 	elif category == self.setTable()[4]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',dubbing,' + sQua + ',.html' + sSort + sHow           
+            url = MAINURL + '/kategorie' + ',' + str(page) + ',dubbing,' + sQua + ',1900-2013,.html' + sSort + sHow           
 	    self.getFilmTable(url, category, page)
 	#PL
 	elif category == self.setTable()[5]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',polskie,' + sQua + ',.html' + sSort + sHow            
+            url = MAINURL + '/kategorie' + ',' + str(page) + ',polskie,' + sQua + ',1900-2013,.html' + sSort + sHow            
 	    self.getFilmTable(url, category, page)
 	#najpopularniejsze
 	elif category == self.setTable()[6]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',wszystkie,wszystkie,.html?sort_field=odslony&sort_method=' + sHow
+            url = MAINURL + '/kategorie' + ',' + str(page) + ',wszystkie,wszystkie,1900-2013,.html?sort_field=odslony&sort_method=' + sHow
 	    self.getFilmTable(url, category, page)		
 	#seriale
 	elif category == self.setTable()[7]:
@@ -484,7 +485,7 @@ class EkinoTV:
 	
 	#lista tytulow
 	if name == 'category':
-            url = MAINURL + '/' + category + ',' + str(page) + ',wszystkie,wszystkie,.html?' + sSort + sHow
+            url = MAINURL + '/' + category + ',' + str(page) + ',wszystkie,wszystkie,1900-2013,.html' + sSort + sHow
             self.getFilmTable(url, category, page)
 
 	#lista seriali
