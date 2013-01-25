@@ -115,4 +115,10 @@
     <string id="56002">Użytkownik:</string>
     <string id="56003">Hasło:</string>
     <string id="56004">Wyswietl powiadomienia</string>
+    
+    <!-- HD3D settings -->
+    <string id="56100">HD3D</string>
+    <string id="56101">Ustawienia główne</string>
+    <string id="56102">Użytkownik:</string>
+    <string id="56103">Hasło:</string>
 </strings>
