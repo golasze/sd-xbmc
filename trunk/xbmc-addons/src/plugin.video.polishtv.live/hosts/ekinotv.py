@@ -111,7 +111,7 @@ class EkinoTV:
 		exit()
         r = re.compile('<ul class="videosCategories">(.+?)<span>Wersja</span>', re.DOTALL).findall(data)    
         if len(r)>0:
-          r2 = re.compile('<a href="(.+?).html">(.+?)</a>').findall(r[0])
+          r2 = re.compile('<a href="(.+?),0,lektor,srednia-jakosc.html">(.+?)</a>').findall(r[0])
           if len(r2)>0:
               for i in range(len(r2)):
                   value = r2[i]
@@ -327,13 +327,11 @@ class EkinoTV:
 		self.exception.getError(str(exception))
 		exit()
 	link = data.replace('<div class="s-quality_mid"></div>', '').replace('<div class="s-quality_low"></div>', '').replace('<div class="s-quality_high"></div>', '')
-	match = re.compile('<li class.+?><a href="(.+)">(.+?)</a></li>').findall(link) 
-	if len(match) == 0:
-            return False
-        else:
+	match = re.compile('<li class.+?><a href="(.+)player(.+?)">(.+?)</a></li>').findall(link) 
+	if len(match) > 0:
             for i in range(len(match)):
-                links = MAINURL + '/' + match[i][0]
-                valTab.append(self.setLinkTable(links, match[i][1]))
+                links = MAINURL + '/' + match[i][0] + 'player' + match[i][1]
+                valTab.append(self.setLinkTable(links, match[i][2]))
             valTab.sort(key = lambda x: x[0])	
             d = xbmcgui.Dialog()
             item = d.select("Wybór hostingu", self.getItemTitles(valTab))
@@ -342,7 +340,10 @@ class EkinoTV:
                 videoID = str(valTab[item][0])
                 log.info('mID: ' + videoID)
             return videoID
-            
+        else:
+            d = xbmcgui.Dialog()
+            d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
+            exit()
 
     def getLinkTable(self,url):
 	linkVideo = ''
@@ -454,7 +455,7 @@ class EkinoTV:
 	elif category == self.setTable()[2]:
             url = MAINURL + '/kategorie' + ',' + str(page) + ',lektor,' + sQua + ',1900-2013,.html' + sSort + sHow
 	    self.getFilmTable(url, category, page)	
-	#napisy    http://www.ekino.tv/kategorie,0,napisy,wszystkie,1900-2013,.html?sort_field=alfabetycznie&sort_method=asc
+	#napisy 
 	elif category == self.setTable()[3]:
             url = MAINURL + '/kategorie' + ',' + str(page) + ',napisy,' + sQua + ',1900-2013,.html' + sSort + sHow           
 	    self.getFilmTable(url, category, page)
@@ -483,7 +484,7 @@ class EkinoTV:
 	if category == 'history' and name != 'playSelectedMovie':
 	    self.getSearchTable(self.searchTab(SURL, name))             
 	
-	#lista tytulow
+	#lista tytulow 
 	if name == 'category':
             url = MAINURL + '/' + category + ',' + str(page) + ',wszystkie,wszystkie,1900-2013,.html' + sSort + sHow
             self.getFilmTable(url, category, page)
@@ -502,13 +503,8 @@ class EkinoTV:
             self.getPlayTable(url, category, title, page)
 	    	    
         if name == 'playSelectedMovie':
-            if username=='' or password=='':
-                videoID = self.getHostingTable(page)
-                if videoID != False:                  
-                    linkVideo = self.up.getVideoLink(self.getLinkTable(videoID))
-                else:
-                    d = xbmcgui.Dialog()
-                    d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')                    
+            if username=='' or password=='':               
+                linkVideo = self.up.getVideoLink(self.getLinkTable(self.getHostingTable(page)))                    
             else: 
                 linkVideo = self.getHostTable(page)
             if linkVideo != False:
