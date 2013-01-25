@@ -124,6 +124,8 @@ class urlparser:
         nUrl = self.parserRAPIDVIDEO(url)
     if host== 'www.videoslasher.com':
         nUrl = self.parserVIDEOSLASHER(url)
+    if host== 'www.megustavid.com':
+        nUrl = self.parserMEGUSTAVID(url)
 
 	
     return nUrl
@@ -449,6 +451,20 @@ class urlparser:
 	return False
     else:
       return False
+
+  def parserMEGUSTAVID(self, url):
+      query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+      link = self.cm.getURLRequestData(query_data)
+      match_key = re.compile('key=(.+?)&jsid').findall(link)
+      if len(match_key) > 0:
+          get_api_url = ('http://megustavid.com/media/nuevo/player/playlist.php?id=%s') % (match_key[0])
+	  query_data = { 'url': get_api_url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	  link_api = self.cm.getURLRequestData(query_data)
+          match_url = re.compile('<file>(.+?)</file>').findall(link_api)
+          if len(match_url) > 0:
+              return match_url[0]
+          else:
+              return False
 
 
 
