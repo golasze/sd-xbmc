@@ -111,7 +111,7 @@ class EkinoTV:
 		exit()
         r = re.compile('<ul class="videosCategories">(.+?)<span>Wersja</span>', re.DOTALL).findall(data)    
         if len(r)>0:
-          r2 = re.compile('<a href="(.+?),0,lektor,srednia-jakosc.html">(.+?)</a>').findall(r[0])
+          r2 = re.compile('<a href="(.+?),0,lektor,.+?.html">(.+?)</a>').findall(r[0])
           if len(r2)>0:
               for i in range(len(r2)):
                   value = r2[i]

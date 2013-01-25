@@ -96,7 +96,7 @@ class urlparser:
         nUrl = self.parserPUTLOCKER(url)
     if host == 'www.sockshare.com':
         nUrl = self.parserSOCKSHARE(url)
-    if host == 'megustavid.com':
+    if host == 'megustavid.com' or host == 'www.megustavid.com':
         nUrl = self.parserMEGUSTAVID(url)
     if host == 'hd3d.cc':
         nUrl = self.parserHD3D(url)
@@ -123,16 +123,8 @@ class urlparser:
     if host== 'www.rapidvideo.com':
         nUrl = self.parserRAPIDVIDEO(url)
     if host== 'www.videoslasher.com':
-        nUrl = self.parserVIDEOSLASHER(url)
-    if host== 'www.megustavid.com':
-        nUrl = self.parserMEGUSTAVID(url)
-
-	
+        nUrl = self.parserVIDEOSLASHER(url)	
     return nUrl
-
-#nUrl - "" ; brak obslugi hosta
-#nUrl - False ; broken parser, cos sie pewnie zmienilo
-#nUrl - "http:...." ; link do streamu
 
 
   def parserPUTLOCKER(self,url):
@@ -188,7 +180,15 @@ class urlparser:
 
 
   def parserHD3D(self,url):
-    query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+    username = ptv.getSetting('hd3d_login')
+    password = ptv.getSetting('hd3d_password')
+    urlL = 'http://hd3d.cc/login.html'
+    self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
+    self.COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "hd3d.cookie"
+    query_dataL = { 'url': urlL, 'use_host': True, 'host': HOST, 'use_cookie': True, 'save_cookie': True, 'load_cookie': False, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
+    postdata = {'user_login': username, 'user_password': password}
+    data = self.cm.getURLRequestData(query_dataL, postdata)
+    query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': True, 'save_cookie': False, 'load_cookie': True, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
     link = self.cm.getURLRequestData(query_data)
     if DEBUG: log.info(link)
     match = re.compile("""url: ["'](.+?)["'],.+?provider:""").findall(link)
@@ -258,7 +258,6 @@ class urlparser:
     query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
     link = self.cm.getURLRequestData(query_data)
     if DEBUG: log.info(link)
-    #<iframe src="http://dwn.so/player/embed.php?v=DS301459CC&width=850&height=440"
     match = re.search("""<iframe src="(.+?)&""",link)
     if match:
       query_data = { 'url': match.group(1), 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
@@ -278,14 +277,11 @@ class urlparser:
     query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
     link = self.cm.getURLRequestData(query_data)
     if DEBUG: log.info(link)
-    #c.value="9ee163b21f5b018544e977cf1fe87569231e4816";
     c = re.search("""c.value="(.+?)";""",link)
-    #log.info("match: " +str(c.group(1)))
     if c:
       cval = c.group(1)   
     else: 
       return False    
-    #<input type="hidden" value="148184646935bc200ed80035c2d16304" class="textbox" name="9ee163b21f5b018544e977cf1fe87569231e4816"
     match = re.compile("""<input type=['"]hidden['"] value=['"](.+?)['"].+?name=['"](.+?)['"]""").findall(link)
     if len(match) > 0:
       postdata = {};
@@ -300,9 +296,7 @@ class urlparser:
       query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': True, 'save_cookie': True, 'load_cookie': False, 'cookiefile': self.COOKIEFILE, 'use_post': True, 'return_data': True }
       link = self.cm.getURLRequestData(query_data, postdata)
       if DEBUG: log.info(link)
-      #<video src="http://r012.wootly.ch/v/01/d6f5ec9acce1bf5c370fac5cb401fe02c30ee4fc.mp4" 
       match = re.search("""<video.*\n.*src=['"](.+?)['"]""",link)
-      #log.info("match: " +str(match.group(1)))
       if match:
         if DEBUG: log.info("final link: " + match.group(1))
         return match.group(1)
@@ -315,7 +309,6 @@ class urlparser:
   def parserMAXVIDEO(self, url):
       self.api = maxvideo.API()
       
-      #addon settings
       self.servset = sets.getSettings('maxvideo')
       if self.servset['maxvideo_notify'] == 'true': notify = True
       else: notify = False
@@ -341,7 +334,6 @@ class urlparser:
     if len(match_domain) > 0 and len(match_file) > 0 and len(match_filekey) > 0:
         get_api_url = ('%s/api/player.api.php?user=undefined&codes=1&file=%s&pass=undefined&key=%s') % (match_domain[0], match_file[0], match_filekey[0])
         link_api = { 'url': get_api_url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
-	#link_api = self.requestData(get_api_url)
         if 'url' in link_api:
               parser = Parser.Parser()
               params = parser.getParams(link_api)
@@ -361,7 +353,6 @@ class urlparser:
       if len(match_file) > 0 and len(match_key) > 0:
           get_api_url = ('http://www.novamov.com/api/player.api.php?key=%s&user=undefined&codes=1&pass=undefined&file=%s') % (match_key[0], match_file[0])
 	  link_api = link_api = { 'url': get_api_url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
-	  #link_api = self.requestData(get_api_url)
           match_url = re.compile('url=(.+?)&title').findall(link_api)
           if len(match_url) > 0:
               return match_url[0]
@@ -437,12 +428,10 @@ class urlparser:
     if len(match)>0:
       query_data = { 'url': 'http://www.videoslasher.com//playlist/' + match[0], 'use_host': False, 'use_cookie': True, 'save_cookie': False, 'load_cookie': True, 'cookiefile': self.COOKIEFILE,  'use_post': True, 'return_data': True }
       data = self.cm.getURLRequestData(query_data)
-      #url="http://proxy4.videoslasher.com/free/Y/YR/YRW6OFQAPDWA.flv?h=XekQ5nvD9Ub6jJ7kMLlgaw&e=1357989166"
       match = re.compile('<title>Video</title><media:content url="(.+?)"').findall(data)
       if len(match)>0:
 	sid = self.cm.getCookieItem(self.COOKIEFILE,'authsid')
 	if sid != '':
-	  #Cookie="authsid=08jv4vdln1ocd22do043r91vg4"
 	  streamUrl = match[0] + '|Cookie="authsid=' + sid + '"'
 	  return streamUrl	
 	else:
@@ -452,19 +441,6 @@ class urlparser:
     else:
       return False
 
-  def parserMEGUSTAVID(self, url):
-      query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-      link = self.cm.getURLRequestData(query_data)
-      match_key = re.compile('key=(.+?)&jsid').findall(link)
-      if len(match_key) > 0:
-          get_api_url = ('http://megustavid.com/media/nuevo/player/playlist.php?id=%s') % (match_key[0])
-	  query_data = { 'url': get_api_url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-	  link_api = self.cm.getURLRequestData(query_data)
-          match_url = re.compile('<file>(.+?)</file>').findall(link_api)
-          if len(match_url) > 0:
-              return match_url[0]
-          else:
-              return False
 
 
 

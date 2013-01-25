@@ -72,4 +72,9 @@
 		<setting id="maxvideo_password" type="text" label="56003" option="hidden" default="" />
 		<setting id="maxvideo_notify" type="bool" label="56004" default="false" />		
 	</category>
+		<category label="56100">
+		<setting type="lsep" label="56101" />
+		<setting id="hd3d_login" type="text" label="56102" default="" />
+		<setting id="hd3d_password" type="text" label="56103" option="hidden" default="" />		
+	</category>
 </settings>
