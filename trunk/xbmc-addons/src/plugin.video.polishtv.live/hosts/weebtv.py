@@ -119,6 +119,8 @@ class Channels:
 						cid = row['cid']
 						name = self.dec(row['channel_name']).replace("\"", "")
 						title = self.dec(row['channel_title']).replace("\"", "")
+						if title == "":
+							title = name;
 						desc = self.dec(row['channel_description']).replace("\"", "")
 						tags = self.dec(row['channel_tags']).replace("\"", "")
 						img = row['channel_image']
