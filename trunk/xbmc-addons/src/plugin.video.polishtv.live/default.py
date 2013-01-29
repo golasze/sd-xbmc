@@ -172,12 +172,12 @@ class PolishLiveTV:
 
   def CATEGORIES(self):
 
-        self.addDir("Telewizja", 1, False, False, False)
-        self.addDir("Filmy, Seriale", 2, False, False, False)
-        self.addDir("Rozrywka", 4, False, False, False)
-        self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, False, False)
-        self.addDir('Informacje o serwisach', 21, True, False, False)
-        self.addDir('Ustawienia', 20, True, False, False)
+        self.addDir("Telewizja", 1, False, 'telewizja', False)
+        self.addDir("Filmy, Seriale", 2, False, 'film', False)
+        self.addDir("Rozrywka", 4, False, 'rozrywka', False)
+        self.addDir('Zarządzanie nagrywaniem/ściąganiem', 19, False, 'nagrywanie', False)
+        self.addDir('Informacje o serwisach', 21, True, 'info', False)
+        self.addDir('Ustawienia', 20, True, 'ustawienia', False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
