@@ -13,6 +13,7 @@ BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "../resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + "ekinotv.cookie"
 LOGOURL = ptv.getAddonInfo('path') + os.path.sep + "images" + os.path.sep + "ekinotv.png"
+NEXTURL = ptv.getAddonInfo('path') + os.path.sep + "images" + os.path.sep + "next.png"
 
 import pLog, settings, Parser, urlparser, pCommon, Navigation, Errors, downloader
 
@@ -29,8 +30,10 @@ dbg = ptv.getSetting('default_debug')
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 SERVICE = 'ekinotv'
-MAINURL = 'http://www.ekino.tv'
-MAINURLS = 'http://www.ekino.tv/seriale-online.html'
+MAINURL = 'http://www.ekino.tv/'
+MAINURLSE = 'http://www.ekino.tv/seriale-online.html'
+MAINURLSR = 'http://www.ekino.tv/szukaj-wszystko,'
+POPULAR = ',wszystkie,wszystkie,1900-2013,.html?sort_field=odslony&sort_method=desc'
 
 if username=='' or password=='':
     pr = ''
@@ -44,8 +47,8 @@ SERVICE_MENU_TABLE =  {1: "Filmy [wg. gatunków]",
                        5: "Filmy [polskie]",
                        6: "Filmy [najpopularniejsze]",
                        7: "Seriale",
-                       8: "Wyszukaj - chwilowo nieczynne",
-                       9: "Historia Wyszukiwania - chwilowo nieczynne"
+                       8: "Wyszukaj",
+                       9: "Historia Wyszukiwania"
                        }
 
 class EkinoTV:
@@ -66,7 +69,7 @@ class EkinoTV:
         if username=='' or password=='':
             xbmc.executebuiltin("XBMC.Notification(Niezalogowany, uzywam Player z limitami,2000)")
         else:
-            url = MAINURL + "/logowanie.html"
+            url = MAINURL + "logowanie.html"
             self.cm.checkDir(ptv.getAddonInfo('path') + os.path.sep + "cookies")
             query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': True, 'save_cookie': True, 'load_cookie': False, 'cookiefile': COOKIEFILE, 'use_post': True, 'return_data': True }
             postdata = { 'form_login_username': username, 'form_login_password': password }
@@ -111,7 +114,7 @@ class EkinoTV:
 		exit()
         r = re.compile('<ul class="videosCategories">(.+?)<span>Wersja</span>', re.DOTALL).findall(data)    
         if len(r)>0:
-          r2 = re.compile('<a href="(.+?),0,lektor,.+?.html">(.+?)</a>').findall(r[0])
+          r2 = re.compile('<a href="(.+?).html">(.+?)</a>').findall(r[0])
           if len(r2)>0:
               for i in range(len(r2)):
                   value = r2[i]
@@ -171,7 +174,7 @@ class EkinoTV:
 		self.addDir(SERVICE, 'playSelectedMovie', '', title, '', MAINURL + '/' + value[1] + pr, img, True, False)
 	    else:
 		page = str(int(page) + 1)
-		self.addDir(SERVICE, 'category', category, value[2], '', page, '', True, False) 
+		self.addDir(SERVICE, 'category', category, value[2], '', page, NEXTURL, True, False) 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def getAlfTab(self,url):   
@@ -242,10 +245,10 @@ class EkinoTV:
 	    title = value[2]
 	    img = value[0].replace('_small', '')
 	    if value[2] != 'Następna strona':
-		self.addDir(SERVICE, 'sezon', MAINURL + '/' + value[1], title, '', img, img, True, False)
+		self.addDir(SERVICE, 'sezon', MAINURL + value[1], title, '', img, img, True, False)
 	    else:
 		page = str(int(page) + 1)
-		self.addDir(SERVICE, 'serial', category, value[2], '', page, '', True, False) 
+		self.addDir(SERVICE, 'serial', category, value[2], '', page, NEXTURL, True, False) 
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def getSezonTable(self,url,category,img):
@@ -279,7 +282,7 @@ class EkinoTV:
           if len(r2)>0:
               for i in range(len(r2)):
                   t = 's' + s + 'e' + r2[i][1] + ' - ' + r2[i][2].replace('  ', '')
-                  l = MAINURL + '/' + r2[i][0] + 'epizod,' + r2[i][1] + '.html' + pr
+                  l = MAINURL + r2[i][0] + 'epizod,' + r2[i][1] + '.html' + pr
                   self.addDir(SERVICE, 'playSelectedMovie', '', t, '', l, img, True, False)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
@@ -307,14 +310,15 @@ class EkinoTV:
 		traceback.print_exc()
 		self.exception.getError(str(exception))
 		exit()
-        if username=='' or password=='':
-            match = re.compile('<a href="(.+?)">(.+?)<div class="').findall(data)
-        else:
-            match = re.compile("""url: '(.+?)'""").findall(data)
+        match = re.compile("""url: '(.+?)'""").findall(data)
 	if len(match) > 0:
             linkVideo = match[0]
             log.info("final link: " + linkVideo)
-        return linkVideo
+            return linkVideo
+        else:
+            d = xbmcgui.Dialog()
+            d.ok(SERVICE + ' - przepraszamy', 'Player premium jest teraz niedostępny.', 'Spróbuj później lub kup konto premium.')
+            exit()
 
     def getHostingTable(self,url):
 	valTab = []
@@ -330,7 +334,7 @@ class EkinoTV:
 	match = re.compile('<li class.+?><a href="(.+)player(.+?)">(.+?)</a></li>').findall(link) 
 	if len(match) > 0:
             for i in range(len(match)):
-                links = MAINURL + '/' + match[i][0] + 'player' + match[i][1]
+                links = MAINURL + match[i][0] + 'player' + match[i][1]
                 valTab.append(self.setLinkTable(links, match[i][2]))
             valTab.sort(key = lambda x: x[0])	
             d = xbmcgui.Dialog()
@@ -342,7 +346,7 @@ class EkinoTV:
             return videoID
         else:
             d = xbmcgui.Dialog()
-            d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
+            d.ok('Brak hostingu', SERVICE + ' - nie dodano jeszcze tego wideo.', 'Zapraszamy w innym terminie.')
             exit()
 
     def getLinkTable(self,url):
@@ -359,6 +363,32 @@ class EkinoTV:
             linkVideo = match[0]
             log.info("final link: " + linkVideo)
         return linkVideo
+
+    def searchInputText(self, SER):
+        text = None
+        k = xbmc.Keyboard()
+        k.doModal()
+        if (k.isConfirmed()):
+	    text = k.getText()
+	    self.history.addHistoryItem(SER, text)
+        return text
+
+    def getStype(self):
+        stype = ''
+        wybierz = ['Filmy','Seriale']
+        d = xbmcgui.Dialog()
+        item = d.select("Co chcesz znaleść?", wybierz)
+        if item == 0:
+            stype =  'filmy'
+        elif item == 1:
+            stype = 'seriale'
+        return stype
+
+    def listsHistory(self, table, ser):
+	for i in range(len(table)):
+	    if table[i] <> '':
+		self.addDir(SERVICE, ser, 'history', table[i], 'None', 'None', 'None', True, False)
+	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def addDir(self, service, name, category, title, plot, page, iconimage, folder = True, isPlayable = True):
         u=sys.argv[0] + "?service=" + service + "&name=" + name + "&category=" + category + "&title=" + title + "&page=" + urllib.quote_plus(page)
@@ -444,54 +474,67 @@ class EkinoTV:
         else:
           sHow = 'asc'
 
+
 	#main menu	
 	if name == None:
             self.requestLoginData()
 	    self.listsMainMenu(SERVICE_MENU_TABLE)	
 	#gatunki    
 	elif category == self.setTable()[1]:
-	    self.listsCategoriesMenu(MAINURL + '/kategorie.html', category)	    
+	    self.listsCategoriesMenu(MAINURL + 'kategorie.html', category)	    
 	#lektor
 	elif category == self.setTable()[2]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',lektor,' + sQua + ',1900-2013,.html' + sSort + sHow
+            url = MAINURL + 'kategorie' + ',' + str(page) + ',lektor,' + sQua + ',1900-2013,.html' + sSort + sHow
 	    self.getFilmTable(url, category, page)	
 	#napisy 
 	elif category == self.setTable()[3]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',napisy,' + sQua + ',1900-2013,.html' + sSort + sHow           
+            url = MAINURL + 'kategorie' + ',' + str(page) + ',napisy,' + sQua + ',1900-2013,.html' + sSort + sHow           
 	    self.getFilmTable(url, category, page)
 	#dubbing
 	elif category == self.setTable()[4]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',dubbing,' + sQua + ',1900-2013,.html' + sSort + sHow           
+            url = MAINURL + 'kategorie' + ',' + str(page) + ',dubbing,' + sQua + ',1900-2013,.html' + sSort + sHow           
 	    self.getFilmTable(url, category, page)
 	#PL
 	elif category == self.setTable()[5]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',polskie,' + sQua + ',1900-2013,.html' + sSort + sHow            
+            url = MAINURL + 'kategorie' + ',' + str(page) + ',polskie,' + sQua + ',1900-2013,.html' + sSort + sHow            
 	    self.getFilmTable(url, category, page)
 	#najpopularniejsze
 	elif category == self.setTable()[6]:
-            url = MAINURL + '/kategorie' + ',' + str(page) + ',wszystkie,wszystkie,1900-2013,.html?sort_field=odslony&sort_method=' + sHow
+            url = MAINURL + 'kategorie' + ',' + str(page) + POPULAR
 	    self.getFilmTable(url, category, page)		
 	#seriale
 	elif category == self.setTable()[7]:
-	    self.listsSerialsMenu(MAINURLS)		
-	#wyszukaj
+	    self.listsSerialsMenu(MAINURLSE)		
+	#wyszukaj   
 	elif category == self.setTable()[8]:
-	    self.getFilmTable(SCR_LINK + str(page), category, page)
+            SERCH = self.getStype()
+            text = self.searchInputText(SERVICE + SERCH)
+            if  SERCH == 'filmy':
+                url = MAINURLSR + text + ',filmy,' + str(page) + '.html'
+                self.getFilmTable(url, category, page)
+            else:
+                url = MAINURLSR + text + ',seriale,' + str(page) + '.html'
+                self.getSerialTable(url, category, page)
 	#Historia Wyszukiwania
 	elif category == self.setTable()[9]:
-	    t = self.history.loadHistoryFile(SERVICE)
-	    self.listsHistory(t)
-	if category == 'history' and name != 'playSelectedMovie':
-	    self.getSearchTable(self.searchTab(SURL, name))             
+            SER = self.getStype()
+	    t = self.history.loadHistoryFile(SERVICE + SER)
+	    self.listsHistory(t, SER)
+	if category == 'history' and name == 'filmy':
+            url = MAINURLSR + title + ',filmy,' + str(page) + '.html'
+            self.getFilmTable(url, category, page)
+	if category == 'history' and name == 'seriale':
+            url = MAINURLSR + title + ',seriale,' + str(page) + '.html'
+            self.getSerialTable(url, category, page)
 	
 	#lista tytulow 
 	if name == 'category':
-            url = MAINURL + '/' + category + ',' + str(page) + ',wszystkie,wszystkie,1900-2013,.html' + sSort + sHow
+            url = MAINURL + category + ',' + str(page) + ',wszystkie,wszystkie,1900-2013,.html' + sSort + sHow
             self.getFilmTable(url, category, page)
 
 	#lista seriali
 	if name == 'serial':
-            url = MAINURL + '/' + category + ',' + str(page) + ',add_date,desc.html'
+            url = MAINURL + category + ',' + str(page) + ',add_date,desc.html'
             self.getSerialTable(url, category, page)
 
 	if name == 'sezon':
