@@ -315,10 +315,8 @@ class EkinoTV:
             linkVideo = match[0]
             log.info("final link: " + linkVideo)
             return linkVideo
-        else:
-            d = xbmcgui.Dialog()
-            d.ok(SERVICE + ' - przepraszamy', 'Player premium jest teraz niedostępny.', 'Spróbuj później lub kup konto premium.')
-            exit()
+
+
 
     def getHostingTable(self,url):
 	valTab = []
@@ -345,9 +343,8 @@ class EkinoTV:
                 log.info('mID: ' + videoID)
             return videoID
         else:
-            d = xbmcgui.Dialog()
-            d.ok('Brak hostingu', SERVICE + ' - nie dodano jeszcze tego wideo.', 'Zapraszamy w innym terminie.')
-            exit()
+            return False
+
 
     def getLinkTable(self,url):
 	linkVideo = ''
@@ -424,7 +421,7 @@ class EkinoTV:
             xbmcPlayer.play(videoUrl, liz)
         except:
             d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+            d.ok(SERVICE + ' - przepraszamy', 'Darmowy player premium jest teraz niedostępny.', 'Spróbuj później lub kup konto premium.')        
         return ok
 
 
@@ -546,8 +543,14 @@ class EkinoTV:
             self.getPlayTable(url, category, title, page)
 	    	    
         if name == 'playSelectedMovie':
-            if username=='' or password=='':               
-                linkVideo = self.up.getVideoLink(self.getLinkTable(self.getHostingTable(page)))                    
+            if username=='' or password=='':
+                videoID = self.getHostingTable(page)
+                if videoID != False:
+                    linkVideo = self.up.getVideoLink(self.getLinkTable(videoID))
+                else:
+                    d = xbmcgui.Dialog()
+                    d.ok(SERVICE + ' - przepraszamy', 'Ten materiał nie został jeszcze dodany', 'Zapraszamy w innym terminie.')
+                    return False
             else: 
                 linkVideo = self.getHostTable(page)
             if linkVideo != False:
