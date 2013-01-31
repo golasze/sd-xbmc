@@ -21,7 +21,7 @@ dbg = ptv.getSetting('default_debug')
 dstpath = ptv.getSetting('default_dstpath')
 
 SERVICE = 'teledyski'
-logoUrl = 'http://www.teledyskihd.pl/img/logo.jpg'
+logoUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTek0K2P_qWoWkEsqh0Hd0ndk4uZtU430x3_YdO63qnFF6r3sGJdQ'
 nextUrl = ptv.getAddonInfo('path') + os.path.sep + "images" + os.path.sep + "next.png"
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
