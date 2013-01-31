@@ -421,7 +421,7 @@ class EkinoTV:
             xbmcPlayer.play(videoUrl, liz)
         except:
             d = xbmcgui.Dialog()
-            d.ok(SERVICE + ' - przepraszamy', 'Darmowy player premium jest teraz niedostępny.', 'Spróbuj później lub kup konto premium.')        
+            d.ok(SERVICE + ' - przepraszamy', 'Ten materiał nie został jeszcze dodany lub', 'darmowy player premium jest teraz niedostępny.', 'Spróbuj później lub kup konto premium.')        
         return ok
 
 
