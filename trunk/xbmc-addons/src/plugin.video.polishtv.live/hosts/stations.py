@@ -15,15 +15,15 @@ import pLog, Parser, pCommon
 log = pLog.pLog()
 
 CATEGORY_TAB = [
-                [0, "Ogólnotematyczne"],
-                [1, "Informacyjne"],
-                [2, "Sportowe"],
-                [3, "Muzyczne"],
-                [4, "Religijne"],
-                [5, "Lokalne"],
-                [6, "Zagraniczne"],
-                [7, "Polskie stacje radiowe"],
-                [8, "Okiem Kamery"]
+                [0, "Ogólnotematyczne", "tv_ogolnotematyczne.png"],
+                [1, "Informacyjne", "tv_informacyjne.png"],
+                [2, "Sportowe", "tv_sportowe.png"],
+                [3, "Muzyczne", "tv_muzyczne.png"],
+                [4, "Religijne", "tv_religijne.png"],
+                [5, "Lokalne", "tv_ogolnotematyczne.png"],
+                [6, "Zagraniczne", "tv_zagraniczne.png"],
+                [7, "Polskie stacje radiowe", "tv_stacjeradiowe.png"],
+                [8, "Okiem Kamery", "tv_okiemkamery.png"]
                ]
 
 #           [title, category_id, videoUrl]
@@ -283,13 +283,17 @@ class StreamStations:
     def showCategories(self):
         CATEGORY_TAB.sort(key = lambda x: x[1])
         for i in range(len(CATEGORY_TAB)):
-            self.add('stations', CATEGORY_TAB[i][1], str(CATEGORY_TAB[i][0]))
+            self.add('stations', CATEGORY_TAB[i][1], str(CATEGORY_TAB[i][0]), CATEGORY_TAB[i][2])
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
-    def add(self, service, name, val, folder = True, isPlayable = False):
-        u=sys.argv[0] + "?service=" + service + "&name=" + name + "&val=" + val 
-        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage="DefaultFolder.png")
+    def add(self, service, name, val, icon, folder = True, isPlayable = False):
+        u=sys.argv[0] + "?service=" + service + "&name=" + name + "&val=" + val
+        if icon != False:
+          icon = os.path.join(ptv.getAddonInfo('path'), "images/") + icon
+        else:
+          icon = "DefaultVideoPlaylists.png"
+        liz=xbmcgui.ListItem(name, iconImage=icon, thumbnailImage='')       
         if isPlayable:
             liz.setProperty("IsPlayable", "true")
             liz.setInfo( type="Video", infoLabels={ "Title": name } )
