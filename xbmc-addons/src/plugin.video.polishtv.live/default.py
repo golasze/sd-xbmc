@@ -17,7 +17,7 @@ sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser
 import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv
-import maxvideo, serialnet, anyfiles
+import maxvideo, serialnet, anyfiles, teledyski
 import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kinomaniak, kabarety
 import serviceinfo
 #import ipla
@@ -33,7 +33,7 @@ TV_ONLINE_TABLE = {
 
 VOD_ONLINE_TABLE = {
                      200: ["AnyFiles [różne filmy]", 'anyfiles'],
-                     #201: ["Ekino TV [filmy, seriale]", 'ekinotv'],
+                     201: ["Ekino TV [filmy, seriale]", 'ekinotv'],
                      202: ["iiTV info [seriale]", 'iitvinfo'],
                      #203: ["IPLA", 'ipla'], 
                      204: ["IPLEX", 'iplex'],
@@ -49,6 +49,7 @@ VOD_ONLINE_TABLE = {
 
 ROZRYWKA_TABLE = {
 		     400: ["Kabarety", ''],
+                     401: ["Teledyski", ''],
 }
 
 REC_DOWN_TABLE = {
@@ -91,9 +92,9 @@ class PolishLiveTV:
         elif mode == 200 or service == VOD_ONLINE_TABLE[200][1]:
                 vod = anyfiles.AnyFiles()
                 vod.handleService()
-       # elif mode == 201 or service == VOD_ONLINE_TABLE[201][1]:
-       #         vod = ekinotv.EkinoTV()
-       #         vod.handleService()
+        elif mode == 201 or service == VOD_ONLINE_TABLE[201][1]:
+                vod = ekinotv.EkinoTV()
+                vod.handleService()
         elif mode == 202 or service == VOD_ONLINE_TABLE[202][1]:
                 vod = iitvinfo.iiTVInfo()
                 vod.handleService()
@@ -132,6 +133,9 @@ class PolishLiveTV:
                 self.LIST(ROZRYWKA_TABLE)
         elif mode == 400 or service == 'kabarety':
                 vod = kabarety.Kabarety()
+                vod.handleService()
+        elif mode == 401 or service == 'teledyski':
+                vod = teledyski.Teledyski()
                 vod.handleService()
 		
         elif mode == 300:

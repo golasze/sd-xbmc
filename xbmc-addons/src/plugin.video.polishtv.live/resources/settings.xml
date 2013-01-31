@@ -49,7 +49,7 @@
 		<setting id="ekinotv_login" type="text" label="55503" default="" />
 		<setting id="ekinotv_password" type="text" label="55504" option="hidden" default="" />
 		<setting id="ekinotv_sort" type="labelenum" label="55501" values="ocena|popularnosc|data dodania|tytul|data premiery" default="tytul" />
-		<setting id="ekinotv_sortorder" type="labelenum" label="55502" values="malejaco|rosnaco" default="malejaco" />
+		<setting id="ekinotv_sortorder" type="labelenum" label="55502" values="malejaco|rosnaco" default="rosnaco" />
 		<setting id="ekinotv_quality" type="labelenum" label="55508" values="wysoka|srednia|niska|wszystkie" default="wszystkie" />
 		<!--<setting type="lsep" label="55506" />
 		<setting id="ekinotv_path" type="folder" label="55507" default="None" />-->
