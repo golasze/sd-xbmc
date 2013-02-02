@@ -17,7 +17,7 @@ sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser, serviceinfo
 import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv, poplertv
-import maxvideo, serialnet, anyfiles, teledyski
+import maxvideo, serialnet, anyfiles, teledyski #, filmin
 import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kinomaniak, kabarety
 #import ipla
 
@@ -45,6 +45,7 @@ VOD_ONLINE_TABLE = {
 		     210: ["Kino Pecetowiec [filmy]", 'kinopecetowiec'],
 		     211: ["Maxvideo [różne filmy]", 'maxvideo'],
 		     212: ["Kinomaniak", 'kinomaniak'],
+             #213: ["Film.in", 'filmin'],
 }
 
 ROZRYWKA_TABLE = {
