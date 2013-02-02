@@ -15,11 +15,10 @@ BASE_RESOURCE_PATH = os.path.join( ptv.getAddonInfo('path'), "resources" )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
-import pLog, settings, Parser
-import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv
+import pLog, settings, Parser, serviceinfo
+import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv, poplertv
 import maxvideo, serialnet, anyfiles, teledyski
 import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kinomaniak, kabarety
-import serviceinfo
 #import ipla
 
 log = pLog.pLog()
@@ -28,6 +27,7 @@ TV_ONLINE_TABLE = {
 		     100 : ["Weeb TV [wyświetl kanały]", 'weebtv'],
 		     101 : ["Włącz TV [wyświetl kanały]", 'wlacztv'],
 		     102 : ["Stacje TV [strumienie]", 'stations'],
+		     #103 : ["Popler TV", ''],
 }
 
 
@@ -86,6 +86,9 @@ class PolishLiveTV:
         elif mode == 102 or service == TV_ONLINE_TABLE[102][1]:
                 tv = stations.StreamStations()
                 tv.handleService()
+        elif mode == 103 or service == 'poplertv':
+                tv = poplertv.poplertv()
+                tv.handleService()	
         
 	elif mode == 2:
                 self.LIST(VOD_ONLINE_TABLE)
