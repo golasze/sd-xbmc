@@ -109,7 +109,7 @@ class Teledyski:
         match2 = re.compile('<a href="(.+?)">następne &raquo;</a></div>').findall(data)
         if len(match2) > 0:
             page = str(int(page) + 1)
-            self.addDir(SERVICE, '', category, 'Następna strona', '', page, nextUrl, True, False)     
+            self.addDir(SERVICE, category, category, 'Następna strona', '', page, nextUrl, True, False)     
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
     def getFilmTable2(self,url):
