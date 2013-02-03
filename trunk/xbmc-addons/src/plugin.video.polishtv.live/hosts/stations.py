@@ -20,7 +20,7 @@ CATEGORY_TAB = [
                 [2, "Sportowe", "tv_sportowe.png"],
                 [3, "Muzyczne", "tv_muzyczne.png"],
                 [4, "Religijne", "tv_religijne.png"],
-                [5, "Lokalne", "tv_ogolnotematyczne.png"],
+                [5, "Lokalne", "tv_lokalne.png"],
                 [6, "Zagraniczne", "tv_zagraniczne.png"],
                 [7, "Polskie stacje radiowe", "tv_stacjeradiowe.png"],
                 [8, "Okiem Kamery", "tv_okiemkamery.png"]

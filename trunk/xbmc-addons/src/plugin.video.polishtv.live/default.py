@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import urllib, urllib2, re, sys, xbmcplugin, xbmcgui
 import string, cookielib, StringIO
 import os, time, base64, logging, calendar
@@ -27,7 +27,7 @@ TV_ONLINE_TABLE = {
 		     100 : ["Weeb TV [wyświetl kanały]", 'weebtv'],
 		     101 : ["Włącz TV [wyświetl kanały]", 'wlacztv'],
 		     102 : ["Stacje TV [strumienie]", 'stations'],
-		     #103 : ["Popler TV", ''],
+		     103 : ["Popler TV", 'poplertv'],
 }
 
 
@@ -45,12 +45,12 @@ VOD_ONLINE_TABLE = {
 		     210: ["Kino Pecetowiec [filmy]", 'kinopecetowiec'],
 		     211: ["Maxvideo [różne filmy]", 'maxvideo'],
 		     212: ["Kinomaniak", 'kinomaniak'],
-             #213: ["Film.in", 'filmin'],
+		     #213: ["Film.in", 'filmin'],
 }
 
 ROZRYWKA_TABLE = {
-		     400: ["Kabarety", ''],
-                     401: ["Teledyski", ''],
+		     400: ["Kabarety", 'kabarety'],
+                     401: ["Teledyski", 'teledyski'],
 }
 
 REC_DOWN_TABLE = {
@@ -135,10 +135,10 @@ class PolishLiveTV:
 		
         elif mode == 4:
                 self.LIST(ROZRYWKA_TABLE)
-        elif mode == 400 or service == 'kabarety':
+        elif mode == 400 or service == ROZRYWKA_TABLE[400][1]:
                 vod = kabarety.Kabarety()
                 vod.handleService()
-        elif mode == 401 or service == 'teledyski':
+        elif mode == 401 or service == ROZRYWKA_TABLE[401][1]:
                 vod = teledyski.Teledyski()
                 vod.handleService()
 		
