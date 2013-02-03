@@ -21,11 +21,13 @@ SERVICE = 'poplertv'
 
 mainUrl = 'http://www.popler.tv'
 apiLiveList = mainUrl + '/api/live_list.php'
+apiVOD = mainUrl + '/api/vod.php'
 
 SERVICE_MENU_TABLE = {
-                        1: "Telewiza na zywo",
-			2: "Najnowsze",
-			3: "Najpopularniejsze"}
+                        1: "Telewiza na żywo",
+			2: "Najnowsze nagrania",
+			3: "Najpopularniejsze nagrania",
+			4: "Polecane nagrania",}
 
 
 class poplertv:
@@ -46,11 +48,11 @@ class poplertv:
       nTab.append(val)
     return nTab
 
-
-  def getLiveListTable(self):
+      
+  def getVideoTable(self, url):
     strTab = []
     valTab = []
-    query_data = {'url': apiLiveList, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True}
+    query_data = {'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True}
     response = self.common.getURLRequestData(query_data)
     result = simplejson.loads(response)  
     for channel in result:
@@ -61,12 +63,19 @@ class poplertv:
       strTab.append(name)
       strTab.append(channel['thumb'])
       strTab.append(channel['rtmp'])
-      strTab.append(int(channel['concurents_views'].encode('UTF-8')))
-      if channel['error'] != None: strTab.append(channel['error'].encode('UTF-8'))
+      
+      if 'concurents_views' in channel: strTab.append(int(channel['concurents_views'].encode('UTF-8')))
       else: strTab.append('')
+	
+      if 'error' in channel:
+	if channel['error'] != None: strTab.append(channel['error'].encode('UTF-8'))
+	else: strTab.append('')
+      else: strTab.append('')	
+      
       valTab.append(strTab)
       strTab = []
-    valTab.sort(key = lambda x: x[3], reverse=True)
+    #sort only Live  
+    if 'concurents_views' in channel: valTab.sort(key = lambda x: x[3], reverse=True)
     #[name,icon,rtmp,views,error_msg]
     return valTab
 
@@ -76,7 +85,8 @@ class poplertv:
       if category == 'video':
         self.add(SERVICE, 'playSelectedMovie', table[i][0], table[i][1], table[i][2], table[i][4], False, False)
       else:
-	self.add(SERVICE, table[i], table[i], '', '', '', True, False)
+	iconimage = os.path.join(ptv.getAddonInfo('path'), "images/") + SERVICE + '.png'
+	self.add(SERVICE, table[i], table[i], iconimage, '', '', True, False)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -124,14 +134,13 @@ class poplertv:
     if name == 'None':
       self.addList(self.getMenuTable(), 'menu')  
     if name == self.setTable()[1]:
-      self.addList(self.getLiveListTable(), 'video')
-      
+      self.addList(self.getVideoTable(apiLiveList), 'video')
     if name == self.setTable()[2]:
-      print "waiting for API"
-      #self.addList(self.getMovieTable('najnowsze'), 'video')
+      self.addList(self.getVideoTable(apiVOD + '?func=nowe'), 'video')
     if name == self.setTable()[3]:
-      print "waiting for API"
-      #self.addList(self.getMovieTable('najnowsze'), 'video')
+      self.addList(self.getVideoTable(apiVOD + '?func=popularne'), 'video')
+    if name == self.setTable()[4]:
+      self.addList(self.getVideoTable(apiVOD + '?func=polecane'), 'video')
     if name == 'playSelectedMovie':
       self.LOAD_AND_PLAY_VIDEO(url, title, error)
       
