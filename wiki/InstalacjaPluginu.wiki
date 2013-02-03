@@ -6,7 +6,7 @@ autorem artykułu jest *broman*, a poniższa instrukcja została zaporzyczona z 
 
 = Instalacja krok po kroku: =
 
-Pobieramy plik zip z repozytorium [http://sd-xbmc.googlecode.com/files/repository.sd-xbmc.org-1.0.1.zip]
+Pobieramy plik zip z repozytorium [http://sd-xbmc.googlecode.com/files/repository.sd-xbmc.org-1.0.2.zip]
 
 Instalujemy pobrane repozytorium:
 
