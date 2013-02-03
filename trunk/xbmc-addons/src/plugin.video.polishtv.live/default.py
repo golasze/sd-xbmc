@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 import urllib, urllib2, re, sys, xbmcplugin, xbmcgui
 import string, cookielib, StringIO
 import os, time, base64, logging, calendar
@@ -27,7 +27,7 @@ TV_ONLINE_TABLE = {
 		     100 : ["Weeb TV [wyświetl kanały]", 'weebtv'],
 		     101 : ["Włącz TV [wyświetl kanały]", 'wlacztv'],
 		     102 : ["Stacje TV [strumienie]", 'stations'],
-		     103 : ["Popler TV", 'poplertv'],
+		     #103 : ["Popler TV", 'poplertv'],
 }
 
 
@@ -44,7 +44,7 @@ VOD_ONLINE_TABLE = {
                      209: ["BestPlayer [filmy]", 'bestplayer'],
 		     210: ["Kino Pecetowiec [filmy]", 'kinopecetowiec'],
 		     211: ["Maxvideo [różne filmy]", 'maxvideo'],
-		     212: ["Kinomaniak", 'kinomaniak'],
+		     #212: ["Kinomaniak", 'kinomaniak'],
 		     #213: ["Film.in", 'filmin'],
 }
 
