@@ -1,3 +1,9 @@
+version 0.4.0
+- dodanie Informacji o Serwisach,
+- nowe ikony,
+- wlaczenie EkinoTV do ponownej obslugi,
+- dodanie serwisu teledyskihd.pl
+
 version 0.3.0
 - dodanie serwisu bestplayer.tv,
 - dodanie serwisu maxvideo.pl,
