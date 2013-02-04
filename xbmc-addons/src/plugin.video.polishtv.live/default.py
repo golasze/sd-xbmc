@@ -19,7 +19,7 @@ import pLog, settings, Parser, serviceinfo
 import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv, poplertv
 import maxvideo, serialnet, anyfiles, teledyski #, filmin
 import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kinomaniak, kabarety
-#import ipla
+#import ipla, hbogo
 
 log = pLog.pLog()
 
@@ -46,6 +46,7 @@ VOD_ONLINE_TABLE = {
 		     211: ["Maxvideo [różne filmy]", 'maxvideo'],
 		     #212: ["Kinomaniak", 'kinomaniak'],
 		     #213: ["Film.in", 'filmin'],
+		     		#214: ["HBO Go [filmy, seriale]", 'hbogo'],
 }
 
 ROZRYWKA_TABLE = {
@@ -129,9 +130,13 @@ class PolishLiveTV:
         elif mode == 211 or service == VOD_ONLINE_TABLE[211][1]:
                 vod = maxvideo.Maxvideo()
                 vod.handleService()
-        elif mode == 212 or service == VOD_ONLINE_TABLE[212][1]:
-                vod = kinomaniak.Kinomaniak()
-                vod.handleService()
+#        elif mode == 212 or service == VOD_ONLINE_TABLE[212][1]:
+#                vod = kinomaniak.Kinomaniak()
+#                vod.handleService()
+
+#        elif mode == 214 or service == VOD_ONLINE_TABLE[214][1]:
+#                vod = hbogo.HBOGO()
+#                vod.handleService()
 		
         elif mode == 4:
                 self.LIST(ROZRYWKA_TABLE)
