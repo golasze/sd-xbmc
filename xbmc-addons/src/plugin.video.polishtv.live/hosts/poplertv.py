@@ -24,7 +24,7 @@ apiLiveList = mainUrl + '/api/live_list.php'
 apiVOD = mainUrl + '/api/vod.php'
 
 SERVICE_MENU_TABLE = {
-                        1: "Telewiza na żywo",
+                        1: "Telewizja na żywo",
 			2: "Najnowsze nagrania",
 			3: "Najpopularniejsze nagrania",
 			4: "Polecane nagrania",}
