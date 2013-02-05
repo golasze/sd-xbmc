@@ -17,9 +17,10 @@ sys.path.append( os.path.join( ptv.getAddonInfo('path'), "hosts" ) )
 
 import pLog, settings, Parser, serviceinfo
 import weebtv, stations, tvp, tvn, iplex, tvpvod, wlacztv, poplertv
-import maxvideo, serialnet, anyfiles, teledyski #, filmin
+import maxvideo, serialnet, anyfiles, teledyski
 import ekinotv, iitvinfo, bestplayer, kinopecetowiec, kinomaniak, kabarety
-#import ipla, hbogo
+#import filmin, hbogo
+#import ipla
 
 log = pLog.pLog()
 
@@ -27,7 +28,7 @@ TV_ONLINE_TABLE = {
 		     100 : ["Weeb TV [wyświetl kanały]", 'weebtv'],
 		     101 : ["Włącz TV [wyświetl kanały]", 'wlacztv'],
 		     102 : ["Stacje TV [strumienie]", 'stations'],
-		     #103 : ["Popler TV", 'poplertv'],
+		     103 : ["Popler TV", 'poplertv'],
 }
 
 
@@ -46,7 +47,7 @@ VOD_ONLINE_TABLE = {
 		     211: ["Maxvideo [różne filmy]", 'maxvideo'],
 		     #212: ["Kinomaniak", 'kinomaniak'],
 		     #213: ["Film.in", 'filmin'],
-		     		#214: ["HBO Go [filmy, seriale]", 'hbogo'],
+		     #214: ["HBO Go [filmy, seriale]", 'hbogo'],
 }
 
 ROZRYWKA_TABLE = {

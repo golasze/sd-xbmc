@@ -64,9 +64,6 @@ class poplertv:
       strTab.append(channel['thumb'])
       strTab.append(channel['rtmp'])
       
-      if 'concurents_views' in channel: strTab.append(int(channel['concurents_views'].encode('UTF-8')))
-      else: strTab.append('')
-	
       if 'error' in channel:
 	if channel['error'] != None: strTab.append(channel['error'].encode('UTF-8'))
 	else: strTab.append('')
@@ -74,16 +71,15 @@ class poplertv:
       
       valTab.append(strTab)
       strTab = []
-    #sort only Live  
-    if 'concurents_views' in channel: valTab.sort(key = lambda x: x[3], reverse=True)
-    #[name,icon,rtmp,views,error_msg]
+
+    #[name,icon,rtmp,error_msg]
     return valTab
 
 
   def addList(self, table, category):
     for i in range(len(table)):
       if category == 'video':
-        self.add(SERVICE, 'playSelectedMovie', table[i][0], table[i][1], table[i][2], table[i][4], False, False)
+        self.add(SERVICE, 'playSelectedMovie', table[i][0], table[i][1], table[i][2], table[i][3], False, False)
       else:
 	iconimage = os.path.join(ptv.getAddonInfo('path'), "images/") + SERVICE + '.png'
 	self.add(SERVICE, table[i], table[i], iconimage, '', '', True, False)
@@ -108,7 +104,8 @@ class poplertv:
     if videoUrl == '' or error != '':
       d = xbmcgui.Dialog()
       if error != '':
-        d.ok('popler.tv','Dostęp do video jest płatny, obecnie można', 'oglądać go wyłącznie na stronie WWW')
+	msg = self.common.formatDialogMsg(error)
+        d.ok('popler.tv',msg[0], msg[1], msg[2])
       else:	
 	d.ok('Nie znaleziono streamingu', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas.')
       return False
