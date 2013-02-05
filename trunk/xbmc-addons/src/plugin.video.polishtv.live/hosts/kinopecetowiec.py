@@ -23,6 +23,7 @@ HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mand
 SERVICE = 'kinopecetowiec'
 MAINURL = 'http://www.kino.pecetowiec.pl'
 LOGOURL = 'http://pecetowiec.pl/images/blackevo4-space/logo.png'
+NEXT = ptv.getAddonInfo('path') + os.path.sep + "images" + os.path.sep + "next.png"
 IMGURL = MAINURL + '/chimg/'
 SURL = MAINURL + '/search/'
 
@@ -43,7 +44,7 @@ SERVICE_MENU_TABLE = {1: "Kategorie Filmowe",
 		      7: "Wyróżnione",
 		      8: "Losowe",
 		      
-		      10: "Szukaj",
+		      10: "Szukaj (minimum 4 znaki)",
 		      11: "Historia Wyszukiwania"
 		      }
 
@@ -144,7 +145,7 @@ class KinoPecetowiec:
 		self.addDir(SERVICE, 'playSelectedMovie', '', title, '', value[1], value[0], True, False)
 	    else:
 		page = str(int(page) + 1)
-		self.addDir(SERVICE, 'category', category, value[2], '', page, '', True, False) 
+		self.addDir(SERVICE, 'category', category, value[2], '', page, NEXT, True, False) 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
