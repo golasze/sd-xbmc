@@ -223,7 +223,40 @@ class common:
             d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
         return ok
 	    
-	    
+
+
+    def formatDialogMsg(self, msg):
+	valTab = []
+	LENGTH = 58
+	item = msg.split(' ');
+	valTab.append('')
+	valTab.append('')
+	valTab.append('')
+
+	if len(msg) <= LENGTH or len(item)==1:
+	    valTab[0] = msg
+	else:
+	    isFull  = [False, False]
+	    for i in item:
+		if isFull[0] == False and isFull[1] == False:
+		    if len(valTab[0] + ' ' + i) <= LENGTH:
+			s = valTab[0] + ' ' + i
+			valTab[0] = s.strip()
+		    else:
+			isFull[0] = True
+		if isFull[0]:
+		    if len(valTab[1] + ' ' + i) <= LENGTH:
+			s = valTab[1] + ' ' + i
+			valTab[1] = s.strip()
+		    else:
+			isFull[1] = True
+		if isFull[1]:
+		    if len(valTab[2] + ' ' + i) <= LENGTH:
+			s = valTab[2] + ' ' + i
+			valTab[2] = s.strip()
+		    else:
+			break
+	return valTab	    
 	
 class history:
     def __init__(self):
