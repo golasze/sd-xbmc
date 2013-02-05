@@ -146,7 +146,7 @@ class EkinoTV:
             traceback.print_exc()
             self.exception.getError(str(exception))
             exit()
-        match = re.compile('class.+?src="(.+?)" alt=.+?/>.\n.+?class=.+?>.\n.+?<h2><a href="(.+?)">(.+?)</a></h2>').findall(data)
+        match = re.compile('class.+?src="(.+?)" alt=.+?</div>.\n.+?class=.+?>.\n.+?<h2><a title=.+?href="(.+?)">(.+?)</a></h2>').findall(data)
         if len(match) > 0:                
             for i in range(len(match)):
                 value = match[i]
