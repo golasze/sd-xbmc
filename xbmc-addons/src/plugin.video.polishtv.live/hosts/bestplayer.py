@@ -26,6 +26,7 @@ mainUrl2 = mainUrl + 'filmy/'
 TOP_LINK = mainUrl + 'top100/'
 logoUrl = mainUrl + 'images/logo.png'
 first = '-strona-1.html'
+NEXT = ptv.getAddonInfo('path') + os.path.sep + "images" + os.path.sep + "next.png"
 
 HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 
@@ -139,7 +140,7 @@ class BestPlayer:
         match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(data)
         if len(match2) > 0:
             nexturl = match2[0]
-            self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', mainUrl + nexturl, '', True, False)     
+            self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', mainUrl + nexturl, NEXT, True, False)     
         xbmcplugin.setContent(int(sys.argv[1]),'movies')
         xbmc.executebuiltin("Container.SetViewMode(503)")
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -190,14 +191,14 @@ class BestPlayer:
 	    self.exception.getError(str(exception))
 	    exit()
         tabURL = link.replace('</div>', '').replace('&amp;', '').replace('quot;', '').replace('&amp;quot;', '')
-        match = re.compile('<div class="movie-cover fl">\n.+?<a href="(.+?)" title=""><img src="(.+?)" width="150" height="200" alt="okladka" /></a>\n.+?<div.+?png" />\n.+?<div>O.+?\n.+?\n.+?<div.+?px">\n.+?<h2><a.+?>(.+?)</a></h2>\n.+?Kat.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc" >(.+?)\n.+?<div style="margin-top: 10px;">').findall(tabURL)
+        match = re.compile('<div class="movie-cover fl">\n.+?<a href="(.+?)" title=.+?><img src="(.+?)".+?height=.+?alt="okladka" /></a>\n.+?<div.+?png" />\n.+?<div>O.+?\n.+?\n.+?<div.+?px">\n.+?<h2><a.+?>(.+?)</a></h2>\n.+?Kat.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc.+?">(.+?)\n.+?<div style="margin-top').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
                 self.addDir(SERVICE, 'playSelectedMovie', 'history', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
         match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(link)
         if len(match2) > 0:
             nexturl = match2[0]
-            self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', mainUrl + nexturl, '', True, False)     
+            self.addDir(SERVICE, 'submenu', '', 'Następna strona', '', mainUrl + nexturl, NEXT, True, False)     
         xbmcplugin.setContent(int(sys.argv[1]),'movies')
         xbmc.executebuiltin("Container.SetViewMode(503)")
         xbmcplugin.endOfDirectory(int(sys.argv[1]))   
