@@ -136,7 +136,7 @@ class BestPlayer:
         if len(match) > 0:
             for i in range(len(match)):
                 #isPlayable needs to be set to False in order to play
-                self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], False, False)   
+                self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], match[i][1], False, False)   
         match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(data)
         if len(match2) > 0:
             nexturl = match2[0]
@@ -159,7 +159,7 @@ class BestPlayer:
         if len(match) > 0:
             for i in range(len(match)):
                 #isPlayable needs to be set to False in order to play
-                self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], False, False)       
+                self.addDir(SERVICE, 'playSelectedMovie', '', match[i][2], match[i][3], match[i][0], match[i][1], False, False)       
         xbmcplugin.setContent(int(sys.argv[1]),'movies')
         xbmc.executebuiltin("Container.SetViewMode(503)")
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -194,7 +194,7 @@ class BestPlayer:
         match = re.compile('<div class="movie-cover fl">\n.+?<a href="(.+?)" title=.+?><img src="(.+?)".+?height=.+?alt="okladka" /></a>\n.+?<div.+?png" />\n.+?<div>O.+?\n.+?\n.+?<div.+?px">\n.+?<h2><a.+?>(.+?)</a></h2>\n.+?Kat.+?</a></p>\n.+?\n.+?<div class="p5 film-dsc.+?">(.+?)\n.+?<div style="margin-top').findall(tabURL)
         if len(match) > 0:
             for i in range(len(match)):
-                self.addDir(SERVICE, 'playSelectedMovie', 'history', match[i][2], match[i][3], match[i][0], mainUrl + match[i][1], True, False)   
+                self.addDir(SERVICE, 'playSelectedMovie', 'history', match[i][2], match[i][3], match[i][0], match[i][1], True, False)   
         match2 = re.compile('<li class="round "><a href="(.+?)" class="next"></a></li>').findall(link)
         if len(match2) > 0:
             nexturl = match2[0]
