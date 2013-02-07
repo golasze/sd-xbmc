@@ -8,7 +8,7 @@ scriptID = 'plugin.video.polishtv.live'
 scriptname = "Polish Live TV"
 ptv = xbmcaddon.Addon(scriptID)
 
-import pLog, xppod, Parser, settings, pCommon
+import pLog, Parser, settings, pCommon
 import maxvideo, anyfiles
 
 log = pLog.pLog()
@@ -29,7 +29,7 @@ class urlparser:
 	valTab.append(str(i+1) + '. ' + self.getHostName(v[i], True))
       item = d.select("Wybor hostingu", valTab)
       if item >= 0: hostUrl = v[item]
-      else: d.ok ('Brak linkow','Przykro nam, ale nie znalezlismy zadnego linku do video.', 'Sproboj ponownie za jakis czas')
+    else: d.ok ('Brak linkow','Przykro nam, ale nie znalezlismy zadnego linku do video.', 'Sproboj ponownie za jakis czas')
     return hostUrl
 
 
