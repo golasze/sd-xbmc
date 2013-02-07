@@ -19,7 +19,6 @@ log = pLog.pLog()
 dbg = ptv.getSetting('default_debug')
 dstpath = ptv.getSetting('default_dstpath')
 
-HOST = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.18) Gecko/20110621 Mandriva Linux/1.9.2.18-0.1mdv2010.2 (2010.2) Firefox/3.6.18'
 SERVICE = 'kinopecetowiec'
 MAINURL = 'http://www.kino.pecetowiec.pl'
 LOGOURL = 'http://pecetowiec.pl/images/blackevo4-space/logo.png'
@@ -59,7 +58,6 @@ class KinoPecetowiec:
 	self.navigation = Navigation.VideoNav()
 	self.chars = pCommon.Chars()
 	self.exception = Errors.Exception()
-	self.dir = pCommon.common()
 
 
     def setTable(self):
@@ -75,8 +73,7 @@ class KinoPecetowiec:
     def getCategoryTab(self,url):   
         strTab = []
         valTab = []
-        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
-	#data = self.cm.requestData(url)
+        query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	try:
 		data = self.cm.getURLRequestData(query_data)
 	except Exception, exception:
@@ -111,7 +108,6 @@ class KinoPecetowiec:
         valTab = []
 	query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	data = self.cm.getURLRequestData(query_data)
-        #data = self.cm.requestData(url)
 	#Kategorie
 	if category.isdigit()==True:
 	    match = re.compile('<div class="channel-details-thumb-box-texts"> <a href="http://www.kino.pecetowiec.pl/video/(.+?)/(.+?)">(.+?)</a><br/>').findall(data)
@@ -148,33 +144,22 @@ class KinoPecetowiec:
 		self.addDir(SERVICE, 'category', category, value[2], '', page, NEXT, True, False) 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-
-    def setLinkTable(self, host, url):
-        strTab = []
-	strTab.append(host)
-	strTab.append(url)
-	return strTab
-
 	
     def getItemTitles(self, table):
         out = []
         for i in range(len(table)):
             value = table[i]
-           # title = value[0].replace('www', '').replace('com', '').replace('.', '').replace('pl', '').replace('eu', '')
             out.append(value[0])
         return out 
 
     def listsHistory(self, table):
-#	print str(table)
 	for i in range(len(table)):
-#	    print str(table[i])
 	    if table[i] <> '':
 		self.addDir(SERVICE, table[i], 'history', table[i], 'None', LOGOURL, 'None', True, False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
     def getSearchTable(self, table):
-        #table = self.searchTab()
         for i in range(len(table)):
 	    value = table[i]
 	    title = value[2].replace("&#039;", "'").replace('&amp;', '&')
@@ -195,7 +180,7 @@ class KinoPecetowiec:
     def searchTab(self, url, text):
         strTab = []
         valTab = []
-        query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': True, 'return_data': True }
+        query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': True, 'return_data': True }
         values = {'search_id': text}
 	try:
 		link = self.cm.getURLRequestData(query_data, values)
@@ -223,7 +208,7 @@ class KinoPecetowiec:
     def getHostTable(self,url):
 	valTab = []
 	videoID = ''
-	query_data = { 'url': url, 'use_host': True, 'host': HOST, 'use_cookie': False, 'use_post': False, 'return_data': True }
+	query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
 	try:
 		link = self.cm.getURLRequestData(query_data)
 	except Exception, exception:
@@ -358,7 +343,7 @@ class KinoPecetowiec:
 		pass
         
         if service == SERVICE and action == 'download' and link != '':
-                        self.dir.checkDir(os.path.join(dstpath, SERVICE))
+                        self.cm.checkDir(os.path.join(dstpath, SERVICE))
 			if dbg == 'true':
 				log.info('KINOPECETOWIEC - handleService()[download][0] -> title: ' + urllib.unquote_plus(vtitle))
 				log.info('KINOPECETOWIEC - handleService()[download][0] -> url: ' + urllib.unquote_plus(link))
