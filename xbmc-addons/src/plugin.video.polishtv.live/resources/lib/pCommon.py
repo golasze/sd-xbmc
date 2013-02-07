@@ -195,6 +195,7 @@ class common:
         except ValueError:
             return False
 
+
     def checkDir(self, path):
         if not os.path.isdir(path):
             os.mkdir(path)
@@ -206,28 +207,33 @@ class common:
 	host = HOST_TABLE[host_id]
 	return host
 
-    def LOAD_AND_PLAY_VIDEO(self, videoUrl, title):
-        ok=True
-        if videoUrl == '':
+
+    def LOAD_AND_PLAY_VIDEO(self, url, title, player = True):
+        if url == '':
             d = xbmcgui.Dialog()
-            d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
+            d.ok('Nie znaleziono streamingu', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
             return False
         thumbnail = xbmc.getInfoImage("ListItem.Thumb")
         liz=xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
         liz.setInfo( type="Video", infoLabels={ "Title": title } )
         try:
-            xbmcPlayer = xbmc.Player()
-            xbmcPlayer.play(videoUrl, liz)
+	    if player != True:
+		print "custom player pCommon"
+		xbmcPlayer = player
+	    else:
+		print "default player pCommon"
+		xbmcPlayer = xbmc.Player()
+            xbmcPlayer.play(url, liz)
         except:
             d = xbmcgui.Dialog()
-            d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
-        return ok
+	    d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Zarejestruj się i opłać abonament.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')        
+	    return False
+	return True
 	    
-
 
     def formatDialogMsg(self, msg):
 	valTab = []
-	LENGTH = 58
+	LENGTH = 56
 	item = msg.split(' ');
 	valTab.append('')
 	valTab.append('')
@@ -257,7 +263,10 @@ class common:
 		    else:
 			break
 	return valTab	    
-	
+
+
+
+
 class history:
     def __init__(self):
         pass
@@ -345,6 +354,8 @@ class history:
 	    item = ET.Element('search')
 	    child.append(item)
 	self.writeHistoryFile(root)
+
+
 
 
 class Chars:
