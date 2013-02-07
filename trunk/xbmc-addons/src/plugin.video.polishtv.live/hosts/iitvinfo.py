@@ -176,22 +176,7 @@ class iiTVInfo:
                 exit()                       
             match_watch = re.compile('<div class="watch_link" id=".+?"> <a href="(.+?)" target="_blank">').findall(data)
             if len(match_watch) > 0:
-                valTab = []
-                strTab = []
-                a = 1
-                for i in range(len(match_watch)):
-                    strTab.append(str(a) + ". " + self.up.getHostName(match_watch[i], True))
-                    strTab.append(match_watch[i])
-                    valTab.append(strTab)
-                    strTab = []
-                    a = a + 1
-                log.info("lista: " + str(valTab))
-                d = xbmcgui.Dialog()
-                item = d.select("Wybór filmu", self.getItemTitles(valTab))
-                if item != -1:
-                    videoID = str(valTab[item][1])
-                    log.info('mID: ' + videoID)
-                    return videoID
+                return self.up.hostSelect(match_watch)
         return False
         
 

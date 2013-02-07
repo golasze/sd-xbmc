@@ -232,21 +232,12 @@ class KinoPecetowiec:
 		exit()
         data = link.replace('putlocker.com/file', 'putlocker.com/embed'). replace('http://sockshare.com', 'http://www.sockshare.com')
 	match = re.compile('<div id="videoplayer">(.+?)</div>', re.DOTALL).findall(data)
+	match2 = []
 	if len(match) > 0:
 	    match2 = re.compile('http://(.+?)["\\r]').findall(match[0])
 	    if len(match2) > 0:
-		for i in range(len(match2)):
-		    match2[i] = 'http://' + match2[i]
-		    valTab.append(self.setLinkTable(self.up.getHostName(match2[i], True), match2[i]))
-	    valTab.sort(key = lambda x: x[0])
-	
-	d = xbmcgui.Dialog()
-        item = d.select("Wybór filmu", self.getItemTitles(valTab))
-        print str(item)
-	if item != -1:
-	    videoID = str(valTab[item][1])
-	    log.info('mID: ' + videoID)
-        return videoID
+		for i in range(len(match2)): match2[i] = 'http://' + match2[i]
+        return self.up.hostSelect(match2)
 
 
     def addDir(self, service, name, category, title, plot, page, iconimage, folder = True, isPlayable = True):
@@ -356,7 +347,7 @@ class KinoPecetowiec:
 	    	    
         if name == 'playSelectedMovie':
             url = self.getHostTable(page)
-	    if url !='':
+	    if url != False:
 		linkVideo = self.up.getVideoLink(url)
 		if linkVideo != False:
 		    self.LOAD_AND_PLAY_VIDEO(linkVideo, title)
@@ -364,7 +355,7 @@ class KinoPecetowiec:
 		    d = xbmcgui.Dialog()
 		    d.ok('Brak linku', SERVICE + ' - przepraszamy, chwilowa awaria.', 'Zapraszamy w innym terminie.')
 	    else:
-		exit()
+		pass
         
         if service == SERVICE and action == 'download' and link != '':
                         self.dir.checkDir(os.path.join(dstpath, SERVICE))
