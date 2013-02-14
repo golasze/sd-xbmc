@@ -17,11 +17,13 @@ import pLog, settings, Parser, pCommon, xppod
 log = pLog.pLog()
 
 SERVICE = 'anyfiles'
+THUMB_SERVICE = os.path.join(ptv.getAddonInfo('path'), "images/") + SERVICE + '.png'
+THUMB_NEXT = os.path.join(ptv.getAddonInfo('path'), "images/") + 'dalej.png'
+THUMB_PREV = os.path.join(ptv.getAddonInfo('path'), "images/") + 'wroc.png'
 COOKIEFILE = ptv.getAddonInfo('path') + os.path.sep + "cookies" + os.path.sep + SERVICE +".cookie"
 
 MAINURL = 'http://video.anyfiles.pl'
 SEARCHURL = MAINURL + '/Search.jsp'
-IMGURL = MAINURL + '/img/nlogo.png'
 NEW_LINK = MAINURL + '/najnowsze/0'
 HOT_LINK = MAINURL + '/najpopularniejsze/0'
 
@@ -87,12 +89,11 @@ class AnyFiles:
       match = re.search('Paginator.+?,(.+?), 8, (.+?),',data)
       if match:
 	if int(match.group(2)) < int(match.group(1)):
-	  #p = SEARCHURL.split('/')
 	  nextpage = (int(match.group(2))+1) * 18
 	  nUrl = SEARCHURL + "?st=" + str(nextpage)
 	  strTab.append("pokaz wiecej")
 	  strTab.append(nUrl)	  
-	  strTab.append("")
+	  strTab.append(THUMB_NEXT)
 	  valTab.append(strTab)
     return valTab
      
@@ -103,12 +104,10 @@ class AnyFiles:
 
     query_data = { 'url': MAINURL, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
     data = self.common.getURLRequestData(query_data)
-    #link = self.common.requestData(MAINURL)
     match = re.compile('<tr><td><a href="(.+?)" class="kat-box-title">.+?</a></td></tr>').findall(data)
     if len(match) > 0:
       for i in range(len(match)):	
 	c = match[i].split('/')
-	#cat = c[1].replace('+',' ')
 	strTab.append(c[1].replace('+',' '))
 	strTab.append(MAINURL + match[i])
 	valTab.append(strTab)
@@ -121,7 +120,6 @@ class AnyFiles:
     valTab = []
     query_data = { 'url': url, 'use_host': False, 'use_cookie': False, 'use_post': False, 'return_data': True }
     data = self.common.getURLRequestData(query_data)
-    #link = self.common.requestData(url)
     match = re.compile('src="(.+?)".+?(?:\n|\r\n?).+?(?:\n|\r\n?).+?(?:\n|\r\n?)<tr><td><a href="(.+?)" class="kat-box-name">(.+?)</a>', re.MULTILINE).findall(data)
     if len(match) > 0:
       for i in range(len(match)):
@@ -142,7 +140,7 @@ class AnyFiles:
 	  strTab.append(MAINURL + "/" + p[3] + "/" + p[4] + "/" + p[5] + "/" + str(nextpage))
 	else:
 	  strTab.append(MAINURL + "/" + p[3] + "/" + str(nextpage))	  
-	strTab.append("")
+	strTab.append(THUMB_NEXT)
 	valTab.append(strTab)
     return valTab
   
@@ -151,13 +149,10 @@ class AnyFiles:
     #name,url,iconimage
     for i in range(len(table)):
       value = table[i]
-      title = value[0]
-      url = value[1]
-      iconimage = value[2]
-      if title == 'pokaz wiecej':
-	self.add(SERVICE, title, 'movie', 'None', title, iconimage, url, True, False)
+      if value[0] == 'pokaz wiecej':
+	self.add(SERVICE, value[0], 'movie', 'None', value[0], value[2], value[1], True, False)
       else:
-	self.add(SERVICE, 'playSelectedMovie', 'movie', 'None', title, iconimage, url, True, False)	
+	self.add(SERVICE, 'playSelectedMovie', 'movie', 'None', value[0], value[2], value[1], True, False)	
     #zmien view na "Thumbnail"
     xbmcplugin.setContent(int(sys.argv[1]),'movies')
     xbmc.executebuiltin("Container.SetViewMode(500)")    
@@ -167,9 +162,9 @@ class AnyFiles:
   def listsAddDirMenu(self, table, name, category, page):
     for i in range(len(table)):
       if name == 'None':
-	self.add(SERVICE, table[i], 'None', 'None', table[i], IMGURL, 'None', True, False)
+	self.add(SERVICE, table[i], 'None', 'None', table[i], THUMB_SERVICE, 'None', True, False)
       if name == 'category':
-	self.add(SERVICE, table[i][0], table[i][0], 'None', table[i][0], 'None', table[i][1], True, False)
+	self.add(SERVICE, table[i][0], table[i][0], 'None', table[i][0], THUMB_SERVICE, table[i][1], True, False)
     #zmien view na "List"
     xbmcplugin.setContent(int(sys.argv[1]),'movies')
     xbmc.executebuiltin("Container.SetViewMode(502)")    	
@@ -179,38 +174,22 @@ class AnyFiles:
   def listsHistory(self, table):
     for i in range(len(table)):
       if table[i] <> '':
-	self.add(SERVICE, table[i], 'history', 'None', 'None', IMGURL, 'None', True, False)
+	self.add(SERVICE, table[i], 'history', 'None', 'None', THUMB_SERVICE, 'None', True, False)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     
 
   def add(self, service, name, category, page, title, iconimage, url, folder = True, isPlayable = True):
-    log.info (url)
     u=sys.argv[0] + "?service=" + service + "&name=" + urllib.quote_plus(name) + "&category=" + urllib.quote_plus(category) + "&page=" + urllib.quote_plus(page) + "&title=" + urllib.quote_plus(title) + "&url=" + urllib.quote_plus(url)
     if name == 'playSelectedMovie':
     	name = title
     if iconimage == '':
     	iconimage = "DefaultVideo.png"
-    liz=xbmcgui.ListItem(name.decode('iso8859-2'), iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+    liz=xbmcgui.ListItem(name.decode('UTF-8'), iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     if isPlayable:
 	liz.setProperty("IsPlayable", "true")
-    liz.setInfo('video', {'title' : title.decode('iso8859-2')} )
+    liz.setInfo('video', {'title' : title.decode('utf-8')} )
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
-  
-
-  def LOAD_AND_PLAY_VIDEO(self, videoUrl):
-    ok=True
-    if videoUrl == '':
-      d = xbmcgui.Dialog()
-      d.ok('Nie znaleziono streamingu.', 'Może to chwilowa awaria.', 'Spróbuj ponownie za jakiś czas')
-      return False
-    try:
-      xbmcPlayer = xbmc.Player()
-      xbmcPlayer.play(videoUrl)
-    except:
-      d = xbmcgui.Dialog()
-      d.ok('Błąd przy przetwarzaniu, lub wyczerpany limit czasowy oglądania.', 'Aby oglądać za darmo spróbuj ponownie za jakiś czas')		
-    return ok
-    
+   
 
   def handleService(self):
     params = self.parser.getParams()
@@ -259,7 +238,7 @@ class AnyFiles:
       videoUrl = self.anyfiles.getVideoUrl(url)
       if videoUrl != False:
 	log.info("videoUrl: "+ videoUrl)
-	self.LOAD_AND_PLAY_VIDEO(videoUrl)
+	self.common.LOAD_AND_PLAY_VIDEO(videoUrl, title)
   
       
 class serviceParser:
@@ -278,10 +257,10 @@ class serviceParser:
       match = re.search("""var flashvars = {.+?"st":"(.+?)"}""",data)
       if match:
 	nUrl = xppod.Decode(match.group(1)[2:]).encode('utf-8').strip()
-	if 'http://' in nUrl: url = nUrl
-	else: url = 'http://video.anyfiles.pl' + nUrl
+	if 'http://' in nUrl: url2 = nUrl
+	else: url2 = 'http://video.anyfiles.pl' + nUrl
 	
-	query_data = { 'url': url+ "&ref=", 'use_host': False, 'use_cookie': True, 'cookiefile': COOKIEFILE, 'load_cookie': True, 'save_cookie': False, 'use_post': False, 'return_data': True }
+	query_data = { 'url': url2+ "&ref=" +urllib.quote_plus(url), 'use_host': False, 'use_cookie': True, 'cookiefile': COOKIEFILE, 'load_cookie': True, 'save_cookie': False, 'use_post': False, 'return_data': True }
 	data = self.cm.getURLRequestData(query_data)
 	data = xppod.Decode(data).encode('utf-8').strip()
 
@@ -298,4 +277,3 @@ class serviceParser:
 	  plugin = 'plugin://plugin.video.youtube/?action=play_video&videoid=' + videoid
 	  return plugin
       return False  
-
