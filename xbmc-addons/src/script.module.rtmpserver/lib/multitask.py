@@ -149,7 +149,6 @@ __version__  = '0.2.0'
 __revision__ = int('$Revision: 121 $'.split()[1])
 
 
-
 ################################################################################
 #
 # Timeout exception type
@@ -1200,8 +1199,6 @@ def add(task):
 def run():
     'Run the default TaskManager instance'
     get_default_task_manager().run()
-
-
 
 ################################################################################
 #
