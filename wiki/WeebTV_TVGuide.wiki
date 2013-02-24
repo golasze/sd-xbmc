@@ -54,13 +54,13 @@ _W systemach Windows, folder {{{Dane Aplikacji}}} jest ukryty._
 
 ==Automatyczne pobieranie pliku z programem EPG==
 === Wersja dla Windows ===
-Sciagamy paczke [http://jatrn.com/xbmc/autoepg.zip] i rozpakowywujemy ja do {{{C:\autoepg}}}. Teraz w folderze {{{C:\autoepg}}} znajduja sie nastepujace pliki:
+Sciagamy paczke [http://sd-xbmc.org/xbmc/files/autoepg.zip] i rozpakowywujemy ja do {{{C:\autoepg}}}. Teraz w folderze {{{C:\autoepg}}} znajduja sie nastepujace pliki:
  * wget.exe - narzedzie do pobieranie plikow,
  * autoepg.bat - plik wsadowy,
  * source.cmd - plik z lokacja EPG do sciagniecia.
 Edytujemy pliki {{{source.cmd}}} i wskazujemy adres skad EPG mam byc sciagniety. Domyslnie wyglada to tak:
 {{{
-SET epgurl=http://jatrn.com/xbmc/epg_weebtv_CST.xml
+SET epgurl=http://sd-xbmc.org/xbmc/epg/epg_weebtv_CST.xml
 }}}
 Teraz po uruchomieniu {{{autoepg.bat}}}, plik z EPG zostanie sciagniety i zapisany do {{{c:\autoepg\epg.xml}}}. We wtyczce, TVGuide jako zrodlo XMLTV, nalez wybrac {{{c:\autoepg\epg.xml}}}.
 By automatycznie scigac EPG po uruchomieniu komputera nalezy skopiowac {{{autoepg.bat}}} do Autostart. Mozna rowniez uzyc Windows Task Scheduler a by sciagac go w regularnych odstepach czasowych. 
