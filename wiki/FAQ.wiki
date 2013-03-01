@@ -6,10 +6,10 @@ Zapostuj problem, podaj swoja dystrybucje, podaj krok po kroku w jaki sposob bla
 === _Gdzie znajduje sie xbmc.log?_ ===
 Wszystkie informacje na temat *xbmc.log* znajduja sie w [XBMC_debug WIKI]
 
-=== _MacOSX: Error script failed_ ===
+=== _MacOSX lub Android: Error script failed_ ===
 W logach pojawia sie: {{{ImportError: dynamic module does not define init function (initParser)}}}
 
-Skopiuj:
+MacOSX skopiuj:
 {{{
 /Users/xxx/Library/Application Support/XBMC/addons/plugin.video.polishtv.live/resources/lib/Parser.py
 }}}
@@ -17,6 +17,17 @@ do
 {{{ 
 /Users/xxx/Library/Application Support/XBMC/addons/plugin.video.polishtv.live/Parser.py
 }}}
+
+Android skopiuj:
+{{{
+/mnt/sdcard/Android/data/org.xbmc.xbmc/files/.xbmc/addons/plugin.video.polishtv.live/resources/lib/Parser.py
+}}}
+do
+{{{ 
+/mnt/sdcard/Android/data/org.xbmc.xbmc/files/.xbmc/addons/plugin.video.polishtv.live/Parser.py
+}}}
+
+
 
 === _Windows: Error script failed_ ===
 Nazwa uzytkownika systemu Windows nie moze zawierac polskich znakow.
