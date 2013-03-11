@@ -33,4 +33,4 @@ do
 Nazwa uzytkownika systemu Windows nie moze zawierac polskich znakow.
 
 === _TVNPlayer nie dziala poza granicami Polski_ ===
-W Ustawieniach wtyczki, w zakladce TVN, zaznacz opcje "I'm outside the Poland".
+Zloz donacje na sd-xbmc.org a dostaniesz namiary na nasz serwer proxy. Po otrzymaniu ich, Ustawienia->Globals wpisz swoi email i haslo a w Ustawienia->TVN zaznacz "use sd-xbmc proxy".
